@@ -1,6 +1,0 @@
-import numpy as np
-
-def test():
-    print("Hello World")
-
-print(np.zeros(5))

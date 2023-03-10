@@ -84,6 +84,21 @@ def getT(G, df):
 
     return t
 
+def getT_ttest(G, df):
+    
+    # Get the imputed data Y and indicator Z
+    df_imputed = G.transform(df)
+    Y_pred = df_imputed[:, Z.shape[1] + X.shape[1]:df_imputed.shape[1]]
+    Z_shuffled = df_imputed[:, 0]
+
+    # Get the t-statistics for T(Z,Y)
+    treatment = Y_pred[Z_shuffled == 1].flatten()
+    control = Y_pred[Z_shuffled == 0].flatten()
+
+    t, p = stats.ttest_ind(treatment, control, equal_var=True)
+
+    return t
+
 def worker(args):
     Z, X, M, Y_masked, G1, G2, t1_obs, t2_obs, shape, L = args
     t1_sim = np.zeros(L)
@@ -158,10 +173,11 @@ def one_shot_test_parallel(Z, X, M, Y, G1, G2, L=10000, n_jobs=multiprocessing.c
 
 
 if __name__ == '__main__':
-    multiprocessing.freeze_support()
+    multiprocessing.freeze_support() # This is necessary and important, not sure why 
+
     #test MissForest
     missForest = IterativeImputer(estimator = RandomForestRegressor(),max_iter=10, random_state=0)
-    p1, p2 = one_shot_test_parallel(Z, X, M, Y, L = 100,G1=missForest, G2=missForest)
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y,G1=missForest, G2=missForest)
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
 
@@ -183,3 +199,14 @@ if __name__ == '__main__':
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
     
+
+
+""" 
+T()
+p-values for part 1: 0.47242206235011985
+p-values for part 2: 0.2670863309352518
+
+tt-test
+p-values for part 1: 0.7107314148681054
+p-values for part 2: 0.29496402877697836
+"""

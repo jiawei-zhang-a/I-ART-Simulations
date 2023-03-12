@@ -16,31 +16,26 @@ X = np.load("/Users/jiaweizhang/research/data/X.npy")
 Y = np.load("/Users/jiaweizhang/research/data/Y.npy")
 Z = np.load("/Users/jiaweizhang/research/data/Z.npy")
 M = np.load("/Users/jiaweizhang/research/data/M.npy")
+S = np.load("/Users/jiaweizhang/research/data/S.npy")
 
-def split_df(df):
-    # Set the proportion of data to be split
-    split_proportion = 0.5
+N = len(X)
 
-    # Set a random seed for reproducibility
-    random.seed(23)
+#split based on strata
+def split_df(df,index_S):
 
-    # Get the indices for the split
-    indices = df.index.tolist()
-    num_rows = len(df)
-    split_index = int(num_rows * split_proportion)
-
-    # Shuffle the indices randomly
-    random.shuffle(indices)
-
-    # Get the randomly selected rows for each split
-    split1_indices = indices[:split_index]
-    split2_indices = indices[split_index:]
-
-    # Split the original DataFrame into two separate DataFrames
-    df1 = df.loc[split1_indices]
-    df2 = df.loc[split2_indices]
+    # Sort the groups by the number of rows in each group
+    sorted_df = df.sort_values(by = index_S, ascending=True)
     
-    return df1,df2
+    # Split the sorted groups into two equal-sized sets of 100 strata each
+    df_set1 = sorted_df.iloc[:int(N/2),0 : index_S]
+    df_set2 = sorted_df.iloc[int(N/2):N, 0 : index_S]
+
+    #set the index of the two sets from zero to 1
+    df_set1.index = range(len(df_set1))
+    df_set2.index = range(len(df_set2))
+    
+    # Return the two sets of strata
+    return df_set1, df_set2
 
 def T(z,y):
 
@@ -100,16 +95,35 @@ def getT_ttest(G, df):
     return t
 
 def worker(args):
-    Z, X, M, Y_masked, G1, G2, t1_obs, t2_obs, shape, L = args
+    # unpack the arguments
+    X, Y_masked, S, G1, G2, t1_obs, t2_obs, L = args
+
+    # simulate data and calculate test statistics
     t1_sim = np.zeros(L)
     t2_sim = np.zeros(L)
 
     for l in range(L):
-        Z_sim = np.random.binomial(1, 0.5, shape[0]).reshape(-1, 1)
-        df_sim = pd.DataFrame(np.concatenate((Z_sim, X, Y_masked), axis=1))
-        df1_sim, df2_sim = split_df(df_sim)
-        t1_sim[l] = getT(G1, df1_sim)
-        t2_sim[l] = getT(G2, df2_sim)
+
+        # simulate treatment indicators in parts 1 and 2
+        df_sim = pd.DataFrame(np.concatenate((X, Y_masked, S), axis=1))
+        
+        # split the simulated data into two parts
+        df1_sim, df2_sim = split_df(df_sim, index_S = X.shape[1] + Y.shape[1])
+
+        # simulate treatment indicators in parts 1 and 2
+        Z_1 = np.random.binomial(1, 0.5, df1_sim.shape[0]).reshape(-1, 1)
+        Z_2 = np.random.binomial(1, 0.5, df2_sim.shape[0]).reshape(-1, 1)
+        df1_sim = pd.concat([pd.DataFrame(Z_1), df1_sim], axis=1)
+        df2_sim = pd.concat([pd.DataFrame(Z_2), df2_sim], axis=1)
+
+        
+        # get the test statistics in part 1
+        t1_sim[l] = getT(G2, df1_sim)
+
+        # get the test statistics in part 2
+        t2_sim[l] = getT(G1, df2_sim)
+
+        # Calculate the completeness percentage
         if l % 100 == 0:
             completeness = l / L * 100  
             print(f"Task is {completeness:.2f}% complete.")
@@ -119,7 +133,10 @@ def worker(args):
 
     return p1, p2
 
-def one_shot_test_parallel(Z, X, M, Y, G1, G2, L=10000, n_jobs=multiprocessing.cpu_count()):
+
+
+
+def one_shot_test_parallel(Z, X, M, Y, S, G1, G2, L=10000, n_jobs=multiprocessing.cpu_count()):
     """
     A one-shot framework for testing H_0.
 
@@ -142,10 +159,10 @@ def one_shot_test_parallel(Z, X, M, Y, G1, G2, L=10000, n_jobs=multiprocessing.c
     # create data a whole data frame
     Y_masked = np.ma.masked_array(Y, mask=M)
     Y_masked = Y_masked.filled(np.nan)
-    df = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
+    df = pd.DataFrame(np.concatenate((Z, X, Y_masked, S), axis=1))
     
     # randomly split the data into two parts
-    df1, df2 = split_df(df)
+    df1, df2 = split_df(df, index_S = Z.shape[1] + X.shape[1] + Y.shape[1])
 
     # impute the missing values and calculate the observed test statistics in part 1
     G1.fit(df1)
@@ -163,7 +180,7 @@ def one_shot_test_parallel(Z, X, M, Y, G1, G2, L=10000, n_jobs=multiprocessing.c
 
 
     # simulate data and calculate test statistics in parallel
-    args_list = [(Z, X, M, Y_masked, G1, G2, t1_obs, t2_obs, df.shape, int(L / n_jobs + 1))] * n_jobs
+    args_list = [(X, Y_masked, S, G1, G2, t1_obs, t2_obs, int(L / n_jobs))] * n_jobs
     with multiprocessing.Pool(processes=n_jobs) as pool:
         p_list = pool.map(worker, args_list)
     p1 = np.mean([p[0] for p in p_list], axis=0)
@@ -171,16 +188,22 @@ def one_shot_test_parallel(Z, X, M, Y, G1, G2, L=10000, n_jobs=multiprocessing.c
     
     return p1, p2
 
-
 if __name__ == '__main__':
     multiprocessing.freeze_support() # This is necessary and important, not sure why 
-
+    
     #test MissForest
     missForest = IterativeImputer(estimator = RandomForestRegressor(),max_iter=10, random_state=0)
-    p1, p2 = one_shot_test_parallel(Z, X, M, Y,G1=missForest, G2=missForest)
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=missForest, G2=missForest)
+    print("p-values for part 1:", p1)
+    print("p-values for part 2:", p2)
+    
+    #test Median imputer
+    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=median_imputer, G2=median_imputer)
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
 
+""" 
     #test KNNimputer
     KNNimputer = KNNImputer(n_neighbors=2)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, G1=KNNimputer, G2=KNNimputer)
@@ -192,16 +215,12 @@ if __name__ == '__main__':
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge, G2=BayesianRidge)
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
+“”“
 
-    #test Median imputer
-    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p1, p2 = one_shot_test_parallel(Z, X, M, Y, G1=median_imputer, G2=median_imputer)
-    print("p-values for part 1:", p1)
-    print("p-values for part 2:", p2)
     
 
 
-""" 
+
 T()
 p-values for part 1: 0.47242206235011985
 p-values for part 2: 0.2670863309352518

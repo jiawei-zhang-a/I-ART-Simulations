@@ -1,4 +1,6 @@
 import pandas as pd
+import xgboost as xgb
+from sklearn.neural_network import MLPRegressor
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.experimental import enable_iterative_imputer
@@ -10,6 +12,9 @@ import matplotlib.pyplot as plt
 from sklearn.impute import SimpleImputer
 import scipy.stats as stats
 import multiprocessing
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.kernel_approximation import Nystroem
 
 #load data
 X = np.load("/Users/jiaweizhang/research/data/X.npy")
@@ -76,21 +81,6 @@ def getT(G, df):
 
     #the Wilcoxon rank sum test
     t = T(new_z,new_y)
-
-    return t
-
-def getT_ttest(G, df):
-    
-    # Get the imputed data Y and indicator Z
-    df_imputed = G.transform(df)
-    Y_pred = df_imputed[:, Z.shape[1] + X.shape[1]:df_imputed.shape[1]]
-    Z_shuffled = df_imputed[:, 0]
-
-    # Get the t-statistics for T(Z,Y)
-    treatment = Y_pred[Z_shuffled == 1].flatten()
-    control = Y_pred[Z_shuffled == 0].flatten()
-
-    t, p = stats.ttest_ind(treatment, control, equal_var=True)
 
     return t
 
@@ -191,41 +181,71 @@ def one_shot_test_parallel(Z, X, M, Y, S, G1, G2, L=10000, n_jobs=multiprocessin
 if __name__ == '__main__':
     multiprocessing.freeze_support() # This is necessary and important, not sure why 
     
-    #test MissForest
+    #MissForest
+    print("One-shot test for Fisher's sharp null for MissForest")
     missForest = IterativeImputer(estimator = RandomForestRegressor(),max_iter=10, random_state=0)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=missForest, G2=missForest)
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
-    
-    #test Median imputer
-    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=median_imputer, G2=median_imputer)
-    print("p-values for part 1:", p1)
-    print("p-values for part 2:", p2)
 
-""" 
-    #test KNNimputer
+    #KNN
+    print("One-shot test for Fisher's sharp null for KNN imputer")
     KNNimputer = KNNImputer(n_neighbors=2)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, G1=KNNimputer, G2=KNNimputer)
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
 
-    #test BayesianRidge
+    #BayesianRidge
+    print("One-shot test for Fisher's sharp null for BayesianRidge")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge, G2=BayesianRidge)
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
-“”“
+
+    #Nystroem Method for Kernel Approximation
+    print("One-shot test for Fisher's sharp null for Nystroem Kernel Approximation")
+    pipeline = make_pipeline(
+        StandardScaler(),
+        Nystroem(), 
+        linear_model.Ridge()
+    )
+    NystroemKernel = IterativeImputer(estimator = pipeline,max_iter=10, random_state=0)
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=NystroemKernel, G2=NystroemKernel)
+    print("p-values for part 1:", p1)
+    print("p-values for part 2:", p2)
+
+    #XGBoost
+    print("One-shot test for Fisher's sharp null for XGBoost")
+    pipeline = make_pipeline(
+        StandardScaler(),
+        xgb.XGBRegressor()
+    )
+    XGBoost = IterativeImputer(estimator = pipeline,max_iter=10, random_state=0)
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=XGBoost, G2=XGBoost)
+    print("p-values for part 1:", p1)
+    print("p-values for part 2:", p2)
+
+    #Neural Network
+    print("One-shot test for Fisher's sharp null for Neural Network")
+    pipeline = make_pipeline(
+        StandardScaler(),
+        MLPRegressor(hidden_layer_sizes=(100, 100, 100,100), activation='relu', alpha=0.0001, random_state=0)
+    )
+    NN_imputer = IterativeImputer(estimator=pipeline.named_steps['mlpregressor'], max_iter=10, random_state=0)
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=NN_imputer, G2=NN_imputer)
+    print("p-values for part 1:", p1)
+    print("p-values for part 2:", p2)
+
+    #test Median imputer
+    print("One-shot test for Fisher's sharp null for Median imputer")
+    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=median_imputer, G2=median_imputer)
+    print("p-values for part 1:", p1)
+    print("p-values for part 2:", p2)
+
+
+
 
     
 
 
-
-T()
-p-values for part 1: 0.47242206235011985
-p-values for part 2: 0.2670863309352518
-
-tt-test
-p-values for part 1: 0.7107314148681054
-p-values for part 2: 0.29496402877697836
-"""

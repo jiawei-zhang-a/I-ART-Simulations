@@ -9,3 +9,7 @@ These framework is is for postprediction missing data imputation
 ```
 pip install -r requirements.txt
 ```
+
+The method used to semi-supervised learning for the imputation is 
+
+KNN,Missforest,XGBoost,NN,RidgeRegression,Kernel Approximation,Mean and median

@@ -65,13 +65,3 @@ pipeline = make_pipeline(
     StandardScaler(),
     KerasNNClassifier(build_fn=build_model)
 )
-
-# Train the pipeline
-pipeline.fit(X_train, y_train)
-
-# Predict on the test set
-y_pred = pipeline.predict(X_test)
-
-# Calculate the accuracy
-accuracy = accuracy_score(y_test, y_pred)
-print("Accuracy: {:.2f}%".format(accuracy * 100))

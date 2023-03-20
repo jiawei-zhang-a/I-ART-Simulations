@@ -181,29 +181,29 @@ def one_shot_test_parallel(Z, X, M, Y, S, G1, G2, L=10000, n_jobs=multiprocessin
 if __name__ == '__main__':
     multiprocessing.freeze_support() # This is necessary and important, not sure why 
     
+    """
     #MissForest
-    print("One-shot test for Fisher's sharp null for MissForest")
     missForest = IterativeImputer(estimator = RandomForestRegressor(),max_iter=10, random_state=0)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=missForest, G2=missForest)
+    print("One-shot test for Fisher's sharp null for MissForest")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
-
+    
     #KNN
-    print("One-shot test for Fisher's sharp null for KNN imputer")
     KNNimputer = KNNImputer(n_neighbors=2)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, G1=KNNimputer, G2=KNNimputer)
+    print("One-shot test for Fisher's sharp null for KNN imputer")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
-
+    """
     #BayesianRidge
-    print("One-shot test for Fisher's sharp null for BayesianRidge")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
-    p1, p2 = one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge, G2=BayesianRidge)
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=BayesianRidge, G2=BayesianRidge)
+    print("One-shot test for Fisher's sharp null for BayesianRidge")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
 
     #Nystroem Method for Kernel Approximation
-    print("One-shot test for Fisher's sharp null for Nystroem Kernel Approximation")
     pipeline = make_pipeline(
         StandardScaler(),
         Nystroem(), 
@@ -211,20 +211,21 @@ if __name__ == '__main__':
     )
     NystroemKernel = IterativeImputer(estimator = pipeline,max_iter=10, random_state=0)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=NystroemKernel, G2=NystroemKernel)
+    print("One-shot test for Fisher's sharp null for Nystroem Kernel Approximation")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
 
     #XGBoost
-    print("One-shot test for Fisher's sharp null for XGBoost")
     pipeline = make_pipeline(
         StandardScaler(),
         xgb.XGBRegressor()
     )
     XGBoost = IterativeImputer(estimator = pipeline,max_iter=10, random_state=0)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=XGBoost, G2=XGBoost)
+    print("One-shot test for Fisher's sharp null for XGBoost")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
-
+    """
     #Neural Network
     print("One-shot test for Fisher's sharp null for Neural Network")
     pipeline = make_pipeline(
@@ -235,11 +236,11 @@ if __name__ == '__main__':
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=NN_imputer, G2=NN_imputer)
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
-
+    """
     #test Median imputer
-    print("One-shot test for Fisher's sharp null for Median imputer")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=median_imputer, G2=median_imputer)
+    print("One-shot test for Fisher's sharp null for Median imputer")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
 

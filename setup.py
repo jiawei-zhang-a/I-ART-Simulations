@@ -6,8 +6,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="project_name",
     version="0.1.0",
-    author="Jiawei Zhang",
-    author_email="jiawei.zhang@nyu.edu",
+    author="",
+    author_email="",
     description="post-prediction data imputation framework",
     long_description=long_description,
     long_description_content_type="text/markdown",

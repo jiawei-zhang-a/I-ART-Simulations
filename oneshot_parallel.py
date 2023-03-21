@@ -195,7 +195,7 @@ if __name__ == '__main__':
     print("One-shot test for Fisher's sharp null for KNN imputer")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
-    """
+   
     #BayesianRidge
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
     p1, p2 = one_shot_test_parallel(Z, X, M, Y, S, G1=BayesianRidge, G2=BayesianRidge)
@@ -214,7 +214,7 @@ if __name__ == '__main__':
     print("One-shot test for Fisher's sharp null for Nystroem Kernel Approximation")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)
-
+ """
     #XGBoost
     pipeline = make_pipeline(
         StandardScaler(),

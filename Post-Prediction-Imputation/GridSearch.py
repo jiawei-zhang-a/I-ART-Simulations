@@ -30,7 +30,7 @@ if __name__ == '__main__':
     Framework = OneShot.OneShotTest(N)
 
     # Fixed X, Z, change beta to make different Y,M
-    for i in [0,1,2,5,10,20,50,100]:
+    for i in [1,2,5,10,20,50,100]:
         print("beta = ", i)
 
         # Change the parameters beta
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         
         #KNN
         KNNimputer = KNNImputer(n_neighbors=2)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, G1=KNNimputer, G2=KNNimputer)
+        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=KNNimputer, G2=KNNimputer)
         print("One-shot test for Fisher's sharp null for KNN imputer")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)

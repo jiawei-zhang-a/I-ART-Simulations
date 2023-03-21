@@ -1,3 +1,4 @@
+
 import pandas as pd
 import xgboost as xgb
 from sklearn.neural_network import MLPRegressor
@@ -15,6 +16,8 @@ import multiprocessing
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.kernel_approximation import Nystroem
+import Generator as Gen
+
 
 #load data
 X = np.load("/Users/jiaweizhang/research/data/X.npy")
@@ -98,7 +101,7 @@ def worker(args):
         df_sim = pd.DataFrame(np.concatenate((X, Y_masked, S), axis=1))
         
         # split the simulated data into two parts
-        df1_sim, df2_sim = split_df(df_sim, index_S = X.shape[1] + Y_masked.shape[1])
+        df1_sim, df2_sim = split_df(df_sim, index_S = X.shape[1] + Y.shape[1])
 
         # simulate treatment indicators in parts 1 and 2
         Z_1 = np.random.binomial(1, 0.5, df1_sim.shape[0]).reshape(-1, 1)

@@ -9,6 +9,7 @@ These framework is is for postprediction missing data imputation
 
 ```
 source venv/bin/activate
+pip install -r requirement.txt
 deactivate
 ```
 

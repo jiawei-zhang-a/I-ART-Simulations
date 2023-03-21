@@ -191,7 +191,7 @@ if __name__ == '__main__':
     
     #KNN
     KNNimputer = KNNImputer(n_neighbors=2)
-    p1, p2 = one_shot_test_parallel(Z, X, M, Y, G1=KNNimputer, G2=KNNimputer)
+    p1, p2 = one_shot_test_parallel(Z, X, M, Y,S, G1=KNNimputer, G2=KNNimputer)
     print("One-shot test for Fisher's sharp null for KNN imputer")
     print("p-values for part 1:", p1)
     print("p-values for part 2:", p2)

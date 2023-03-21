@@ -6,8 +6,10 @@ people routinely exclude study subjects with missing outcomes, which would subst
 the statistical power due to discarding many study samples.
 These framework is is for postprediction missing data imputation
 
+
 ```
-pip install -r requirements.txt
+source venv/bin/activate
+deactivate
 ```
 
 The method used to semi-supervised learning for the imputation is 

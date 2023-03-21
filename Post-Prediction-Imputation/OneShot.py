@@ -107,7 +107,7 @@ class OneShotTest:
 
         return p1, p2
 
-    def one_shot_test_parallel(self, Z, X, M, Y, S, G1, G2, L=10000, n_jobs=multiprocessing.cpu_count(),verbose = True):
+    def one_shot_test_parallel(self, Z, X, M, Y, S, G1, G2, L=10000, n_jobs=multiprocessing.cpu_count(),verbose = False):
         """
         A one-shot framework for testing H_0.
 

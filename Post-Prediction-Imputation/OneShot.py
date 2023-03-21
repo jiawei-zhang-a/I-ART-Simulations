@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import multiprocessing
 
-class OneShot:
+class OneShotTest:
     #load data
     def __init__(self,N):
         self.N = N
@@ -49,11 +49,11 @@ class OneShot:
         
         return t
 
-    def getT(self, G, df):
+    def getT(self, G, df, indexY):
         
         # Get the imputed data Y and indicator Z
         df_imputed = G.transform(df)
-        y = df_imputed[:, self.Z.shape[1] + self.X.shape[1]:df_imputed.shape[1]]
+        y = df_imputed[:, indexY:df_imputed.shape[1]]
         z = df_imputed[:, 0]
         
         z_tiled = np.tile(z, 3)
@@ -69,7 +69,7 @@ class OneShot:
 
     def worker(self, args):
         # unpack the arguments
-        X, Y_masked, S, G1, G2, t1_obs, t2_obs, L = args
+        X, Y_masked, S, G1, G2, t1_obs, t2_obs, L, verbose = args
 
         # simulate data and calculate test statistics
         t1_sim = np.zeros(L)
@@ -91,22 +91,23 @@ class OneShot:
 
             
             # get the test statistics in part 1
-            t1_sim[l] = self.getT(G2, df1_sim)
+            t1_sim[l] = self.getT(G2, df1_sim, Z_1.shape[1] + X.shape[1])
 
             # get the test statistics in part 2
-            t2_sim[l] = self.getT(G1, df2_sim)
+            t2_sim[l] = self.getT(G1, df2_sim, Z_2.shape[1] + X.shape[1])
 
             # Calculate the completeness percentage
             if l % 100 == 0:
                 completeness = l / L * 100  
-                print(f"Task is {completeness:.2f}% complete.")
+                if verbose:
+                    print(f"Task is {completeness:.2f}% complete.")
 
         p1 = np.mean(t1_sim >= t1_obs, axis=0)
         p2 = np.mean(t2_sim >= t2_obs, axis=0)
 
         return p1, p2
 
-    def one_shot_test_parallel(self, Z, X, M, Y, S, G1, G2, L=10000, n_jobs=multiprocessing.cpu_count()):
+    def one_shot_test_parallel(self, Z, X, M, Y, S, G1, G2, L=10000, n_jobs=multiprocessing.cpu_count(),verbose = True):
         """
         A one-shot framework for testing H_0.
 
@@ -124,7 +125,8 @@ class OneShot:
         p2: 1D array of exact p-values for testing Fisher's sharp null in part 2
         """
         #print train start
-        print("Training start")
+        if verbose:
+            print("Training start")
 
         # create data a whole data frame
         Y_masked = np.ma.masked_array(Y, mask=M)
@@ -136,21 +138,22 @@ class OneShot:
 
         # impute the missing values and calculate the observed test statistics in part 1
         G1.fit(df1)
-        t1_obs = self.getT(G1, df1)
+        t1_obs = self.getT(G1, df1, Z.shape[1] + X.shape[1])
 
         # impute the miassing values and calculate the observed test statistics in part 2
         G2.fit(df2)
-        t2_obs = self.getT(G2, df2)
+        t2_obs = self.getT(G2, df2, Z.shape[1] + X.shape[1])
 
         #print train end
-        print("Training end")
+        if verbose:
+            print("Training end")
         
         # print the number of cores
-        print(f"Number of cores: {n_jobs}")
-
+        if verbose:
+            print(f"Number of cores: {n_jobs}")
 
         # simulate data and calculate test statistics in parallel
-        args_list = [(X, Y_masked, S, G1, G2, t1_obs, t2_obs, int(L / n_jobs))] * n_jobs
+        args_list = [(X, Y_masked, S, G1, G2, t1_obs, t2_obs, int(L / n_jobs), verbose)] * n_jobs
         with multiprocessing.Pool(processes=n_jobs) as pool:
             p_list = pool.map(self.worker, args_list)
         p1 = np.mean([p[0] for p in p_list], axis=0)

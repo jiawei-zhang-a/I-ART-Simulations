@@ -28,7 +28,7 @@ if __name__ == '__main__':
     Framework = OneShot.OneShotTest(N)
 
     # Fixed X, Z, change beta to make different Y,M
-    for i in [1,2,5,10,20,50,100]:
+    for i in [0, 1,2,5,10,20,50,100]:
         print("beta = ", i)
 
         # Change the parameters beta

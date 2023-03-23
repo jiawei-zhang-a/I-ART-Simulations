@@ -60,52 +60,11 @@ if __name__ == '__main__':
         print("One-shot test for Fisher's sharp null for MissForest")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)
-        
-        #KNN
-        KNNimputer = KNNImputer(n_neighbors=4)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=KNNimputer, G2=KNNimputer, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for KNN imputer")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
     
         #BayesianRidge
         BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
         p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=BayesianRidge, G2=BayesianRidge, n_jobs = 12)
         print("One-shot test for Fisher's sharp null for BayesianRidge")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
-
-        #Nystroem Method for Kernel Approximation
-        pipeline = make_pipeline(
-            StandardScaler(),
-            Nystroem(), 
-            linear_model.Ridge()
-        )
-        NystroemKernel = IterativeImputer(estimator = pipeline,max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=NystroemKernel, G2=NystroemKernel, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for Nystroem Kernel Approximation")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
-
-        #XGBoost
-        pipeline = make_pipeline(
-            StandardScaler(),
-            xgb.XGBRegressor()
-        )
-        XGBoost = IterativeImputer(estimator = pipeline,max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=XGBoost, G2=XGBoost, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for XGBoost")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
-
-        #Neural Network
-        print("One-shot test for Fisher's sharp null for Neural Network")
-        pipeline = make_pipeline(
-            StandardScaler(),
-            MLPRegressor(hidden_layer_sizes=(100, 100, 100,100), activation='relu', alpha=0.0001, random_state=0)
-        )
-        NN_imputer = IterativeImputer(estimator=pipeline.named_steps['mlpregressor'], max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=NN_imputer, G2=NN_imputer, n_jobs = 12)
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)
 

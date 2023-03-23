@@ -7,6 +7,11 @@ the statistical power due to discarding many study samples.
 These framework is is for postprediction missing data imputation
 
 
+python >= 3.9
+python -m pip install --upgrade pip
+pip -version >= 22.0.4
+
+
 ```
 source venv/bin/activate
 pip install -r requirement.txt

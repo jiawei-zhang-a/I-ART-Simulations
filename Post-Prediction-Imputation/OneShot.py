@@ -160,3 +160,84 @@ class OneShotTest:
         p2 = np.mean([p[1] for p in p_list], axis=0)
         
         return p1, p2
+    
+    def one_shot_test(self, Z, X, M, Y, S, G1, G2,  L=10000, verbose = False):
+        """
+        A one-shot framework for testing H_0.
+
+        Args:
+        Z: 2D array of observed treatment indicators
+        X: 2D array of observed covariates
+        M: 2D array of observed missing indicators
+        Y: 2D array of observed values for K outcomes
+        G1: a function that takes (Z, X, M, Y_k) as input and returns the imputed value for outcome k
+        G2: a function that takes (Z, X, M, Y_k) as input and returns the imputed value for outcome k
+        L: number of Monte Carlo simulations (default is 10000)
+
+        Returns:
+        p1: 1D array of exact p-values for testing Fisher's sharp null in part 1
+        p2: 1D array of exact p-values for testing Fisher's sharp null in part 2
+        """
+
+        #print train start
+        if verbose:
+            print("Training start")
+
+        # create data a whole data frame
+        Y_masked = np.ma.masked_array(Y, mask=M)
+        Y_masked = Y_masked.filled(np.nan)
+        df = pd.DataFrame(np.concatenate((Z, X, Y_masked,S), axis=1))
+        
+        # randomly split the data into two parts
+        df1, df2 = self.split_df(df, X.shape[1] + Y.shape[1] + Z.shape[1])
+
+        # impute the missing values and calculate the observed test statistics in part 1
+        G1.fit(df1)
+        t1_obs = self.getT(G1, df1)
+
+        # impute the missing values and calculate the observed test statistics in part 2
+        G2.fit(df2)
+        t2_obs = self.getT(G2, df2)
+
+        #print train end
+        if verbose:
+            print("Training end")
+
+        # simulate data and calculate test statistics
+        t1_sim = np.zeros(L)
+        t2_sim = np.zeros(L)
+        
+        for l in range(L):
+
+            # simulate treatment indicators in parts 1 and 2
+            df_sim = pd.DataFrame(np.concatenate((X, Y_masked, S), axis=1))
+            
+            # split the simulated data into two parts
+            df1_sim, df2_sim = self.split_df(df_sim, X.shape[1] + Y.shape[1])
+
+            # simulate treatment indicators in parts 1 and 2
+            Z_1 = np.random.binomial(1, 0.5, df1_sim.shape[0]).reshape(-1, 1)
+            Z_2 = np.random.binomial(1, 0.5, df2_sim.shape[0]).reshape(-1, 1)
+            df1_sim = pd.concat([pd.DataFrame(Z_1), df1_sim], axis=1)
+            df2_sim = pd.concat([pd.DataFrame(Z_2), df2_sim], axis=1)
+            
+        
+            # get the test statistics in part 1
+            t1_sim[l] = self.getT(G2, df1_sim)
+
+            # get the test statistics in part 2
+            t2_sim[l] = self.getT(G1, df2_sim)
+
+            # Calculate the completeness percentage
+            if l % 100 == 0:
+                completeness = l / L * 100  
+                if verbose:
+                    print(f"Task is {completeness:.2f}% complete.")
+
+        # calculate exact p-values for each outcome
+        p1 = np.mean(t1_sim >= t1_obs, axis=0)
+        p2 = np.mean(t2_sim >= t2_obs, axis=0)
+        
+        return p1, p2
+    
+

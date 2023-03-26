@@ -1,4 +1,4 @@
-import Generator
+import Simulation as Generator
 
 DataGen = Generator.DataGenerator(N = 20000, N_T = 10000, N_S = 100, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1, MaskRate=0.3)
 
@@ -34,5 +34,5 @@ print(M[:,1].sum() / len(M))
 print(M[:,2].sum() / len(M))
 
 # Generate S
-S = DataGen.GenerateS(Z)
+S = DataGen.GenerateS()
 print("S")

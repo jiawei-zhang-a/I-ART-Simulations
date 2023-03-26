@@ -53,16 +53,26 @@ class DataGenerator:
 
       return U
 
+  def GenerateS(self):
+    # Add strata index
+    groupSize = int(self.N / self.N_S)
+    S = np.zeros(self.N)
+    for i in range(self.N_S):
+        S[groupSize*i:groupSize*(i+1)] = i + 1
+    S = S.reshape(-1, 1)
+    return S
+
   def GenerateZ(self):
-      # generate Zn
-      Z = np.zeros(self.N)
-      Z[:self.N_T] = 1
-      np.random.shuffle(Z)
+    Z = []
+    np.random.shuffle(Z)
+    groupSize = int(self.N / self.N_S)
 
-      Z = Z.reshape(-1,1)
+    for i in range(self.N_S):
+        Z.append(np.random.binomial(1, 0.5, groupSize))
 
-      return Z
-
+    Z = np.concatenate(Z).reshape(-1, 1)
+    return Z
+  
   def GenerateY(self, X, U, Z):
     #def sum1():
     sum1 = np.zeros(self.N)
@@ -171,32 +181,7 @@ class DataGenerator:
             M[i][2] =  0
 
       return M
-
-  def GenerateS(self, Z):
-    #add strata index to the data, each strata has 100 samples, 50 Z = 1 and 50 Z = 0
-    S = np.zeros((self.N,1))
-    Z0_counter = 0
-    Z0_index = 0
-    Z1_counter = 0
-    Z1_index = 0
-
-    #once Z0_counter = 50 ---> Z0_index += 1 and Z0_counter = 0
-    for i in range(self.N):
-        if Z[i] == 0:
-            Z0_counter += 1
-            if Z0_counter == self.N_S / 2:
-                Z0_index += 1
-                Z0_counter = 0
-            S[i] = Z0_index
-        else:
-            Z1_counter += 1
-            if Z1_counter == self.N_S / 2:
-                Z1_index += 1
-                Z1_counter = 0
-            S[i] = Z1_index
-    
-    return S
-
+  
   def GenerateData(self):  
     # Generate X
     X = self.GenerateX()

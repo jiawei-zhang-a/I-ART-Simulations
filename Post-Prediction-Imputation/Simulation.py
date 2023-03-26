@@ -186,20 +186,20 @@ class DataGenerator:
     # Generate X
     X = self.GenerateX()
 
-    # Generate Z
-    Z = self.GenerateZ()
-
     # Generate U
     U = self.GenerateU()
+
+    # Generate S
+    S = self.GenerateS()
+
+    # Generate Z
+    Z = self.GenerateZ()
 
     # Generate Y
     Y = self.GenerateY(X, U, Z)
 
     # Generate M
     M = self.GenerateM(X, U, Y)
-
-    # Generate S
-    S = self.GenerateS(Z)
 
     return X, Z, U, Y, M, S
 

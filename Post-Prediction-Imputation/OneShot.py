@@ -12,11 +12,11 @@ class OneShotTest:
     def split_df(self,df,index_S):
 
         # Sort the groups by the number of rows in each group
-        sorted_df = df.sort_values(by = index_S, ascending=True)
+        #sorted_df = df.sort_values(by = index_S, ascending=True)
         
         # Split the sorted groups into two equal-sized sets of 100 strata each
-        df_set1 = sorted_df.iloc[:int(self.N/2),0 : index_S]
-        df_set2 = sorted_df.iloc[int(self.N/2):self.N, 0 : index_S]
+        df_set1 = df.iloc[:int(self.N/2),0 : index_S]
+        df_set2 = df.iloc[int(self.N/2):self.N, 0 : index_S]
 
         #set the index of the two sets from zero to 1
         df_set1.index = range(len(df_set1))

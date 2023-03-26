@@ -14,6 +14,9 @@ from sklearn.pipeline import make_pipeline
 from sklearn.kernel_approximation import Nystroem
 import Simulation as Generator
 import OneShot
+#from cuml import XGBRegressor
+ #   XGBRegressor(tree_method='gpu_hist')
+
 
 
 if __name__ == '__main__':
@@ -32,14 +35,10 @@ if __name__ == '__main__':
     Framework = OneShot.OneShotTest(N)
 
     #Print the mask situation of M
-    print("Mask Rate:")
-    M = DataGen.GenerateM(X, U, Y)
-    print(M[:,0].sum() / len(M))
-    print(M[:,1].sum() / len(M))
-    print(M[:,2].sum() / len(M))
+    print("Mask Rate: ", DataGen.MaskRate)
 
     # Fixed X, Z, change beta to make different Y,M
-    for i in [0,1,2,5,10,20,50,100]:
+    for i in [1,2,5,10,20,50,100]:
         print("beta = ", i)
 
         # Change the parameters beta
@@ -54,23 +53,18 @@ if __name__ == '__main__':
         Y = DataGen.GenerateY(X, U, Z)
         M = DataGen.GenerateM(X, U, Y)
         
-        #MissForest
-        missForest = IterativeImputer(estimator = RandomForestRegressor(),max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=missForest, G2=missForest, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for MissForest")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
-    
-        #BayesianRidge
-        BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=BayesianRidge, G2=BayesianRidge, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for BayesianRidge")
+        #XGBoost
+        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=10, random_state=0)
+        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=10, random_state=0)
+        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=XGBoost_1, G2=XGBoost_2)
+        print("One-shot test for Fisher's sharp null for XGBoost")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)
 
         #test Median imputer
-        median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=median_imputer, G2=median_imputer, n_jobs = 12)
+        median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
+        median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
+        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=median_imputer_1, G2=median_imputer_2)
         print("One-shot test for Fisher's sharp null for Median imputer")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)

@@ -12,7 +12,7 @@ import multiprocessing
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.kernel_approximation import Nystroem
-import Generator
+import Simulation as Generator
 import OneShot
 
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     print(M[:,2].sum() / len(M))
 
     # Fixed X, Z, change beta to make different Y,M
-    for i in [0,1,2,5,10,20,50,100]:
+    for i in [1,2,5,10,20,50,100]:
         print("beta = ", i)
 
         # Change the parameters beta
@@ -60,14 +60,14 @@ if __name__ == '__main__':
         print("One-shot test for Fisher's sharp null for MissForest")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)
-        
+        """
         #KNN
         KNNimputer = KNNImputer(n_neighbors=4)
         p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=KNNimputer, G2=KNNimputer, n_jobs = 12)
         print("One-shot test for Fisher's sharp null for KNN imputer")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)
-    
+        """
         #BayesianRidge
         BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
         p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=BayesianRidge, G2=BayesianRidge, n_jobs = 12)

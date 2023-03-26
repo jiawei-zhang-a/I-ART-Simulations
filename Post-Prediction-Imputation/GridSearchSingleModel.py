@@ -12,7 +12,7 @@ import multiprocessing
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.kernel_approximation import Nystroem
-import Generator
+import Simulation as Generator
 import OneShot
 
 

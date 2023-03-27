@@ -57,7 +57,7 @@ if __name__ == '__main__':
         #MissForest
         missForest = IterativeImputer(estimator = RandomForestRegressor(),max_iter=10, random_state=0)
         p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=missForest, G2=missForest, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for MissForest")
+        print("One-shot test or Fisher's sharp null for MissForest")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)
     

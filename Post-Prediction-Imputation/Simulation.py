@@ -2,6 +2,8 @@ import numpy as np
 from mv_laplace import MvLaplaceSampler
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.special import expit
+
 
 class DataGenerator:
   def __init__(self, N, N_T, N_S, beta_11, beta_12, beta_21, beta_22, beta_23, beta_31, MaskRate):
@@ -64,7 +66,6 @@ class DataGenerator:
 
   def GenerateZ(self):
     Z = []
-    np.random.shuffle(Z)
     groupSize = int(self.N / self.N_S)
 
     for i in range(self.N_S):
@@ -165,17 +166,22 @@ class DataGenerator:
       lambda3 = np.percentile(M_lamda[:,2], 100 * (1-self.MaskRate))
           
       for i in range(self.N):
-          if (np.exp(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.exp(Y[i, 0])) > lambda1:
+          values = np.zeros(3)
+          values[0] = expit(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.exp(Y[i, 0])
+          values[1] = ((X[i, :]**3).sum() + sum2 + U[i, 0] + (Y[i, 0]**3)/2 + Y[i, 1])
+          values[2] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.exp(Y[i, 1]))
+
+          if values[0] > lambda1:
             M[i][0] = 1 - single
           else:
             M[i][0] = 0
           
-          if ((X[i, :]**3).sum() + sum2 + U[i, 0] + (Y[i, 0]**3)/2 + Y[i, 1]) > lambda2:
+          if values[1] > lambda2:
             M[i][1] =  1 - single
           else:
             M[i][1] =  0
 
-          if (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.exp(Y[i, 1])) > lambda3:
+          if values[2] > lambda3:
             M[i][2] =  1
           else:
             M[i][2] =  0

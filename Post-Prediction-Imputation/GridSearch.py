@@ -12,14 +12,20 @@ import multiprocessing
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.kernel_approximation import Nystroem
-import Generator
+import Simulation as Generator
 import OneShot
+import warnings
+
+#from cuml import XGBRegressor
+ #   XGBRegressor(tree_method='gpu_hist')
+
 
 
 if __name__ == '__main__':
     multiprocessing.freeze_support() # This is necessary and important, not sure why 
     # Mask Rate
 
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
 
     #Simulate Data
     DataGen = Generator.DataGenerator(N = 20000, N_T = 10000, N_S = 100, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1, MaskRate=0.3)
@@ -32,14 +38,10 @@ if __name__ == '__main__':
     Framework = OneShot.OneShotTest(N)
 
     #Print the mask situation of M
-    print("Mask Rate:")
-    M = DataGen.GenerateM(X, U, Y)
-    print(M[:,0].sum() / len(M))
-    print(M[:,1].sum() / len(M))
-    print(M[:,2].sum() / len(M))
+    print("Mask Rate: ", DataGen.MaskRate)
 
     # Fixed X, Z, change beta to make different Y,M
-    for i in [0,1,2,5,10,20,50,100]:
+    for i in [10000]:
         print("beta = ", i)
 
         # Change the parameters beta
@@ -53,68 +55,29 @@ if __name__ == '__main__':
         # Simulate data
         Y = DataGen.GenerateY(X, U, Z)
         M = DataGen.GenerateM(X, U, Y)
-        
-        #MissForest
-        missForest = IterativeImputer(estimator = RandomForestRegressor(),max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=missForest, G2=missForest, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for MissForest")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
-        
-        #KNN
-        KNNimputer = KNNImputer(n_neighbors=4)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=KNNimputer, G2=KNNimputer, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for KNN imputer")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
-    
-        #BayesianRidge
-        BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=BayesianRidge, G2=BayesianRidge, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for BayesianRidge")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
-
-        #Nystroem Method for Kernel Approximation
-        pipeline = make_pipeline(
-            StandardScaler(),
-            Nystroem(), 
-            linear_model.Ridge()
-        )
-        NystroemKernel = IterativeImputer(estimator = pipeline,max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=NystroemKernel, G2=NystroemKernel, n_jobs = 12)
-        print("One-shot test for Fisher's sharp null for Nystroem Kernel Approximation")
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
 
         #XGBoost
-        pipeline = make_pipeline(
-            StandardScaler(),
-            xgb.XGBRegressor()
-        )
-        XGBoost = IterativeImputer(estimator = pipeline,max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=XGBoost, G2=XGBoost, n_jobs = 12)
+        XGBRegressor_1 = xgb.XGBRegressor()
+        XGBRegressor_2 = xgb.XGBRegressor()
+
+        XGBoost_1= IterativeImputer(estimator = XGBRegressor_1 ,max_iter=10, random_state=0)
+        XGBoost_2= IterativeImputer(estimator = XGBRegressor_2 ,max_iter=10, random_state=0)
+        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=XGBoost_1, G2=XGBoost_2, n_jobs=14)
         print("One-shot test for Fisher's sharp null for XGBoost")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)
 
-        #Neural Network
-        print("One-shot test for Fisher's sharp null for Neural Network")
-        pipeline = make_pipeline(
-            StandardScaler(),
-            MLPRegressor(hidden_layer_sizes=(100, 100, 100,100), activation='relu', alpha=0.0001, random_state=0)
-        )
-        NN_imputer = IterativeImputer(estimator=pipeline.named_steps['mlpregressor'], max_iter=10, random_state=0)
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=NN_imputer, G2=NN_imputer, n_jobs = 12)
-        print("p-values for part 1:", p1)
-        print("p-values for part 2:", p2)
-
         #test Median imputer
-        median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=median_imputer, G2=median_imputer, n_jobs = 12)
+        median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
+        median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
+        p1, p2 = Framework.one_shot_test_parallel(Z, X, M, Y, S, G1=median_imputer_1, G2=median_imputer_2, n_jobs=14)
         print("One-shot test for Fisher's sharp null for Median imputer")
         print("p-values for part 1:", p1)
         print("p-values for part 2:", p2)
+
+
+
+
 
 
 

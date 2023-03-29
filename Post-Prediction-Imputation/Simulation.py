@@ -2,9 +2,11 @@ import numpy as np
 from mv_laplace import MvLaplaceSampler
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.special import expit
+
 
 class DataGenerator:
-  def __init__(self, N, N_T, N_S, beta_11, beta_12, beta_21, beta_22, beta_23, beta_31, MaskRate):
+  def __init__(self, N, N_T, N_S, beta_11, beta_12, beta_21, beta_22, beta_23, beta_31, MaskRate, Unobserved = True):
     self.N = N
     self.N_T = N_T
     self.N_S = N_S
@@ -15,6 +17,7 @@ class DataGenerator:
     self.beta_23 = beta_23
     self.beta_31 = beta_31
     self.MaskRate = MaskRate
+    self.Unobserved = Unobserved
 
   def GenerateX(self):
       # generate Xn1 and Xn2
@@ -53,16 +56,25 @@ class DataGenerator:
 
       return U
 
+  def GenerateS(self):
+    # Add strata index
+    groupSize = int(self.N / self.N_S)
+    S = np.zeros(self.N)
+    for i in range(self.N_S):
+        S[groupSize*i:groupSize*(i+1)] = i + 1
+    S = S.reshape(-1, 1)
+    return S
+
   def GenerateZ(self):
-      # generate Zn
-      Z = np.zeros(self.N)
-      Z[:self.N_T] = 1
-      np.random.shuffle(Z)
+    Z = []
+    groupSize = int(self.N / self.N_S)
 
-      Z = Z.reshape(-1,1)
+    for i in range(self.N_S):
+        Z.append(np.random.binomial(1, 0.5, groupSize))
 
-      return Z
-
+    Z = np.concatenate(Z).reshape(-1, 1)
+    return Z
+  
   def GenerateY(self, X, U, Z):
     #def sum1():
     sum1 = np.zeros(self.N)
@@ -104,17 +116,31 @@ class DataGenerator:
     U_n2 = U[:,1]
     Z = Z.reshape(-1,)
 
-    # Calculate Y_n1
-    Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2 + np.sin(U_n1) + U_n2) 
+    if self.Unobserved:
+      # Calculate Y_n1
+      Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2 + np.sin(U_n1) + U_n2) 
 
-    # Compute Yn2
-    Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z * U_n1 * U_n2 + sum3 + sum4) 
+      # Compute Yn2
+      Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z * U_n1 * U_n2 + sum3 + sum4) 
 
-    # Compute Yn3
-    Y_n3 = (self.beta_31 * Z + sum5 + sum6 + X[:,0] * X[:,1] * np.sin(U_n1 * U_n2)) 
+      # Compute Yn3
+      Y_n3 = (self.beta_31 * Z + sum5 + sum6 + X[:,0] * X[:,1] * np.sin(U_n1 * U_n2)) 
 
-    Y = np.concatenate((Y_n1.reshape(-1, 1), Y_n2.reshape(-1, 1),Y_n3.reshape(-1, 1)), axis=1) 
+      Y = np.concatenate((Y_n1.reshape(-1, 1), Y_n2.reshape(-1, 1),Y_n3.reshape(-1, 1)), axis=1) 
     
+    else:
+      # Calculate Y_n1
+      Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2) 
+
+      # Compute Yn2
+      Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z + sum3 + sum4) 
+
+      # Compute Yn3
+      Y_n3 = (self.beta_31 * Z + sum5 + sum6 + X[:,0] * X[:,1]) 
+
+      Y = np.concatenate((Y_n1.reshape(-1, 1), Y_n2.reshape(-1, 1),Y_n3.reshape(-1, 1)), axis=1) 
+    
+
     return Y
 
   def GenerateM(self, X, U, Y, single = True):
@@ -155,66 +181,46 @@ class DataGenerator:
       lambda3 = np.percentile(M_lamda[:,2], 100 * (1-self.MaskRate))
           
       for i in range(self.N):
-          if (np.exp(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.exp(Y[i, 0])) > lambda1:
+          values = np.zeros(3)
+          values[0] = expit(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.exp(Y[i, 0])
+          values[1] = ((X[i, :]**3).sum() + sum2 + U[i, 0] + (Y[i, 0]**3)/2 + Y[i, 1])
+          values[2] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.exp(Y[i, 1]))
+
+          if values[0] > lambda1:
             M[i][0] = 1 - single
           else:
             M[i][0] = 0
           
-          if ((X[i, :]**3).sum() + sum2 + U[i, 0] + (Y[i, 0]**3)/2 + Y[i, 1]) > lambda2:
+          if values[1] > lambda2:
             M[i][1] =  1 - single
           else:
             M[i][1] =  0
 
-          if (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.exp(Y[i, 1])) > lambda3:
+          if values[2] > lambda3:
             M[i][2] =  1
           else:
             M[i][2] =  0
 
       return M
-
-  def GenerateS(self, Z):
-    #add strata index to the data, each strata has 100 samples, 50 Z = 1 and 50 Z = 0
-    S = np.zeros((self.N,1))
-    Z0_counter = 0
-    Z0_index = 0
-    Z1_counter = 0
-    Z1_index = 0
-
-    #once Z0_counter = 50 ---> Z0_index += 1 and Z0_counter = 0
-    for i in range(self.N):
-        if Z[i] == 0:
-            Z0_counter += 1
-            if Z0_counter == self.N_S / 2:
-                Z0_index += 1
-                Z0_counter = 0
-            S[i] = Z0_index
-        else:
-            Z1_counter += 1
-            if Z1_counter == self.N_S / 2:
-                Z1_index += 1
-                Z1_counter = 0
-            S[i] = Z1_index
-    
-    return S
-
+  
   def GenerateData(self):  
     # Generate X
     X = self.GenerateX()
 
-    # Generate Z
-    Z = self.GenerateZ()
-
     # Generate U
     U = self.GenerateU()
+
+    # Generate S
+    S = self.GenerateS()
+
+    # Generate Z
+    Z = self.GenerateZ()
 
     # Generate Y
     Y = self.GenerateY(X, U, Z)
 
     # Generate M
     M = self.GenerateM(X, U, Y)
-
-    # Generate S
-    S = self.GenerateS(Z)
 
     return X, Z, U, Y, M, S
 

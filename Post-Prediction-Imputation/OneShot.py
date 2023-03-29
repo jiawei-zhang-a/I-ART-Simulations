@@ -12,11 +12,11 @@ class OneShotTest:
     def split_df(self,df,index_S):
 
         # Sort the groups by the number of rows in each group
-        sorted_df = df.sort_values(by = index_S, ascending=True)
+        #sorted_df = df.sort_values(by = index_S, ascending=True)
         
         # Split the sorted groups into two equal-sized sets of 100 strata each
-        df_set1 = sorted_df.iloc[:int(self.N/2),0 : index_S]
-        df_set2 = sorted_df.iloc[int(self.N/2):self.N, 0 : index_S]
+        df_set1 = df.iloc[:int(self.N/2),0 : index_S]
+        df_set2 = df.iloc[int(self.N/2):self.N, 0 : index_S]
 
         #set the index of the two sets from zero to 1
         df_set1.index = range(len(df_set1))
@@ -53,7 +53,7 @@ class OneShotTest:
         
         # Get the imputed data Y and indicator Z
         df_imputed = G.transform(df)
-        y = df_imputed[:, indexY:df_imputed.shape[1]]
+        y = df_imputed[:, indexY]
         z = df_imputed[:, 0]
         
         z_tiled = np.tile(z, 3)
@@ -89,7 +89,6 @@ class OneShotTest:
             df1_sim = pd.concat([pd.DataFrame(Z_1), df1_sim], axis=1)
             df2_sim = pd.concat([pd.DataFrame(Z_2), df2_sim], axis=1)
 
-            
             # get the test statistics in part 1
             t1_sim[l] = self.getT(G2, df1_sim, Z_1.shape[1] + X.shape[1])
 
@@ -136,13 +135,13 @@ class OneShotTest:
         # randomly split the data into two parts
         df1, df2 = self.split_df(df, index_S = Z.shape[1] + X.shape[1] + Y.shape[1])
 
-        # impute the missing values and calculate the observed test statistics in part 1
+        # re-impute the missing values and calculate the observed test statistics in part 1
         G1.fit(df1)
-        t1_obs = self.getT(G1, df1, Z.shape[1] + X.shape[1])
+        t1_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1])
 
-        # impute the miassing values and calculate the observed test statistics in part 2
+        # re-impute the miassing values and calculate the observed test statistics in part 2
         G2.fit(df2)
-        t2_obs = self.getT(G2, df2, Z.shape[1] + X.shape[1])
+        t2_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1])
 
         #print train end
         if verbose:

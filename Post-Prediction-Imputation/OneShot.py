@@ -194,7 +194,6 @@ class OneShotTest:
         # create data a whole data frame
         Y_masked = np.ma.masked_array(Y, mask=M)
         Y_masked = Y_masked.filled(np.nan)
-        print(np.mean(M[:,2]))
     
         df = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
         
@@ -221,9 +220,11 @@ class OneShotTest:
         t1_sim = np.zeros((L,3))
         t2_sim = np.zeros((L,3))
 
+        """
         df_imputed = G1.transform(df2)
         pd.DataFrame(df2).to_csv("samples/df_obs.csv")
         pd.DataFrame(df_imputed).to_csv("samples/df_obs_imputed.csv")
+        """
         
         for l in range(L):
 
@@ -250,14 +251,17 @@ class OneShotTest:
             if l % 100 == 0:
                 completeness = l / L * 100  
                 
-                print("t1_sim:"+str(t1_sim[l]), "t2_sim:"+str(t2_sim[l]))
+                """
                 if l == 100:
                     df_imputed = G1.transform(df2_sim)
-                    pd.DataFrame(df2).to_csv("samples/df_sim.csv")
-                    pd.DataFrame(df_imputed).to_csv("samples/df_sim_imputed.csv")
+                    #pd.DataFrame(df2).to_csv("samples/df_sim.csv")
+                    #pd.DataFrame(df_imputed).to_csv("samples/df_sim_imputed.csv")
+                """
 
                 if verbose:
                     print(f"Task is {completeness:.2f}% complete.")
+                    print("t1_sim:"+str(t1_sim[l]), "t2_sim:"+str(t2_sim[l]))
+
 
         # calculate exact p-values for each outcome
         p11 = np.mean(t1_sim[:,0] >= t1_obs[0], axis=0)

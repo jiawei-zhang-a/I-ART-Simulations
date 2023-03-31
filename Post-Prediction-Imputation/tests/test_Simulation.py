@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from data_generator import DataGenerator
+from ../Simulation.py import DataGenerator
 
 # Constants for testing
 N = 100

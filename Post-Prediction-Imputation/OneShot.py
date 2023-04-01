@@ -106,11 +106,13 @@ class OneShotTest:
 
             # Calculate the completeness percentage
             if l % 100 == 0:
-                print(t1_sim[l], t2_sim[l])
+                
                 completeness = l / L * 100  
                 if verbose:
+                    print("t1_sim:"+str(t1_sim[l]), "t2_sim:"+str(t2_sim[l]))
                     print(f"Task is {completeness:.2f}% complete.")
 
+        # calculate exact p-values for each outcome
         p11 = np.mean(t1_sim[:,0] >= t1_obs[0], axis=0)
         p12 = np.mean(t2_sim[:,0] >= t2_obs[0], axis=0)
         p21 = np.mean(t1_sim[:,1] >= t1_obs[1], axis=0)
@@ -118,11 +120,9 @@ class OneShotTest:
         p31 = np.mean(t1_sim[:,2] >= t1_obs[2], axis=0)
         p32 = np.mean(t2_sim[:,2] >= t2_obs[2], axis=0)
         
-        print(p11.shape, p12.shape, p32.shape)
-
         return p11, p12, p21, p22, p31, p32
 
-    def one_shot_test_parallel(self, Z, X, M, Y, G1, G2, L=10000, n_jobs=multiprocessing.cpu_count(),verbose = False):
+    def one_shot_test_parallel(self, Z, X, M, Y, G1, G2, L=10000, n_jobs=None,verbose = False):
         """
         A one-shot framework for testing H_0.
 
@@ -139,6 +139,9 @@ class OneShotTest:
         p1: 1D array of exact p-values for testing Fisher's sharp null in part 1
         p2: 1D array of exact p-values for testing Fisher's sharp null in part 2
         """
+            # Calculate the number of worker processes
+        if n_jobs is None or n_jobs < 1:
+            n_jobs = multiprocessing.cpu_count()
         #print train start
         if verbose:
             print("Training start")
@@ -152,17 +155,23 @@ class OneShotTest:
         df1, df2 = self.split_df(df)
 
         # re-impute the missing values and calculate the observed test statistics in part 2
-        G2.fit(df2)
-        t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1])
-
-        # re-impute the miassing values and calculate the observed test statistics in part 1
+        t2_obs = np.zeros(3)
         G1.fit(df1)
         t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1])
 
+        # re-impute the missing values and calculate the observed test statistics in part 1
+        t1_obs = np.zeros(3)
+        G2.fit(df2)
+        t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1])
+
+        # get the correlation of G1 and G2
+        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:])
+        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:])
 
         #print train end
         if verbose:
             print("t1_obs:"+str(t1_obs), "t2_obs:"+str(t2_obs))
+            print("corr_G1:"+str(corr_G1), "corr_G2:"+str(corr_G2))
             print("Training end")
         
         # print the number of cores
@@ -180,7 +189,7 @@ class OneShotTest:
         p31 = np.mean([p[4] for p in p_list], axis=0)
         p32 = np.mean([p[5] for p in p_list], axis=0)
         
-        return p11, p12, p21, p22, p31, p32
+        return p11, p12, p21, p22, p31, p32, corr_G1, corr_G2
     
     def one_shot_test(self, Z, X, M, Y, G1, G2,  L=10000, verbose = False):
         """
@@ -224,20 +233,19 @@ class OneShotTest:
         t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1])
 
         # get the correlation of G1 and G2
-        corr2_obs = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:])
-        corr1_obs = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:])
+        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:])
+        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:])
 
         #print train end
         if verbose:
             print("t1_obs:"+str(t1_obs), "t2_obs:"+str(t2_obs))
-            print(df1.shape, df2.shape)
+            print("corr_G1:"+str(corr_G1), "corr_G2:"+str(corr_G2))
             print("Training end")
 
         # simulate data and calculate test statistics
         t1_sim = np.zeros((L,3))
         t2_sim = np.zeros((L,3))
 
-        
         for l in range(L):
 
             # simulate treatment indicators in parts 1 and 2
@@ -276,6 +284,6 @@ class OneShotTest:
         p31 = np.mean(t1_sim[:,2] >= t1_obs[2], axis=0)
         p32 = np.mean(t2_sim[:,2] >= t2_obs[2], axis=0)
         
-        return p11, p12, p21, p22, p31, p32, corr1_obs, corr2_obs
+        return p11, p12, p21, p22, p31, p32, corr_G1, corr_G2
     
 

@@ -25,6 +25,19 @@ class OneShotTest:
         # Return the two sets of strata
         return df_set1, df_set2
 
+    def get_corr(self, G, df, indexY, Y):
+            
+        # Get the imputed data Y and indicator Z
+        df_imputed = G.transform(df)
+        y = df_imputed[:, indexY:df_imputed.shape[1]]
+        
+        # Calculate the correlation between the imputed data and the observed data
+        corr = []
+        for i in range(3):
+            corr.append(np.corrcoef(y[:,i],Y[:,i])[0,1])
+        
+        return corr
+
     def T(self,z,y):
 
         #the Wilcoxon rank sum test
@@ -210,6 +223,10 @@ class OneShotTest:
         G2.fit(df2)
         t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1])
 
+        # get the correlation of G1 and G2
+        corr2_obs = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:])
+        corr1_obs = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:])
+
         #print train end
         if verbose:
             print("t1_obs:"+str(t1_obs), "t2_obs:"+str(t2_obs))
@@ -220,11 +237,6 @@ class OneShotTest:
         t1_sim = np.zeros((L,3))
         t2_sim = np.zeros((L,3))
 
-        """
-        df_imputed = G1.transform(df2)
-        pd.DataFrame(df2).to_csv("samples/df_obs.csv")
-        pd.DataFrame(df_imputed).to_csv("samples/df_obs_imputed.csv")
-        """
         
         for l in range(L):
 
@@ -240,7 +252,7 @@ class OneShotTest:
             df1_sim = pd.concat([pd.DataFrame(Z_1), df1_sim], axis=1)
             df2_sim = pd.concat([pd.DataFrame(Z_2), df2_sim], axis=1)
             
-        
+            
             # get the test statistics in part 1
             t1_sim[l] = self.getT(G2, df1_sim, Z.shape[1] + X.shape[1])
             
@@ -251,13 +263,6 @@ class OneShotTest:
             if l % 100 == 0:
                 completeness = l / L * 100  
                 
-                """
-                if l == 100:
-                    df_imputed = G1.transform(df2_sim)
-                    #pd.DataFrame(df2).to_csv("samples/df_sim.csv")
-                    #pd.DataFrame(df_imputed).to_csv("samples/df_sim_imputed.csv")
-                """
-
                 if verbose:
                     print(f"Task is {completeness:.2f}% complete.")
                     print("t1_sim:"+str(t1_sim[l]), "t2_sim:"+str(t2_sim[l]))
@@ -271,6 +276,6 @@ class OneShotTest:
         p31 = np.mean(t1_sim[:,2] >= t1_obs[2], axis=0)
         p32 = np.mean(t2_sim[:,2] >= t2_obs[2], axis=0)
         
-        return p11, p12, p21, p22, p31, p32
+        return p11, p12, p21, p22, p31, p32, corr1_obs, corr2_obs
     
 

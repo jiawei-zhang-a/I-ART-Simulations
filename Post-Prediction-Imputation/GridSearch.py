@@ -58,23 +58,25 @@ if __name__ == '__main__':
         #test Median imputer
         median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
         median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
-        p11, p12, p21, p22, p31, p32 = Framework.one_shot_test(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
+        p11, p12, p21, p22, p31, p32, corr1, corr2 = Framework.one_shot_test(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
         print("One-shot test for Fisher's sharp null for Median Imputer")
         print("beta = ", i)
         print("p-values for part 1:", p11,p21,p31)
         print("p-values for part 2:", p12,p22,p32)
-        
+        print("corr1, corr2", corr1, corr2)
+
         #XGBoost
         XGBRegressor_1 = xgb.XGBRegressor()
         XGBRegressor_2 = xgb.XGBRegressor()
 
         XGBoost_1= IterativeImputer(estimator = XGBRegressor_1 ,max_iter=10, random_state=0)
         XGBoost_2= IterativeImputer(estimator = XGBRegressor_2 ,max_iter=10, random_state=0)
-        p11, p12, p21, p22, p31, p32 = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
+        p11, p12, p21, p22, p31, p32, corr1, corr2 = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
         print("One-shot test for Fisher's sharp null for XGBoost")
         print("beta = ", i)
         print("p-values for part 1:", p11,p21,p31)
         print("p-values for part 2:", p12,p22,p32)
+        print("corr1, corr2", corr1, corr2)
         
 
 

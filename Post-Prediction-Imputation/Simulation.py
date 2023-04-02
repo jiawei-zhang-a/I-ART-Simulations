@@ -1,7 +1,5 @@
 import numpy as np
 from mv_laplace import MvLaplaceSampler
-import matplotlib.pyplot as plt
-import pandas as pd
 from scipy.special import expit
 
 

@@ -46,13 +46,16 @@ if __name__ == '__main__':
     power_LR = 0
     power_xgboost = 0
 
+    #iteration 
+    iter = 50
+
     # correlation initialization
-    corr_median = np.zeros(200)
-    corr_LR = np.zeros(200)
-    corr_xgboost = np.zeros(200)
+    corr_median = np.zeros(iter)
+    corr_LR = np.zeros(iter)
+    corr_xgboost = np.zeros(iter)
 
     # Fixed X, Z, change beta to make different Y,M
-    for i in range(200):
+    for i in range(iter):
         
         print("Iteration: ", i)
         # Simulate data
@@ -90,9 +93,9 @@ if __name__ == '__main__':
     print("Correlation of LR Imputer: " + str(np.mean(corr_LR)))
     print("Correlation of XGBoost Imputer: " + str(np.mean(corr_xgboost)))
     
-    print("Power of Median Imputer: " + str(power_median/200))
-    print("Power of LR Imputer: " + str(power_LR/200))
-    print("Power of XGBoost Imputer: " + str(power_xgboost/200))
+    print("Power of Median Imputer: " + str(power_median/iter))
+    print("Power of LR Imputer: " + str(power_LR/iter))
+    print("Power of XGBoost Imputer: " + str(power_xgboost/iter))
 
     #file.close()
 

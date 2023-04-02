@@ -1,6 +1,7 @@
 import sys
 import xgboost as xgb
 import numpy as np
+from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 from sklearn.impute import SimpleImputer

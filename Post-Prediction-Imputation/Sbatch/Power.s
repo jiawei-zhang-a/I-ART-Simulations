@@ -14,6 +14,8 @@ module purge
 module load python/intel/3.8.6
 cd ../../
 source venv/bin/activate
+export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.9/bin:$PATH
+source ~/.bashrc
 
 cd Post-Prediction-Imputation
-python Power.py 
+python3 Power.py 

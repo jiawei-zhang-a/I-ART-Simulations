@@ -1,4 +1,4 @@
-
+import sys
 import xgboost as xgb
 from sklearn.neural_network import MLPRegressor
 import numpy as np
@@ -27,6 +27,17 @@ if __name__ == '__main__':
 
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     
+    # Open file
+    file_name = ""
+    
+    if len(sys.argv) == 2:
+        file_name = sys.argv[1]
+    else:
+        file_name = "result.txt"
+    
+
+    file = open(file_name, 'w')
+
     # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = 1000)
 
@@ -36,12 +47,12 @@ if __name__ == '__main__':
     power_xgboost = 0
 
     # correlation initialization
-    corr_median = np.zeros(200)
-    corr_LR = np.zeros(200)
-    corr_xgboost = np.zeros(200)
+    corr_median = np.zeros(50)
+    corr_LR = np.zeros(50)
+    corr_xgboost = np.zeros(50)
 
     # Fixed X, Z, change beta to make different Y,M
-    for i in range(200):
+    for i in range(50):
         
         print("Iteration: ", i)
         # Simulate data
@@ -73,14 +84,16 @@ if __name__ == '__main__':
         power_xgboost += reject
         corr_xgboost[i] = (corr1 + corr2) / 2
     
-    print("Correlation of Median Imputer: ", np.mean(corr_median))
-    print("Correlation of LR Imputer: ", np.mean(corr_LR))
-    print("Correlation of XGBoost Imputer: ", np.mean(corr_xgboost))
+    #Write result into the file
+    file.write("Correlation of Median Imputer: " + str(np.mean(corr_median)))
+    file.write("Correlation of LR Imputer: " + str(np.mean(corr_LR)))
+    file.write("Correlation of XGBoost Imputer: " + str(np.mean(corr_xgboost)))
     
-    print("Power of Median Imputer: ", power_median/200)
-    print("Power of LR Imputer: ", power_LR/200)
-    print("Power of XGBoost Imputer: ", power_xgboost/200)
+    file.write("Power of Median Imputer: " + str(power_median/50))
+    file.write("Power of LR Imputer: " + str(power_LR/50))
+    file.write("Power of XGBoost Imputer: " + str(power_xgboost/50))
 
+    file.close()
 
 
 

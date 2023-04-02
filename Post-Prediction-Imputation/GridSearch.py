@@ -65,6 +65,8 @@ if __name__ == '__main__':
         print("p-values for part 2:", p12,p22,p32)
         print("corr1, corr2", corr1, corr2)
 
+        median_imputer_3 = SimpleImputer(missing_values=np.nan, strategy='median')
+        median_imputer_4 = SimpleImputer(missing_values=np.nan, strategy='median')
         p11, p12, p21, p22, p31, p32, corr1, corr2 = Framework.one_shot_test_parallel(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
         print("One-shot test for Fisher's sharp null for Median Imputer")
         print("beta = ", i)

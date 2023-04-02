@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 import multiprocessing
+from statsmodels.stats.multitest import multipletests
+
 
 class OneShotTest:
     #load data
@@ -24,6 +26,15 @@ class OneShotTest:
         
         # Return the two sets of strata
         return df_set1, df_set2
+
+    def holm_bonferroni(self,p_values):
+        # Perform the Holm-Bonferroni correction
+        reject, corrected_p_values, _, _ = multipletests(p_values, alpha=0.05, method='holm')
+
+        # Check if any null hypothesis can be rejected
+        any_rejected = any(reject)
+
+        return any_rejected
 
     def get_corr(self, G, df, indexY, Y):
             

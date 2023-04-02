@@ -26,44 +26,38 @@ if __name__ == '__main__':
     # Mask Rate
 
     warnings.filterwarnings("ignore", category=RuntimeWarning)
-
-    #Simulate Data
-    DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 100, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1, MaskRate=0.3,Unobserved=0)
-
-    X, Z, U, Y, M, S = DataGen.GenerateData()
-
-    N = len(X)
-
+    
     # Create an instance of the OneShot class
-    Framework = OneShot.OneShotTest(N)
+    Framework = OneShot.OneShotTest(N = 1000)
 
-    #Print the mask situation of M
-    print("Mask Rate: \n", DataGen.MaskRate)
-
+    # level initialization
+    level_median = 0
+    level_LR = 0
+    level_xgboost = 0
+    
     # Fixed X, Z, change beta to make different Y,M
-    for i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]:
-
-        # Change the parameters beta
-        DataGen.beta_11 = i
-        DataGen.beta_12 = i
-        DataGen.beta_21 = i
-        DataGen.beta_22 = i
-        DataGen.beta_23 = i
-        DataGen.beta_31 = i
+    for i in range(200):
         
+        print("Iteration: ", i)
         # Simulate data
-        Y = DataGen.GenerateY(X, U, Z)
-        M = DataGen.GenerateM(X, U, Y)
+        DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=0)
+
+        X, Z, U, Y, M, S = DataGen.GenerateData()
 
         #test Median imputer
         median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
         median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
         p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
-        print("One-shot test for Fisher's sharp null for Median Imputer reject:", reject)
-        print("beta = ", i)
-        print("p-values for part 1:", p11,p21,p31)
-        print("p-values for part 2:", p12,p22,p32)
-        print("corr1, corr2", corr1, corr2)
+        if p31 <= 0.05 or p32 <= 0.05:
+            level_median += 1
+
+        #test LR imputer
+        BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
+        BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
+        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
+        if p31 <= 0.05 or p32 <= 0.05:
+            level_LR += 1
+
 
         #XGBoost
         XGBRegressor_1 = xgb.XGBRegressor()
@@ -72,13 +66,12 @@ if __name__ == '__main__':
         XGBoost_1= IterativeImputer(estimator = XGBRegressor_1 ,max_iter=10, random_state=0)
         XGBoost_2= IterativeImputer(estimator = XGBRegressor_2 ,max_iter=10, random_state=0)
         p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
-        print("One-shot test for Fisher's sharp null for XGBoost reject:", reject)
-        print("beta = ", i)
-        print("p-values for part 1:", p11,p21,p31)
-        print("p-values for part 2:", p12,p22,p32)
-        print("corr1, corr2", corr1, corr2)
-        
-
+        if p31 <= 0.05 or p32 <= 0.05:
+            level_xgboost += 1
+    
+    print("level of Median Imputer: ", level_median/200)
+    print("level of LR Imputer: ", level_LR/200)
+    print("level of XGBoost Imputer: ", level_xgboost/200)
 
 
 

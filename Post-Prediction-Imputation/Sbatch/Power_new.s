@@ -1,11 +1,11 @@
 #!/bin/bash
 #
 #SBATCH --job-name=Power
-#SBATCH --nodes=1 
-#SBATCH --ntasks-per-node=1
-#SBATCH --time=5:00
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=12
+#SBATCH --time=5:00:00
 #SBATCH --mem=12GB
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=40
 
 module purge
 

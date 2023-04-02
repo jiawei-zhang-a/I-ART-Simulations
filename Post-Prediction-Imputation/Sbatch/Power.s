@@ -5,6 +5,7 @@
 #SBATCH --ntasks-per-node=10
 #SBATCH --time=5:00
 #SBATCH --mem=4GB
+#SBATCH --cpus-per-task=12
 #SBATCH --output=Power_%A_%a.out
 #SBATCH --error=Power_%A_%a.err
 

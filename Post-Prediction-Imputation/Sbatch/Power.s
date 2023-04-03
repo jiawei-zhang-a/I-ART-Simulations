@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-#SBATCH --job-name=Power
-#SBATCH --nodes=1 
-#SBATCH --time=5:00
+#SBATCH --job-name=Level
+#SBATCH --nodes=1
+#SBATCH --time=6:00:00
 #SBATCH --mem=12GB
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=40
 
 module purge
 

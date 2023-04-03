@@ -1,10 +1,12 @@
 #!/bin/bash
 #
-#SBATCH --job-name=Power
-#SBATCH --nodes=1 
-#SBATCH --time=5:00
+#SBATCH --job-name=Level
+#SBATCH --nodes=1
+#SBATCH --time=5:00:00
 #SBATCH --mem=12GB
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=40
+#SBATCH --gres=gpu:rtx8000:1
+
 
 module purge
 
@@ -14,4 +16,4 @@ export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.
 source ~/.bashrc
 
 cd Post-Prediction-Imputation
-python3 Power.py 
+python3 Level.py 

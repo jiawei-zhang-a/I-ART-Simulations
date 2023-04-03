@@ -54,8 +54,8 @@ if __name__ == '__main__':
 
 
         #XGBoost
-        XGBRegressor_1 = xgb.XGBRegressor(tree_method='gpu_hist')
-        XGBRegressor_2 = xgb.XGBRegressor(tree_method='gpu_hist',)
+        XGBRegressor_1 = xgb.XGBRegressor()
+        XGBRegressor_2 = xgb.XGBRegressor()
 
         XGBoost_1= IterativeImputer(estimator = XGBRegressor_1 ,max_iter=10, random_state=0)
         XGBoost_2= IterativeImputer(estimator = XGBRegressor_2 ,max_iter=10, random_state=0)

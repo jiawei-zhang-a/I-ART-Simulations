@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --job-name=Level
+#SBATCH --job-name=Power
 #SBATCH --nodes=1
 #SBATCH --time=6:00:00
 #SBATCH --mem=12GB

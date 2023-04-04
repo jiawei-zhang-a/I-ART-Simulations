@@ -5,6 +5,7 @@ import multiprocessing
 from statsmodels.stats.multitest import multipletests
 
 
+
 class OneShotTest:
     #load data
     def __init__(self,N):
@@ -37,16 +38,34 @@ class OneShotTest:
         return any_rejected
 
     def get_corr(self, G, df, indexY, Y):
-            
         # Get the imputed data Y and indicator Z
         df_imputed = G.transform(df)
         y = df_imputed[:, indexY:df_imputed.shape[1]]
-        
+
+        # Initialize the lists to store imputed and truth values for missing positions
+        y_imputed = [[] for _ in range(3)]
+        y_truth = [[] for _ in range(3)]
+
+        # Iterate over the rows and columns to find missing values
+        for i in range(df.shape[0]):
+            for j in range(3):
+                # Check if the value in the last three columns of df is missing (you can replace 'your_missing_value' with the appropriate value or condition)
+                if np.isnan(df.iloc[i, -3 + j]):
+                    y_imputed[j].append(y[i, j])
+                    y_truth[j].append(Y[i, j])
+
+        # Convert the lists to NumPy arrays
+        y_imputed = [np.array(arr) for arr in y_imputed]
+        y_truth = [np.array(arr) for arr in y_truth]
+
         # Calculate the correlation between the imputed data and the observed data
         corr = []
         for i in range(3):
-            corr.append(np.corrcoef(y[:,i],Y[:,i])[0,1])
-        
+            if len(y_imputed[i]) > 0 and len(y_truth[i]) > 0:
+                corr.append(np.corrcoef(y_imputed[i], y_truth[i])[0, 1])
+            else:
+                corr.append(None)
+
         return corr
 
     def T(self,z,y):
@@ -176,8 +195,8 @@ class OneShotTest:
         t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1])
 
         # get the correlation of G1 and G2
-        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:])
-        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:])
+        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1], Y[df1.shape[0]:,:])
+        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1], Y[0:df1.shape[0],:])
 
         #print train end
         if verbose:

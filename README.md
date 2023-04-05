@@ -13,9 +13,7 @@ pip -version >= 22.0.4
 
 
 ```
-source venv/bin/activate
 pip install -r requirement.txt
-deactivate
 ```
 
 The method used to semi-supervised learning for the imputation is 

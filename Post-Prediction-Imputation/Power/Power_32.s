@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-#SBATCH --job-name=Power
+#SBATCH --job-name=Power-32
 #SBATCH --nodes=1
 #SBATCH --time=1:00:00
 #SBATCH --mem=2GB
 #SBATCH --cpus-per-task=30
-#SBATCH --output=10_%a.out
-#SBATCH --error=10_%a.err
+#SBATCH --output=32_%a.out
+#SBATCH --error=32_%a.err
 
 module purge
 
@@ -16,4 +16,4 @@ export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.
 source ~/.bashrc
 
 cd Post-Prediction-Imputation
-python3 Power.py 10 $SLURM_ARRAY_TASK_ID
+python3 Power.py 32 $SLURM_ARRAY_TASK_ID

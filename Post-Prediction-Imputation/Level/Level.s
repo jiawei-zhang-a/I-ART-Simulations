@@ -5,7 +5,8 @@
 #SBATCH --time=6:00:00
 #SBATCH --mem=12GB
 #SBATCH --cpus-per-task=40
-
+#SBATCH --output=%a.out
+#SBATCH --error=%a.err
 
 module purge
 

@@ -35,7 +35,7 @@ if __name__ == '__main__':
     power_xgboost = 0
 
     #iteration 
-    iter = 20
+    iter = 10
 
     # correlation initialization
     corr_median = np.zeros(iter)

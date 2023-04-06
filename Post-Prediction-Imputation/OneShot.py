@@ -4,8 +4,6 @@ import numpy as np
 import multiprocessing
 from statsmodels.stats.multitest import multipletests
 
-
-
 class OneShotTest:
     #load data
     def __init__(self,N):

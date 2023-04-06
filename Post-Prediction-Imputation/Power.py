@@ -24,7 +24,7 @@ if __name__ == '__main__':
     beta_coef = 1
     
     if len(sys.argv) == 2:
-        beta_coef = sys.argv[1]
+        beta_coef = int(sys.argv[1])
 
     # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = 1000)
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     power_xgboost = 0
 
     #iteration 
-    iter = 200
+    iter = 2
 
     # correlation initialization
     corr_median = np.zeros(iter)
@@ -80,6 +80,15 @@ if __name__ == '__main__':
     print("Power of Median Imputer: " + str(power_median/iter))
     print("Power of LR Imputer: " + str(power_LR/iter))
     print("Power of XGBoost Imputer: " + str(power_xgboost/iter))
+
+    #Save the file in numpy format
+    # Create numpy arrays
+    correlations = np.array([corr_median, corr_LR, corr_xgboost])
+    powers = np.array([power_median, power_LR, power_xgboost])
+
+    # Save numpy arrays to files
+    np.save('HPC_result/correlations_%d.npy'%beta_coef, correlations)
+    np.save('HPC_result/powers_%d.npy'%beta_coef, powers)
 
     #file.close()
 

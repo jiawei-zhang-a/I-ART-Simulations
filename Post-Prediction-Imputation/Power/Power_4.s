@@ -10,10 +10,9 @@
 
 module purge
 
-cd ../../
-source venv/bin/activate
+source /scratch/jz4721/Post-prediction-Causal-Inference/venv/
 export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.9/bin:$PATH
 source ~/.bashrc
 
-cd Post-Prediction-Imputation
+cd ../
 python3 Power.py 4 $SLURM_ARRAY_TASK_ID

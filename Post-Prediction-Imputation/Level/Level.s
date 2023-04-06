@@ -3,17 +3,16 @@
 #SBATCH --job-name=Level
 #SBATCH --nodes=1
 #SBATCH --time=2:00:00
-#SBATCH --mem=12GB
+#SBATCH --mem=8GB
 #SBATCH --cpus-per-task=40
 #SBATCH --output=%a.out
 #SBATCH --error=%a.err
 
 module purge
 
-cd ../../
-source venv/bin/activate
+source /scratch/jz4721/Post-prediction-Causal-Inference/venv/
 export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.9/bin:$PATH
 source ~/.bashrc
 
-cd Post-Prediction-Imputation
+cd ../
 python3 Level.py 

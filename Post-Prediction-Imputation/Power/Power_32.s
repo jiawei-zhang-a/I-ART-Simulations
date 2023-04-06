@@ -3,7 +3,7 @@
 #SBATCH --job-name=Power-32
 #SBATCH --nodes=1
 #SBATCH --time=1:00:00
-#SBATCH --mem=2GB
+#SBATCH --mem=8GB
 #SBATCH --cpus-per-task=30
 #SBATCH --output=32_%a.out
 #SBATCH --error=32_%a.err

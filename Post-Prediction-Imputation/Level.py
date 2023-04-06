@@ -25,7 +25,7 @@ if __name__ == '__main__':
     Framework = OneShot.OneShotTest(N = 1000)
 
     #Iter
-    iter = 50
+    iter = 10
 
     # level initialization
     level_median = 0

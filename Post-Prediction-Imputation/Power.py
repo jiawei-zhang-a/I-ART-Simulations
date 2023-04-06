@@ -22,9 +22,13 @@ if __name__ == '__main__':
     warnings.filterwarnings("ignore", category=RuntimeWarning)
 
     beta_coef = 1
-    
-    if len(sys.argv) == 2:
+    task_id = 1
+    save_file = False
+
+    if len(sys.argv) == 3:
         beta_coef = int(sys.argv[1])
+        task_id = int(sys.argv[2])
+        save_file = True
 
     # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = 1000)
@@ -82,14 +86,14 @@ if __name__ == '__main__':
     print("Power of XGBoost Imputer: " + str(power_xgboost/iter))
 
     #Save the file in numpy format
-    # Create numpy arrays
-    correlations = np.array([corr_median, corr_LR, corr_xgboost])
-    powers = np.array([power_median, power_LR, power_xgboost])
+    if(save_file):
+        # Create numpy arrays
+        correlations = np.array([corr_median, corr_LR, corr_xgboost])
+        powers = np.array([power_median, power_LR, power_xgboost])
 
-    # Save numpy arrays to files
-    np.save('HPC_result/correlations_%d.npy'%beta_coef, correlations)
-    np.save('HPC_result/powers_%d.npy'%beta_coef, powers)
-
+        # Save numpy arrays to files
+        np.save('HPC_result/correlations_%d_%d.npy'%(beta_coef,task_id), correlations)
+        np.save('HPC_result/powers_%d_%d.npy'%(beta_coef,task_id), powers)        
     #file.close()
 
 

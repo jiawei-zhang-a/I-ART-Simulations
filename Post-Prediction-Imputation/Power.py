@@ -20,6 +20,8 @@ if __name__ == '__main__':
     # Mask Rate
 
     warnings.filterwarnings("ignore", category=RuntimeWarning)
+    warnings.filterwarnings("ignore", category=UserWarning, module="numpy.core.getlimits")
+
 
     beta_coef = 1
     task_id = 1

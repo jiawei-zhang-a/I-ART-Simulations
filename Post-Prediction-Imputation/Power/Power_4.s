@@ -11,7 +11,7 @@
 module purge
 
 source /scratch/jz4721/Post-prediction-Causal-Inference/venv/
-export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.9/bin:$PATH
+export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.8/bin:$PATH
 source ~/.bashrc
 
 cd ../

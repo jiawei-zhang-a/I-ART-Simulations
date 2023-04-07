@@ -6,6 +6,7 @@ from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 from sklearn.impute import SimpleImputer
 import multiprocessing
+import sys
 import Simulation as Generator
 import OneShot
 import warnings
@@ -21,16 +22,27 @@ if __name__ == '__main__':
 
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     
+    #Argument
+    task_id = 1
+    save_file = False
+
+    if len(sys.argv) == 2:
+        task_id = int(sys.argv[1])
+        save_file = True
+
+    
     # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = 1000)
 
     #Iter
-    iter = 10
+    iter = 1
 
     # level initialization
     level_median = 0
     level_LR = 0
     level_xgboost = 0
+
+    
     
     # Fixed X, Z, change beta to make different Y,M
     for i in range(iter):
@@ -69,6 +81,14 @@ if __name__ == '__main__':
     print("level of Median Imputer: ", level_median/iter)
     print("level of LR Imputer: ", level_LR/iter)
     print("level of XGBoost Imputer: ", level_xgboost/iter)
+
+    #Save the file in numpy format
+    if(save_file):
+        # Create numpy arrays
+        levels = np.array([level_median, level_LR, level_xgboost])
+
+        # Save numpy arrays to files
+        np.save('HPC_result/levels_%d.npy'%(task_id), levels)        
 
 
 

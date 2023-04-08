@@ -15,4 +15,4 @@ export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.
 source ~/.bashrc
 
 cd ../
-python3 Level.py $SLURM_ARRAY_TASK_ID
+python Level.py $SLURM_ARRAY_TASK_ID

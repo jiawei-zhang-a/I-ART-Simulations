@@ -1,6 +1,7 @@
 
 import xgboost as xgb
 import numpy as np
+import multiprocessing
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn import linear_model
@@ -21,7 +22,8 @@ if __name__ == '__main__':
     # Mask Rate
 
     warnings.filterwarnings("ignore", category=RuntimeWarning)
-    
+    warnings.filterwarnings("ignore", category=UserWarning, module="numpy.core.getlimits")
+
     #Argument
     task_id = 1
     save_file = False
@@ -35,7 +37,7 @@ if __name__ == '__main__':
     Framework = OneShot.OneShotTest(N = 1000)
 
     #Iter
-    iter = 10
+    iter = 2
 
     # level initialization
     level_median = 0
@@ -53,14 +55,14 @@ if __name__ == '__main__':
 
         X, Z, U, Y, M, S = DataGen.GenerateData()
 
-        #test Median imputer
+        #Median imputer
         median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
         median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
         p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
         if p31 <= 0.05 or p32 <= 0.05:
             level_median += 1
 
-        #test LR imputer
+        #LR imputer
         BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
         BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
         p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
@@ -69,11 +71,8 @@ if __name__ == '__main__':
 
 
         #XGBoost
-        XGBRegressor_1 = xgb.XGBRegressor()
-        XGBRegressor_2 = xgb.XGBRegressor()
-
-        XGBoost_1= IterativeImputer(estimator = XGBRegressor_1 ,max_iter=10, random_state=0)
-        XGBoost_2= IterativeImputer(estimator = XGBRegressor_2 ,max_iter=10, random_state=0)
+        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(n_jobs = multiprocessing.cpu_count()) ,max_iter=10, random_state=0)
+        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(n_jobs = multiprocessing.cpu_count()) ,max_iter=10, random_state=0)
         p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
         if p31 <= 0.05 or p32 <= 0.05:
             level_xgboost += 1

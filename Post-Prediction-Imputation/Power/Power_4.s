@@ -2,8 +2,8 @@
 #
 #SBATCH --job-name=Power-4
 #SBATCH --nodes=1
-#SBATCH --time=1:00:00
-#SBATCH --mem=8GB
+#SBATCH --time=0:30:00
+#SBATCH --mem=32GB
 #SBATCH --cpus-per-task=30
 #SBATCH --output=4_%a.out
 #SBATCH --error=4_%a.err

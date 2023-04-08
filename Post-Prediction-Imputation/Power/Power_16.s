@@ -2,8 +2,8 @@
 #
 #SBATCH --job-name=Power-16
 #SBATCH --nodes=1
-#SBATCH --time=1:00:00
-#SBATCH --mem=8GB
+#SBATCH --time=0:30:00
+#SBATCH --mem=32GB
 #SBATCH --cpus-per-task=30
 #SBATCH --output=16_%a.out
 #SBATCH --error=16_%a.err

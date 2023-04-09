@@ -2,19 +2,22 @@ import os
 import numpy as np
 
 def read_and_print_npz_files(directory):
-    # Iterate over all files in the directory
-    for file_name in os.listdir(directory):
-        # Check if the file is a numpy npz file
-        if file_name.endswith('.npy'):
-            # Load the numpy npz file
-            file_path = os.path.join(directory, file_name)
-            data = np.load(file_path)
+    summed_levels = None
 
-            # Print the file name and its content
-            print(f"File: {file_name}")
-            print("Content:")
-            for key in data:
-                print(f"{key}: {data[key]}")
-            print("")
+    # Loop through all the files in the directory
+    for filename in os.listdir(directory):
+        # Check if the file is a numpy file
+        if filename.endswith(".npy"):
+            # Load the numpy array from the file
+            filepath = os.path.join(directory, filename)
+            levels = np.load(filepath)
+            # Add the array to the running sum
+            if summed_levels is None:
+                summed_levels = levels
+            else:
+                summed_levels += levels
+
+    # Print the summed array
+    print(summed_levels)
 
 read_and_print_npz_files('HPC_result')

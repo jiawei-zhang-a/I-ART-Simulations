@@ -37,7 +37,7 @@ if __name__ == '__main__':
     Framework = OneShot.OneShotTest(N = 1000)
 
     #Iter
-    iter = 1
+    iter = 2
 
     # level initialization
     level_median = 0
@@ -50,30 +50,19 @@ if __name__ == '__main__':
     for i in range(iter):
         
         print("Iteration: ", i)
+
+        print("Beta: ", task_id)
+
+        print("save_file", save_file)
         # Simulate data
         DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=0)
 
         X, Z, U, Y, M, S = DataGen.GenerateData()
 
-        #Median imputer
-        median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
-        median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
-        if p31 <= 0.05 or p32 <= 0.05:
-            level_median += 1
-
-        #LR imputer
-        BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
-        BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10)
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
-        if p31 <= 0.05 or p32 <= 0.05:
-            level_LR += 1
-
-        
         #XGBoost
-        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor() ,max_iter=10, random_state=0)
-        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor() ,max_iter=10, random_state=0)
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=1)
+        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(verbose = 1) ,max_iter=10, random_state=0)
+        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(verbose = 1) ,max_iter=10, random_state=0)
+        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=1)
         if p31 <= 0.05 or p32 <= 0.05:
             level_xgboost += 1
     

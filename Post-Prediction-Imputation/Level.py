@@ -11,6 +11,7 @@ import sys
 import Simulation as Generator
 import OneShot
 import warnings
+import os
 
 #from cuml import XGBRegressor
  #   XGBRegressor(tree_method='gpu_hist')
@@ -63,17 +64,16 @@ if __name__ == '__main__':
             level_median += 1
 
         #LR imputer
-        BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
-        BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
+        BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge())
+        BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge())
         p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
         if p31 <= 0.05 or p32 <= 0.05:
             level_LR += 1
 
-
         #XGBoost
-        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(n_jobs = multiprocessing.cpu_count()) ,max_iter=10, random_state=0)
-        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(n_jobs = multiprocessing.cpu_count()) ,max_iter=10, random_state=0)
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
+        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor())
+        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor())
+        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
         if p31 <= 0.05 or p32 <= 0.05:
             level_xgboost += 1
     

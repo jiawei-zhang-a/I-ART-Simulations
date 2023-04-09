@@ -1,10 +1,11 @@
 #!/bin/bash
 #
-#SBATCH --job-name=Power-8
+#SBATCH --job-name=Power-1
 #SBATCH --nodes=1
-#SBATCH --time=0:30:00
+#SBATCH --time=1:00:00
 #SBATCH --mem=32GB
-#SBATCH --cpus-per-task=30
+#SBATCH --cpus-per-task=40
+#SBATCH --array=1-250
 #SBATCH --output=8_%a.out
 #SBATCH --error=8_%a.err
 

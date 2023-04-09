@@ -1,5 +1,4 @@
 import sys
-from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 import multiprocessing
 from sklearn.experimental import enable_iterative_imputer
@@ -10,6 +9,8 @@ import multiprocessing
 import Simulation as Generator
 import OneShot
 import warnings
+import xgboost as xgb
+import os
 
 #from cuml import XGBRegressor
  #   XGBRegressor(tree_method='gpu_hist')
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     power_RandomForest = 0
 
     #iteration 
-    iter = 2
+    iter = 1
 
     # correlation initialization
     corr_median = np.zeros(iter)
@@ -73,9 +74,9 @@ if __name__ == '__main__':
         corr_LR[i] = (corr1[2] + corr2[2]) / 2
 
         #XGBoost
-        RandomForestRegressor_1= IterativeImputer(estimator = RandomForestRegressor())
-        RandomForestRegressor_2= IterativeImputer(estimator = RandomForestRegressor())
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=RandomForestRegressor_1, G2=RandomForestRegressor_2,verbose=0)
+        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor())
+        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor())
+        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
         power_RandomForest += reject
         corr_RandomForest[i] = (corr1[2] + corr2[2]) / 2
     
@@ -90,13 +91,18 @@ if __name__ == '__main__':
 
     #Save the file in numpy format
     if(save_file):
+
+        if not os.path.exists("HPC_Power/%d"%beta_coef):
+            # If the folder does not exist, create it
+            os.makedirs("HPC_Power/%d"%beta_coef)
+
         # Create numpy arrays
         correlations = np.array([corr_median, corr_LR, corr_RandomForest])
         powers = np.array([power_median, power_LR, power_RandomForest])
 
         # Save numpy arrays to files
-        np.save('HPC_result/correlations_%d_%d.npy'%(beta_coef,task_id), correlations)
-        np.save('HPC_result/powers_%d_%d.npy'%(beta_coef,task_id), powers)        
+        np.save('HPC_Power/%d/correlations_%d'%(beta_coef,task_id), correlations)
+        np.save('HPC_Power/%d/powers_%d'%(beta_coef,task_id), powers)        
     #file.close()
 
 

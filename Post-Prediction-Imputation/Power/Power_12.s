@@ -6,8 +6,8 @@
 #SBATCH --mem=32GB
 #SBATCH --cpus-per-task=40
 #SBATCH --array=1-250
-#SBATCH --output=4_%a.out
-#SBATCH --error=4_%a.err
+#SBATCH --output=12_%a.out
+#SBATCH --error=12_%a.err
 
 module purge
 
@@ -16,4 +16,4 @@ export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.
 source ~/.bashrc
 
 cd ../
-python3 Power.py 4 $SLURM_ARRAY_TASK_ID
+python3 Power.py 12 $SLURM_ARRAY_TASK_ID

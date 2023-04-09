@@ -2,33 +2,39 @@ import numpy as np
 import os
 import glob
 
-folder_path = 'HPC_result'
+folder_path = 'HPC_Power'
 
-# Find all correlation and power files
-correlation_files = glob.glob(os.path.join(folder_path, 'correlations_*.npy'))
-power_files = glob.glob(os.path.join(folder_path, 'powers_*.npy'))
+def sum_npy_files(directory, prefix):
+    # Initialize a variable to store the sum of the arrays
+    summed_arrays = None
 
-# Initialize arrays for accumulated correlations and powers
-accumulated_correlations = None
-accumulated_powers = None
+    # Loop through all the files in the directory
+    for filename in os.listdir(directory):
+        # Check if the file matches the prefix and is a npy file
+        if filename.startswith(prefix) and filename.endswith(".npy"):
+            # Load the numpy array from the file
+            filepath = os.path.join(directory, filename)
+            array = np.load(filepath)
 
-# Iterate over correlation files, load the contents, and add them to accumulated_correlations
-for file_path in correlation_files:
-    loaded_array = np.load(file_path)
-    
-    if accumulated_correlations is None:
-        accumulated_correlations = loaded_array
-    else:
-        accumulated_correlations += loaded_array
+            # Add the array to the running sum
+            if summed_arrays is None:
+                summed_arrays = array
+            else:
+                summed_arrays += array
 
-# Iterate over power files, load the contents, and add them to accumulated_powers
-for file_path in power_files:
-    loaded_array = np.load(file_path)
-    
-    if accumulated_powers is None:
-        accumulated_powers = loaded_array
-    else:
-        accumulated_powers += loaded_array
+    # Return the summed arrays
+    return summed_arrays
 
-print("Accumulated Correlations:\n", accumulated_correlations)
-print("Accumulated Powers:\n", accumulated_powers)
+def main():
+    for i in [1, 2, 4, 5, 8, 10, 12, 14, 16, 18, 20, 32]:
+        print("beta: ", i)
+        # Sum up correlations arrays
+        summed_correlations = sum_npy_files(folder_path + '/%d'%(i), "correlations_")
+
+        # Sum up powers arrays
+        summed_powers = sum_npy_files(folder_path + '/%d'%(i), "powers_")
+
+        print("correlations: ", summed_correlations)
+        print("powers: ", summed_powers)
+
+main()

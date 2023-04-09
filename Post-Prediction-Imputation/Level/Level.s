@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=Level
 #SBATCH --nodes=1
-#SBATCH --time=00:05:00
+#SBATCH --time=01:00:00
 #SBATCH --mem=40GB
 #SBATCH --cpus-per-task=40
 
@@ -13,4 +13,4 @@ export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.
 source ~/.bashrc
 
 cd ../
-python Level.py 2
+python Level.py $SLURM_ARRAY_TASK_ID

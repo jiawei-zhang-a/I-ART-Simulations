@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
-from ../Simulation.py import DataGenerator
+import sys
+sys.path.append('../')
+from Simulation import DataGenerator
 
 # Constants for testing
 N = 100

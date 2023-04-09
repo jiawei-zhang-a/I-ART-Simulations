@@ -1,5 +1,5 @@
 import sys
-import xgboost as xgb
+from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 import multiprocessing
 from sklearn.experimental import enable_iterative_imputer
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # power initialization
     power_median = 0
     power_LR = 0
-    power_xgboost = 0
+    power_RandomForest = 0
 
     #iteration 
     iter = 2
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     # correlation initialization
     corr_median = np.zeros(iter)
     corr_LR = np.zeros(iter)
-    corr_xgboost = np.zeros(iter)
+    corr_RandomForest = np.zeros(iter)
 
     # Fixed X, Z, change beta to make different Y,M
     for i in range(iter):
@@ -66,33 +66,33 @@ if __name__ == '__main__':
         corr_median[i] = (corr1[2] + corr2[2]) / 2
 
         #LR imputer
-        BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
-        BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=10, random_state=0)
+        BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge())
+        BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge())
         p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge_1, G2=median_imputer_2,verbose=0)
         power_LR += reject
         corr_LR[i] = (corr1[2] + corr2[2]) / 2
 
         #XGBoost
-        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(n_jobs = multiprocessing.cpu_count()) ,max_iter=10, random_state=0)
-        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(n_jobs = multiprocessing.cpu_count()) ,max_iter=10, random_state=0)
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
-        power_xgboost += reject
-        corr_xgboost[i] = (corr1[2] + corr2[2]) / 2
+        RandomForestRegressor_1= IterativeImputer(estimator = RandomForestRegressor())
+        RandomForestRegressor_2= IterativeImputer(estimator = RandomForestRegressor())
+        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=RandomForestRegressor_1, G2=RandomForestRegressor_2,verbose=0)
+        power_RandomForest += reject
+        corr_RandomForest[i] = (corr1[2] + corr2[2]) / 2
     
     #Write result into the file
     print("Correlation of Median Imputer: " + str(np.mean(corr_median)))
     print("Correlation of LR Imputer: " + str(np.mean(corr_LR)))
-    print("Correlation of XGBoost Imputer: " + str(np.mean(corr_xgboost)))
+    print("Correlation of XGBoost Imputer: " + str(np.mean(corr_RandomForest)))
     
     print("Power of Median Imputer: " + str(power_median/iter))
     print("Power of LR Imputer: " + str(power_LR/iter))
-    print("Power of XGBoost Imputer: " + str(power_xgboost/iter))
+    print("Power of XGBoost Imputer: " + str(power_RandomForest/iter))
 
     #Save the file in numpy format
     if(save_file):
         # Create numpy arrays
-        correlations = np.array([corr_median, corr_LR, corr_xgboost])
-        powers = np.array([power_median, power_LR, power_xgboost])
+        correlations = np.array([corr_median, corr_LR, corr_RandomForest])
+        powers = np.array([power_median, power_LR, power_RandomForest])
 
         # Save numpy arrays to files
         np.save('HPC_result/correlations_%d_%d.npy'%(beta_coef,task_id), correlations)

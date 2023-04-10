@@ -11,12 +11,9 @@ import sys
 import Simulation as Generator
 import OneShot
 import warnings
-import os
 
 #from cuml import XGBRegressor
  #   XGBRegressor(tree_method='gpu_hist')
-
-
 
 if __name__ == '__main__':
     multiprocessing.freeze_support() # This is necessary and important, not sure why 
@@ -40,10 +37,10 @@ if __name__ == '__main__':
     #Iter
     iter = 1
 
-    # level initialization
-    level_median = 0
-    level_LR = 0
-    level_xgboost = 0
+    # Initialize empty lists to store p-values
+    p_values_median = []
+    p_values_LR = []
+    p_values_xgboost = []
 
     
     
@@ -59,35 +56,40 @@ if __name__ == '__main__':
         #Median imputer
         median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
         median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
-        if p31 <= 0.05 or p32 <= 0.05:
-            level_median += 1
+        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
+        # Append p-values to corresponding lists
+        p_values_median.append(( p11, p12, p21, p22, p31, p32, corr1, corr2,reject ))
 
         #LR imputer
         BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge())
         BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge())
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
-        if p31 <= 0.05 or p32 <= 0.05:
-            level_LR += 1
+        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
+        # Append p-values to corresponding lists
+        p_values_median.append(( p11, p12, p21, p22, p31, p32, corr1, corr2,reject ))
 
         #XGBoost
         XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor())
         XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor())
         p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
-        if p31 <= 0.05 or p32 <= 0.05:
-            level_xgboost += 1
+        # Append p-values to corresponding lists
+        p_values_xgboost.append(( p11, p12, p21, p22, p31, p32, corr1, corr2,reject ))
+
     
-    print("level of Median Imputer: ", level_median/iter)
-    print("level of LR Imputer: ", level_LR/iter)
-    print("level of XGBoost Imputer: ", level_xgboost/iter)
+    print("level of Median Imputer: ", p_values_median[:,8].sum()/iter)
+    print("level of LR Imputer: ", p_values_LR[:,8].sum()/iter)
+    print("level of XGBoost Imputer: ", p_values_xgboost[:,8].sum()/iter)
 
     #Save the file in numpy format
     if(save_file):
-        # Create numpy arrays
-        levels = np.array([level_median, level_LR, level_xgboost])
+        # Convert lists to numpy arrays
+        p_values_median = np.array(p_values_median)
+        p_values_LR = np.array(p_values_LR)
+        p_values_xgboost = np.array(p_values_xgboost)
 
         # Save numpy arrays to files
-        np.save('HPC_result/levels_%d.npy'%(task_id), levels)        
+        np.save('HPC_result/p_values_median_%d.npy' % (task_id), p_values_median)
+        np.save('HPC_result/p_values_LR_%d.npy' % (task_id), p_values_LR)
+        np.save('HPC_result/p_values_xgboost_%d.npy' % (task_id), p_values_xgboost)      
 
 
 

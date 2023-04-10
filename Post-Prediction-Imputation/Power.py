@@ -76,7 +76,7 @@ if __name__ == '__main__':
         #XGBoost
         XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor())
         XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor())
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
+        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
         power_RandomForest += reject
         corr_RandomForest[i] = (corr1[2] + corr2[2]) / 2
     

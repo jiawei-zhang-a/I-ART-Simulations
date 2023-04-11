@@ -43,7 +43,7 @@ if __name__ == '__main__':
     power_RandomForest = 0
 
     #iteration 
-    iter = 2
+    iter = 1
 
     # correlation initialization
     corr_median = np.zeros(iter)

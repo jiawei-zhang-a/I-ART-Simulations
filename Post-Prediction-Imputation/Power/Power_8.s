@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --time=1:00:00
 #SBATCH --mem=32GB
-#SBATCH --cpus-per-task=40
+#SBATCH --cpus-per-task=1
 #SBATCH --output=8_%a.out
 #SBATCH --error=8_%a.err
 

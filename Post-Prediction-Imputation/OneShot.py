@@ -60,10 +60,13 @@ class OneShotTest:
         corr = []
         for i in range(3):
             if len(y_imputed[i]) > 0 and len(y_truth[i]) > 0:
-                corr.append(np.corrcoef(y_imputed[i], y_truth[i])[0, 1])
+                val = np.corrcoef(y_imputed[i], y_truth[i])[0, 1]
+                if np.isnan(val):
+                    corr.append(0)
+                else:
+                    corr.append(val)
             else:
                 corr.append(None)
-
         return corr
 
     def T(self,z,y):

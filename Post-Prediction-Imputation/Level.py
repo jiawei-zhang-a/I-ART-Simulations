@@ -30,62 +30,43 @@ if __name__ == '__main__':
         task_id = int(sys.argv[1])
         save_file = True
 
-    
     # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = 1000)
 
-    #Iter
-    iter = 1
+    # Simulate data
+    DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=0)
 
-    # Initialize empty lists to store p-values
-    p_values_median = []
-    p_values_LR = []
-    p_values_xgboost = []
+    X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    
-    
-    # Fixed X, Z, change beta to make different Y,M
-    for i in range(iter):
-        
-        print("Iteration: ", i)
-        # Simulate data
-        DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=0)
+    #Median imputer
+    median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
+    median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
+    # Append p-values to corresponding lists
+    p_values_median = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
-        X, Z, U, Y, M, S = DataGen.GenerateData()
+    #LR imputer
+    BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge())
+    BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge())
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
+    # Append p-values to corresponding lists
+    p_values_LR = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
-        #Median imputer
-        median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
-        median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
-        # Append p-values to corresponding lists
-        p_values_median.append(( p11, p12, p21, p22, p31, p32, corr1, corr2,reject ))
+    #XGBoost
+    XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor())
+    XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor())
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
+    # Append p-values to corresponding lists
+    p_values_xgboost = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
-        #LR imputer
-        BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge())
-        BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge())
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
-        # Append p-values to corresponding lists
-        p_values_median.append(( p11, p12, p21, p22, p31, p32, corr1, corr2,reject ))
-
-        #XGBoost
-        XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor())
-        XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor())
-        p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
-        # Append p-values to corresponding lists
-        p_values_xgboost.append(( p11, p12, p21, p22, p31, p32, corr1, corr2,reject ))
-
-    
-    print("level of Median Imputer: ", p_values_median[:,8].sum()/iter)
-    print("level of LR Imputer: ", p_values_LR[:,8].sum()/iter)
-    print("level of XGBoost Imputer: ", p_values_xgboost[:,8].sum()/iter)
+    print("Finished")
 
     #Save the file in numpy format
     if(save_file):
-        # Convert lists to numpy arrays
+    # Convert lists to numpy arrays
         p_values_median = np.array(p_values_median)
         p_values_LR = np.array(p_values_LR)
         p_values_xgboost = np.array(p_values_xgboost)
-
         # Save numpy arrays to files
         np.save('HPC_result/p_values_median_%d.npy' % (task_id), p_values_median)
         np.save('HPC_result/p_values_LR_%d.npy' % (task_id), p_values_LR)

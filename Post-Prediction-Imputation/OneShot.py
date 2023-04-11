@@ -61,7 +61,7 @@ class OneShotTest:
         for i in range(3):
             if len(y_imputed[i]) > 0 and len(y_truth[i]) > 0:
                 val = np.corrcoef(y_imputed[i], y_truth[i])[0, 1]
-                if np.isna(val):
+                if np.isnan(val):
                     corr.append(0)
                 else:
                     corr.append(val)

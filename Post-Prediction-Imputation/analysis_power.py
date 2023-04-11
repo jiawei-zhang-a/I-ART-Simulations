@@ -1,40 +1,55 @@
 import numpy as np
 import os
-import glob
-
 folder_path = 'HPC_Power'
 
-def sum_npy_files(directory, prefix):
-    # Initialize a variable to store the sum of the arrays
-    summed_arrays = None
 
+def read_and_print_npz_files(directory):
+    
+
+    summed_p_values_median = None
+    summed_p_values_LR = None
+    summed_p_values_xgboost = None
+
+    N = int(len(os.listdir(directory)) / 3)
     # Loop through all the files in the directory
     for filename in os.listdir(directory):
-        # Check if the file matches the prefix and is a npy file
-        if filename.startswith(prefix) and filename.endswith(".npy"):
+
+        # Check if the file is a numpy file
+        if filename.endswith(".npy"):
             # Load the numpy array from the file
             filepath = os.path.join(directory, filename)
-            array = np.load(filepath)
+            p_values = np.load(filepath)
 
-            # Add the array to the running sum
-            if summed_arrays is None:
-                summed_arrays = array
-            else:
-                summed_arrays += array
+            # Add the array to the running sum based on the filename
+            if "p_values_median" in filename:
+                if summed_p_values_median is None:
+                    summed_p_values_median = p_values
+                else:
+                    summed_p_values_median += p_values
+            elif "p_values_LR" in filename:
+                if summed_p_values_LR is None:
+                    summed_p_values_LR = p_values
+                else:
+                    summed_p_values_LR += p_values
+            elif "p_values_xgboost" in filename:
+                if summed_p_values_xgboost is None:
+                    summed_p_values_xgboost = p_values
+                else:
+                    summed_p_values_xgboost += p_values
 
-    # Return the summed arrays
-    return summed_arrays
+    # Print the summed arrays
+    print("Summed p-values for Median Imputer:")
+    print(summed_p_values_median/N)
+    print("Summed p-values for LR Imputer:")
+    print(summed_p_values_LR/N)
+    print("Summed p-values for XGBoost Imputer:")
+    print(summed_p_values_xgboost/N)
+
 
 def main():
     for i in [1, 2, 4, 5, 8, 10, 12, 14, 16, 18, 20, 32]:
         print("beta: ", i)
         # Sum up correlations arrays
-        summed_correlations = sum_npy_files(folder_path + '/%d'%(i), "correlations_")
-
-        # Sum up powers arrays
-        summed_powers = sum_npy_files(folder_path + '/%d'%(i), "powers_")
-
-        print("correlations: ", summed_correlations)
-        print("powers: ", summed_powers)
+        read_and_print_npz_files(folder_path + "/" + str(i))
 
 main()

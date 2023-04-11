@@ -2,8 +2,8 @@
 #
 #SBATCH --job-name=Level
 #SBATCH --nodes=1
-#SBATCH --time=1:00:00
-#SBATCH --mem=32GB
+#SBATCH --time=00:30:00
+#SBATCH --mem=4GB
 #SBATCH --cpus-per-task=1
 
 module purge

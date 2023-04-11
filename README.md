@@ -4,7 +4,7 @@ incomplete. In randomized experiments, simply ignoring the missing outcomes may 
 statistical inference not finite population exact anymore. In matched observational studies,
 people routinely exclude study subjects with missing outcomes, which would substantially
 the statistical power due to discarding many study samples.
-These framework is is for postprediction missing data imputation
+These framework is for testing post-prediction missing data imputation
 
 
 python >= 3.9

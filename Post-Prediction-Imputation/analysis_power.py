@@ -1,6 +1,6 @@
 import numpy as np
 import os
-folder_path = 'HPC_Power'
+folder_path = 'HPC_beta'
 
 
 def read_and_print_npz_files(directory):

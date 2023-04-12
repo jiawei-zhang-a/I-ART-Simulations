@@ -40,7 +40,7 @@ if __name__ == '__main__':
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=0)
+    DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, MaskRate=0.3,Unobserved=0)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
@@ -70,9 +70,9 @@ if __name__ == '__main__':
     #Save the file in numpy format
     if(save_file):
 
-        if not os.path.exists("HPC_Power/%d"%beta_coef):
+        if not os.path.exists("HPC_beta/%d"%beta_coef):
             # If the folder does not exist, create it
-            os.makedirs("HPC_Power/%d"%beta_coef)
+            os.makedirs("HPC_beta/%d"%beta_coef)
 
         # Convert lists to numpy arrays
         p_values_median = np.array(p_values_median)
@@ -80,9 +80,9 @@ if __name__ == '__main__':
         p_values_xgboost = np.array(p_values_xgboost)
 
         # Save numpy arrays to files
-        np.save('HPC_Power/%d/p_values_median_%d.npy' % (beta_coef, task_id), p_values_median)
-        np.save('HPC_Power/%d/p_values_LR_%d.npy' % (beta_coef,task_id), p_values_LR)
-        np.save('HPC_Power/%d/p_values_xgboost_%d.npy' % (beta_coef,task_id), p_values_xgboost)      
+        np.save('HPC_beta/%d/p_values_median_%d.npy' % (beta_coef, task_id), p_values_median)
+        np.save('HPC_beta/%d/p_values_LR_%d.npy' % (beta_coef,task_id), p_values_LR)
+        np.save('HPC_beta/%d/p_values_xgboost_%d.npy' % (beta_coef,task_id), p_values_xgboost)      
 
 
 

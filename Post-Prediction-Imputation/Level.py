@@ -34,7 +34,7 @@ if __name__ == '__main__':
     Framework = OneShot.OneShotTest(N = 1000)
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = 100, beta_12 = 100, beta_21 = 100, beta_22 = 100, beta_23 = 100, beta_31 = 100, MaskRate=0.3,Unobserved=1)
+    DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=1)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 

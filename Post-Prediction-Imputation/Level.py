@@ -35,7 +35,6 @@ if __name__ == '__main__':
 
     # Simulate data
     DataGen = Generator.DataGenerator(N = 1000, N_T = 500, N_S = 50, beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=1)
-
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
     #Median imputer

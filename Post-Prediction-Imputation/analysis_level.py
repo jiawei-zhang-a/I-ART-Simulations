@@ -84,7 +84,7 @@ def plot_p_values_distribution(p_values, imputer_name):
         print(f"Proportion of p-values below {threshold_005}: {proportion_below_005:.4f}")
         print(f"Proportion of p-values below {threshold_010}: {proportion_below_010:.4f}")
 
-    #fig.suptitle(f"Distribution of first 6 p-values for {imputer_name}")
-    #plt.show()
+    fig.suptitle(f"Distribution of first 6 p-values for {imputer_name}")
+    plt.show()
 
-read_and_print_npz_files('HPC_result')
+read_and_print_npz_files('HPC_result_unobserved')

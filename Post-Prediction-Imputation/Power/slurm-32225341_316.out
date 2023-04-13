@@ -1,0 +1,622 @@
+/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib/python3.8/site-packages/numpy/core/getlimits.py:518: UserWarning: The value of the smallest subnormal for <class 'numpy.float64'> type is zero.
+  setattr(self, word, getattr(machar, word).flat[0])
+/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib/python3.8/site-packages/numpy/core/getlimits.py:89: UserWarning: The value of the smallest subnormal for <class 'numpy.float64'> type is zero.
+  return self._float_to_str(self.smallest_subnormal)
+/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib/python3.8/site-packages/numpy/core/getlimits.py:518: UserWarning: The value of the smallest subnormal for <class 'numpy.float32'> type is zero.
+  setattr(self, word, getattr(machar, word).flat[0])
+/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib/python3.8/site-packages/numpy/core/getlimits.py:89: UserWarning: The value of the smallest subnormal for <class 'numpy.float32'> type is zero.
+  return self._float_to_str(self.smallest_subnormal)
+Begin
+Training start
+t1_obs:[array(94066.), array(81042.), array(72557.)] t2_obs:[array(89466.), array(77765.), array(71759.)]
+corr_G1:[None, None, 1.0740920336233559e-17] corr_G2:[None, None, -5.0266614313176756e-17]
+Training end
+Task is 0.00% complete.
+t1_sim:[65731. 65990. 64992.] t2_sim:[62966. 64488. 65965.]
+Task is 1.00% complete.
+t1_sim:[69196. 68070. 63918.] t2_sim:[65655. 65553. 65712.]
+Task is 2.00% complete.
+t1_sim:[59468. 58663. 58457.] t2_sim:[58641. 59499. 58249.]
+Task is 3.00% complete.
+t1_sim:[60777. 61489. 62292.] t2_sim:[59692. 60328. 61897.]
+Task is 4.00% complete.
+t1_sim:[60025. 61145. 62370.] t2_sim:[59552. 58359. 62016.]
+Task is 5.00% complete.
+t1_sim:[56894. 57004. 54374.] t2_sim:[62256. 62040. 63536.]
+Task is 6.00% complete.
+t1_sim:[64019. 63703. 65529.] t2_sim:[62127. 62800. 59969.]
+Task is 7.00% complete.
+t1_sim:[63113. 62759. 64752.] t2_sim:[67613. 67118. 66437.]
+Task is 8.00% complete.
+t1_sim:[65247. 64875. 64195.] t2_sim:[65228. 65760. 64951.]
+Task is 9.00% complete.
+t1_sim:[65450. 64053. 63177.] t2_sim:[62336. 63537. 63880.]
+Task is 10.00% complete.
+t1_sim:[58234. 58344. 58684.] t2_sim:[61983. 59710. 62149.]
+Task is 11.00% complete.
+t1_sim:[61253. 60453. 61870.] t2_sim:[58521. 59121. 61405.]
+Task is 12.00% complete.
+t1_sim:[65250. 65446. 63796.] t2_sim:[61169. 62253. 61998.]
+Task is 13.00% complete.
+t1_sim:[65442. 64398. 66452.] t2_sim:[62887. 61968. 62315.]
+Task is 14.00% complete.
+t1_sim:[64039. 64995. 67590.] t2_sim:[68644. 68812. 67154.]
+Task is 15.00% complete.
+t1_sim:[59961. 59715. 58277.] t2_sim:[58703. 59316. 59371.]
+Task is 16.00% complete.
+t1_sim:[59311. 57993. 59007.] t2_sim:[54959. 54308. 57251.]
+Task is 17.00% complete.
+t1_sim:[63584. 62560. 63322.] t2_sim:[68512. 67594. 65955.]
+Task is 18.00% complete.
+t1_sim:[63980. 63994. 64245.] t2_sim:[61685. 61116. 62968.]
+Task is 19.00% complete.
+t1_sim:[65620. 67008. 65971.] t2_sim:[62930. 63070. 61959.]
+Task is 20.00% complete.
+t1_sim:[58818. 58871. 58871.] t2_sim:[64376. 66235. 66316.]
+Task is 21.00% complete.
+t1_sim:[62054. 61282. 62099.] t2_sim:[65720. 68660. 67547.]
+Task is 22.00% complete.
+t1_sim:[56028. 56887. 61896.] t2_sim:[61441. 61745. 62393.]
+Task is 23.00% complete.
+t1_sim:[60104. 58626. 63525.] t2_sim:[66909. 66046. 65274.]
+Task is 24.00% complete.
+t1_sim:[59148. 60997. 60010.] t2_sim:[58341. 58679. 59417.]
+Task is 25.00% complete.
+t1_sim:[62591. 62822. 60662.] t2_sim:[64304. 64705. 63817.]
+Task is 26.00% complete.
+t1_sim:[59798. 58638. 62371.] t2_sim:[65700. 66240. 65538.]
+Task is 27.00% complete.
+t1_sim:[57948. 56897. 57110.] t2_sim:[61623. 59143. 59869.]
+Task is 28.00% complete.
+t1_sim:[61910. 60499. 60201.] t2_sim:[64194. 64314. 64234.]
+Task is 29.00% complete.
+t1_sim:[60398. 61424. 61684.] t2_sim:[59737. 59525. 56637.]
+Task is 30.00% complete.
+t1_sim:[65364. 65145. 64997.] t2_sim:[64222. 63589. 64549.]
+Task is 31.00% complete.
+t1_sim:[61582. 61811. 62853.] t2_sim:[64170. 63669. 65146.]
+Task is 32.00% complete.
+t1_sim:[64745. 65323. 64290.] t2_sim:[57000. 55990. 59049.]
+Task is 33.00% complete.
+t1_sim:[61125. 60787. 64078.] t2_sim:[64296. 63833. 63909.]
+Task is 34.00% complete.
+t1_sim:[60985. 60315. 58333.] t2_sim:[63528. 63884. 61625.]
+Task is 35.00% complete.
+t1_sim:[62054. 61190. 61947.] t2_sim:[57117. 57104. 61019.]
+Task is 36.00% complete.
+t1_sim:[56944. 57158. 59797.] t2_sim:[65399. 65707. 67402.]
+Task is 37.00% complete.
+t1_sim:[64064. 64038. 66762.] t2_sim:[66617. 66476. 62524.]
+Task is 38.00% complete.
+t1_sim:[62660. 63369. 64232.] t2_sim:[62122. 62706. 65104.]
+Task is 39.00% complete.
+t1_sim:[58246. 58464. 55121.] t2_sim:[64814. 64090. 66954.]
+Task is 40.00% complete.
+t1_sim:[63679. 64596. 64685.] t2_sim:[58735. 59592. 62634.]
+Task is 41.00% complete.
+t1_sim:[61134. 61103. 61272.] t2_sim:[61867. 62685. 62882.]
+Task is 42.00% complete.
+t1_sim:[65529. 65057. 65064.] t2_sim:[60083. 59395. 59482.]
+Task is 43.00% complete.
+t1_sim:[70717. 71310. 70754.] t2_sim:[63546. 63536. 64529.]
+Task is 44.00% complete.
+t1_sim:[64684. 64461. 65004.] t2_sim:[61037. 61748. 59976.]
+Task is 45.00% complete.
+t1_sim:[67180. 66906. 66016.] t2_sim:[59425. 58406. 60384.]
+Task is 46.00% complete.
+t1_sim:[59875. 60238. 62760.] t2_sim:[61641. 60641. 61210.]
+Task is 47.00% complete.
+t1_sim:[60051. 60044. 59652.] t2_sim:[65766. 66451. 66713.]
+Task is 48.00% complete.
+t1_sim:[65253. 64582. 65771.] t2_sim:[64121. 64721. 64391.]
+Task is 49.00% complete.
+t1_sim:[58688. 57907. 57144.] t2_sim:[56406. 58613. 59055.]
+Task is 50.00% complete.
+t1_sim:[62973. 63433. 64359.] t2_sim:[64054. 64684. 61652.]
+Task is 51.00% complete.
+t1_sim:[60487. 61277. 59045.] t2_sim:[62297. 62099. 61930.]
+Task is 52.00% complete.
+t1_sim:[64492. 64265. 64637.] t2_sim:[65836. 65847. 66377.]
+Task is 53.00% complete.
+t1_sim:[61038. 60501. 59371.] t2_sim:[60646. 60245. 61395.]
+Task is 54.00% complete.
+t1_sim:[57285. 57378. 55236.] t2_sim:[56120. 54997. 57687.]
+Task is 55.00% complete.
+t1_sim:[66274. 66564. 65232.] t2_sim:[64718. 61625. 65196.]
+Task is 56.00% complete.
+t1_sim:[56696. 57228. 59062.] t2_sim:[64846. 64118. 65363.]
+Task is 57.00% complete.
+t1_sim:[63312. 63028. 62094.] t2_sim:[57862. 57393. 60996.]
+Task is 58.00% complete.
+t1_sim:[63708. 61910. 61841.] t2_sim:[66151. 65899. 66110.]
+Task is 59.00% complete.
+t1_sim:[65387. 66269. 63252.] t2_sim:[64258. 64043. 64514.]
+Task is 60.00% complete.
+t1_sim:[60461. 59011. 61488.] t2_sim:[62198. 62856. 61814.]
+Task is 61.00% complete.
+t1_sim:[62988. 64031. 63134.] t2_sim:[60836. 61867. 62106.]
+Task is 62.00% complete.
+t1_sim:[58762. 61436. 60099.] t2_sim:[58457. 58894. 59773.]
+Task is 63.00% complete.
+t1_sim:[63080. 61342. 61287.] t2_sim:[63771. 63866. 66948.]
+Task is 64.00% complete.
+t1_sim:[63525. 65595. 66937.] t2_sim:[64446. 64405. 63543.]
+Task is 65.00% complete.
+t1_sim:[64104. 62842. 63597.] t2_sim:[61633. 60551. 62513.]
+Task is 66.00% complete.
+t1_sim:[62916. 63943. 66275.] t2_sim:[60006. 60237. 60650.]
+Task is 67.00% complete.
+t1_sim:[62021. 62411. 60989.] t2_sim:[58972. 58592. 60922.]
+Task is 68.00% complete.
+t1_sim:[58563. 58638. 59180.] t2_sim:[64981. 63552. 62682.]
+Task is 69.00% complete.
+t1_sim:[55514. 55882. 56902.] t2_sim:[60564. 61841. 59475.]
+Task is 70.00% complete.
+t1_sim:[64525. 63424. 65877.] t2_sim:[61379. 63231. 62247.]
+Task is 71.00% complete.
+t1_sim:[54970. 55481. 53942.] t2_sim:[67345. 66809. 64977.]
+Task is 72.00% complete.
+t1_sim:[61954. 62269. 61483.] t2_sim:[60542. 60331. 60185.]
+Task is 73.00% complete.
+t1_sim:[68756. 68649. 67563.] t2_sim:[61083. 60780. 62647.]
+Task is 74.00% complete.
+t1_sim:[60919. 59823. 59598.] t2_sim:[59632. 59578. 59777.]
+Task is 75.00% complete.
+t1_sim:[63889. 64814. 64148.] t2_sim:[53697. 54612. 51851.]
+Task is 76.00% complete.
+t1_sim:[64540. 63845. 63996.] t2_sim:[64984. 65625. 68899.]
+Task is 77.00% complete.
+t1_sim:[63892. 64825. 65045.] t2_sim:[62683. 63226. 61603.]
+Task is 78.00% complete.
+t1_sim:[69957. 67792. 71066.] t2_sim:[60568. 60987. 61189.]
+Task is 79.00% complete.
+t1_sim:[68267. 68538. 70283.] t2_sim:[62945. 61592. 63755.]
+Task is 80.00% complete.
+t1_sim:[62184. 63164. 61947.] t2_sim:[61656. 61468. 65833.]
+Task is 81.00% complete.
+t1_sim:[62472. 62585. 65685.] t2_sim:[59957. 62812. 63468.]
+Task is 82.00% complete.
+t1_sim:[60585. 60780. 59832.] t2_sim:[60336. 59899. 64423.]
+Task is 83.00% complete.
+t1_sim:[58996. 58026. 57448.] t2_sim:[61951. 61025. 63651.]
+Task is 84.00% complete.
+t1_sim:[67193. 65790. 67985.] t2_sim:[58090. 58002. 56619.]
+Task is 85.00% complete.
+t1_sim:[61840. 62359. 61760.] t2_sim:[65190. 64047. 63374.]
+Task is 86.00% complete.
+t1_sim:[64798. 65104. 60513.] t2_sim:[63484. 63196. 62142.]
+Task is 87.00% complete.
+t1_sim:[63310. 63887. 63886.] t2_sim:[64488. 65546. 63486.]
+Task is 88.00% complete.
+t1_sim:[59521. 59563. 60246.] t2_sim:[54413. 52825. 54843.]
+Task is 89.00% complete.
+t1_sim:[62071. 63598. 62824.] t2_sim:[59634. 58726. 58168.]
+Task is 90.00% complete.
+t1_sim:[64339. 64253. 65004.] t2_sim:[63144. 62113. 61638.]
+Task is 91.00% complete.
+t1_sim:[57236. 58797. 56394.] t2_sim:[63337. 64661. 62564.]
+Task is 92.00% complete.
+t1_sim:[62181. 63176. 62588.] t2_sim:[65317. 66321. 65547.]
+Task is 93.00% complete.
+t1_sim:[61275. 61834. 62514.] t2_sim:[62359. 61910. 63032.]
+Task is 94.00% complete.
+t1_sim:[65212. 63213. 64606.] t2_sim:[62602. 60969. 60261.]
+Task is 95.00% complete.
+t1_sim:[66461. 67228. 65234.] t2_sim:[66646. 66346. 66094.]
+Task is 96.00% complete.
+t1_sim:[61912. 62925. 62035.] t2_sim:[64444. 64479. 66120.]
+Task is 97.00% complete.
+t1_sim:[59424. 57996. 55734.] t2_sim:[66542. 67106. 66549.]
+Task is 98.00% complete.
+t1_sim:[66799. 66099. 66761.] t2_sim:[64036. 62919. 65167.]
+Task is 99.00% complete.
+t1_sim:[58350. 57899. 58569.] t2_sim:[61351. 61773. 61466.]
+Training start
+t1_obs:[array(94066.), array(81042.), array(78827.)] t2_obs:[array(89466.), array(77765.), array(76057.)]
+corr_G1:[None, None, 0.9965951374357572] corr_G2:[None, None, 0.9908703398434249]
+Training end
+Task is 0.00% complete.
+t1_sim:[67589. 66400. 66655.] t2_sim:[64085. 65418. 64273.]
+Task is 1.00% complete.
+t1_sim:[64399. 65658. 65619.] t2_sim:[62446. 61829. 62573.]
+Task is 2.00% complete.
+t1_sim:[62632. 63855. 65117.] t2_sim:[68389. 68818. 67276.]
+Task is 3.00% complete.
+t1_sim:[55230. 55769. 57019.] t2_sim:[66014. 66706. 67871.]
+Task is 4.00% complete.
+t1_sim:[64855. 64727. 65120.] t2_sim:[62991. 63163. 62864.]
+Task is 5.00% complete.
+t1_sim:[63342. 61726. 61158.] t2_sim:[59917. 61274. 62012.]
+Task is 6.00% complete.
+t1_sim:[61169. 61634. 60622.] t2_sim:[65042. 68071. 68172.]
+Task is 7.00% complete.
+t1_sim:[62867. 64417. 63419.] t2_sim:[60284. 61029. 61799.]
+Task is 8.00% complete.
+t1_sim:[64361. 65161. 65967.] t2_sim:[62299. 61711. 61627.]
+Task is 9.00% complete.
+t1_sim:[61741. 62060. 62812.] t2_sim:[67028. 67006. 66202.]
+Task is 10.00% complete.
+t1_sim:[62668. 65041. 65714.] t2_sim:[62267. 62572. 61822.]
+Task is 11.00% complete.
+t1_sim:[67050. 66695. 66346.] t2_sim:[69867. 71845. 69895.]
+Task is 12.00% complete.
+t1_sim:[54749. 54770. 53988.] t2_sim:[59389. 57688. 58783.]
+Task is 13.00% complete.
+t1_sim:[65612. 65701. 64554.] t2_sim:[66021. 66293. 65441.]
+Task is 14.00% complete.
+t1_sim:[62683. 61079. 62667.] t2_sim:[57415. 57064. 55765.]
+Task is 15.00% complete.
+t1_sim:[59909. 59989. 61266.] t2_sim:[57356. 59597. 59065.]
+Task is 16.00% complete.
+t1_sim:[60965. 60703. 61634.] t2_sim:[60536. 62144. 62335.]
+Task is 17.00% complete.
+t1_sim:[61449. 62284. 62819.] t2_sim:[58187. 57413. 59699.]
+Task is 18.00% complete.
+t1_sim:[62865. 62492. 64274.] t2_sim:[68183. 65575. 65507.]
+Task is 19.00% complete.
+t1_sim:[60161. 59832. 60426.] t2_sim:[58129. 58682. 58740.]
+Task is 20.00% complete.
+t1_sim:[58457. 58422. 58145.] t2_sim:[60153. 58519. 59312.]
+Task is 21.00% complete.
+t1_sim:[68687. 68560. 68505.] t2_sim:[61744. 61225. 61593.]
+Task is 22.00% complete.
+t1_sim:[59862. 60209. 59712.] t2_sim:[71826. 72303. 72350.]
+Task is 23.00% complete.
+t1_sim:[60374. 60575. 59390.] t2_sim:[59154. 59893. 58649.]
+Task is 24.00% complete.
+t1_sim:[67216. 68979. 68971.] t2_sim:[58793. 60762. 59064.]
+Task is 25.00% complete.
+t1_sim:[63045. 61825. 62079.] t2_sim:[62483. 62022. 61683.]
+Task is 26.00% complete.
+t1_sim:[68180. 67186. 67712.] t2_sim:[63009. 62024. 60844.]
+Task is 27.00% complete.
+t1_sim:[61777. 61703. 60933.] t2_sim:[59579. 61152. 60051.]
+Task is 28.00% complete.
+t1_sim:[64352. 65166. 64450.] t2_sim:[70725. 69854. 70848.]
+Task is 29.00% complete.
+t1_sim:[58795. 60650. 60704.] t2_sim:[67835. 68286. 68333.]
+Task is 30.00% complete.
+t1_sim:[63096. 63772. 62826.] t2_sim:[62210. 61806. 61788.]
+Task is 31.00% complete.
+t1_sim:[63627. 65011. 63282.] t2_sim:[56244. 56542. 55548.]
+Task is 32.00% complete.
+t1_sim:[66562. 65186. 63547.] t2_sim:[62711. 61623. 61889.]
+Task is 33.00% complete.
+t1_sim:[61890. 62765. 62732.] t2_sim:[67073. 67300. 65616.]
+Task is 34.00% complete.
+t1_sim:[64464. 62329. 63070.] t2_sim:[56502. 59156. 56025.]
+Task is 35.00% complete.
+t1_sim:[70840. 69291. 69382.] t2_sim:[62696. 64589. 63967.]
+Task is 36.00% complete.
+t1_sim:[61314. 59800. 61700.] t2_sim:[70662. 71402. 71128.]
+Task is 37.00% complete.
+t1_sim:[60487. 59580. 60508.] t2_sim:[64120. 66155. 65623.]
+Task is 38.00% complete.
+t1_sim:[56489. 54874. 57815.] t2_sim:[62891. 62821. 62324.]
+Task is 39.00% complete.
+t1_sim:[57607. 58910. 58568.] t2_sim:[65189. 64294. 64650.]
+Task is 40.00% complete.
+t1_sim:[58843. 58352. 59525.] t2_sim:[61640. 62097. 59954.]
+Task is 41.00% complete.
+t1_sim:[62289. 62382. 62552.] t2_sim:[63527. 63709. 64061.]
+Task is 42.00% complete.
+t1_sim:[61884. 60689. 61270.] t2_sim:[65995. 63701. 64258.]
+Task is 43.00% complete.
+t1_sim:[64844. 64692. 63217.] t2_sim:[67632. 67887. 68311.]
+Task is 44.00% complete.
+t1_sim:[69296. 68904. 69108.] t2_sim:[61763. 62456. 61541.]
+Task is 45.00% complete.
+t1_sim:[65904. 64858. 65822.] t2_sim:[60785. 62626. 61724.]
+Task is 46.00% complete.
+t1_sim:[65227. 64261. 66140.] t2_sim:[62328. 63222. 64170.]
+Task is 47.00% complete.
+t1_sim:[60628. 59865. 59331.] t2_sim:[64059. 65218. 67138.]
+Task is 48.00% complete.
+t1_sim:[62917. 65333. 64731.] t2_sim:[62513. 62681. 63038.]
+Task is 49.00% complete.
+t1_sim:[58731. 60264. 60897.] t2_sim:[61213. 59264. 60697.]
+Task is 50.00% complete.
+t1_sim:[58421. 58967. 59502.] t2_sim:[63810. 64334. 63027.]
+Task is 51.00% complete.
+t1_sim:[55496. 56341. 55596.] t2_sim:[62930. 63958. 62074.]
+Task is 52.00% complete.
+t1_sim:[66449. 67244. 66619.] t2_sim:[64087. 65544. 64648.]
+Task is 53.00% complete.
+t1_sim:[68422. 67539. 67942.] t2_sim:[69630. 68787. 70358.]
+Task is 54.00% complete.
+t1_sim:[57475. 56267. 56982.] t2_sim:[60261. 61076. 61403.]
+Task is 55.00% complete.
+t1_sim:[65743. 64375. 65851.] t2_sim:[63842. 64039. 64907.]
+Task is 56.00% complete.
+t1_sim:[63941. 63550. 65911.] t2_sim:[58393. 58966. 58747.]
+Task is 57.00% complete.
+t1_sim:[62106. 64256. 64315.] t2_sim:[61156. 60911. 61162.]
+Task is 58.00% complete.
+t1_sim:[61209. 61472. 62607.] t2_sim:[56234. 56805. 59716.]
+Task is 59.00% complete.
+t1_sim:[62899. 63653. 63772.] t2_sim:[60678. 59235. 59537.]
+Task is 60.00% complete.
+t1_sim:[68117. 66941. 66673.] t2_sim:[55821. 56939. 57470.]
+Task is 61.00% complete.
+t1_sim:[62639. 62987. 62956.] t2_sim:[65832. 66305. 65564.]
+Task is 62.00% complete.
+t1_sim:[61202. 59446. 57576.] t2_sim:[57828. 58186. 60642.]
+Task is 63.00% complete.
+t1_sim:[66551. 66512. 65501.] t2_sim:[64231. 63430. 64149.]
+Task is 64.00% complete.
+t1_sim:[60087. 60715. 60978.] t2_sim:[64204. 63462. 61445.]
+Task is 65.00% complete.
+t1_sim:[61820. 62505. 60343.] t2_sim:[63431. 62997. 60388.]
+Task is 66.00% complete.
+t1_sim:[60754. 58968. 58114.] t2_sim:[67006. 65170. 68011.]
+Task is 67.00% complete.
+t1_sim:[66024. 66822. 65166.] t2_sim:[62555. 63213. 61119.]
+Task is 68.00% complete.
+t1_sim:[71800. 72063. 71386.] t2_sim:[67660. 67921. 68283.]
+Task is 69.00% complete.
+t1_sim:[61333. 60769. 60588.] t2_sim:[63060. 61675. 60134.]
+Task is 70.00% complete.
+t1_sim:[62781. 61585. 61309.] t2_sim:[66100. 64996. 64009.]
+Task is 71.00% complete.
+t1_sim:[66598. 65876. 64162.] t2_sim:[59988. 61447. 60986.]
+Task is 72.00% complete.
+t1_sim:[62288. 61324. 62818.] t2_sim:[66035. 67112. 66448.]
+Task is 73.00% complete.
+t1_sim:[66969. 66609. 65381.] t2_sim:[64530. 64330. 63167.]
+Task is 74.00% complete.
+t1_sim:[66622. 66530. 65251.] t2_sim:[63030. 61851. 61718.]
+Task is 75.00% complete.
+t1_sim:[61069. 60065. 59841.] t2_sim:[62828. 63420. 62455.]
+Task is 76.00% complete.
+t1_sim:[61983. 61529. 61188.] t2_sim:[61565. 63104. 61671.]
+Task is 77.00% complete.
+t1_sim:[64033. 62624. 62470.] t2_sim:[57853. 58425. 58239.]
+Task is 78.00% complete.
+t1_sim:[61272. 59510. 59279.] t2_sim:[60543. 60475. 60652.]
+Task is 79.00% complete.
+t1_sim:[60421. 60277. 59782.] t2_sim:[62306. 60323. 60563.]
+Task is 80.00% complete.
+t1_sim:[63479. 63246. 61995.] t2_sim:[60947. 60631. 61109.]
+Task is 81.00% complete.
+t1_sim:[57784. 56112. 55825.] t2_sim:[67470. 66330. 67772.]
+Task is 82.00% complete.
+t1_sim:[63719. 65945. 65564.] t2_sim:[63941. 65790. 65016.]
+Task is 83.00% complete.
+t1_sim:[62421. 62380. 62656.] t2_sim:[68702. 68206. 69260.]
+Task is 84.00% complete.
+t1_sim:[61435. 62473. 64520.] t2_sim:[62110. 62188. 60324.]
+Task is 85.00% complete.
+t1_sim:[61093. 60841. 61294.] t2_sim:[60724. 61065. 61333.]
+Task is 86.00% complete.
+t1_sim:[63415. 64678. 64508.] t2_sim:[63555. 60605. 62226.]
+Task is 87.00% complete.
+t1_sim:[65904. 65315. 63656.] t2_sim:[59662. 58567. 59884.]
+Task is 88.00% complete.
+t1_sim:[62327. 62250. 64366.] t2_sim:[57619. 59582. 58638.]
+Task is 89.00% complete.
+t1_sim:[63350. 60448. 60788.] t2_sim:[66838. 65889. 65389.]
+Task is 90.00% complete.
+t1_sim:[59892. 59098. 58350.] t2_sim:[56946. 56481. 57263.]
+Task is 91.00% complete.
+t1_sim:[63530. 63308. 64498.] t2_sim:[59279. 58815. 57995.]
+Task is 92.00% complete.
+t1_sim:[69235. 68381. 66180.] t2_sim:[63685. 63381. 65258.]
+Task is 93.00% complete.
+t1_sim:[69734. 69319. 71719.] t2_sim:[61342. 61011. 61227.]
+Task is 94.00% complete.
+t1_sim:[61807. 61884. 63271.] t2_sim:[62830. 62017. 62229.]
+Task is 95.00% complete.
+t1_sim:[64607. 62681. 61457.] t2_sim:[63574. 62710. 62287.]
+Task is 96.00% complete.
+t1_sim:[62244. 62274. 62389.] t2_sim:[62047. 61697. 61032.]
+Task is 97.00% complete.
+t1_sim:[65822. 67025. 67031.] t2_sim:[58918. 60367. 61239.]
+Task is 98.00% complete.
+t1_sim:[59713. 57532. 58783.] t2_sim:[64027. 63767. 62517.]
+Task is 99.00% complete.
+t1_sim:[59348. 59103. 59190.] t2_sim:[64162. 64210. 65646.]
+Training start
+t1_obs:[array(94066.), array(81042.), array(75004.)] t2_obs:[array(89466.), array(77765.), array(74640.)]
+corr_G1:[None, None, 0.2107822423008884] corr_G2:[None, None, 0.17909750087567738]
+Training end
+Task is 0.00% complete.
+t1_sim:[64753. 63569. 64143.] t2_sim:[58818. 58559. 55842.]
+Task is 1.00% complete.
+t1_sim:[66439. 64610. 64125.] t2_sim:[58531. 60059. 55889.]
+Task is 2.00% complete.
+t1_sim:[65712. 65379. 65280.] t2_sim:[64768. 63914. 60283.]
+Task is 3.00% complete.
+t1_sim:[59336. 59066. 62880.] t2_sim:[67208. 68527. 63372.]
+Task is 4.00% complete.
+t1_sim:[57377. 56285. 58893.] t2_sim:[60334. 60062. 56580.]
+Task is 5.00% complete.
+t1_sim:[62113. 60649. 61854.] t2_sim:[64226. 65828. 61977.]
+Task is 6.00% complete.
+t1_sim:[63528. 63847. 64287.] t2_sim:[65673. 65811. 62617.]
+Task is 7.00% complete.
+t1_sim:[66699. 65021. 66610.] t2_sim:[57830. 58017. 55004.]
+Task is 8.00% complete.
+t1_sim:[66112. 65944. 65786.] t2_sim:[62451. 61534. 59690.]
+Task is 9.00% complete.
+t1_sim:[60580. 61703. 60428.] t2_sim:[69320. 68902. 66436.]
+Task is 10.00% complete.
+t1_sim:[56523. 56294. 57508.] t2_sim:[64453. 64205. 62092.]
+Task is 11.00% complete.
+t1_sim:[65099. 64305. 64400.] t2_sim:[64959. 64945. 59266.]
+Task is 12.00% complete.
+t1_sim:[61762. 62194. 61982.] t2_sim:[68060. 67630. 64980.]
+Task is 13.00% complete.
+t1_sim:[61762. 62320. 63105.] t2_sim:[61760. 61928. 58167.]
+Task is 14.00% complete.
+t1_sim:[56587. 58284. 58575.] t2_sim:[61661. 61558. 58909.]
+Task is 15.00% complete.
+t1_sim:[59786. 60449. 64394.] t2_sim:[55729. 55000. 52758.]
+Task is 16.00% complete.
+t1_sim:[62560. 62271. 63462.] t2_sim:[66470. 67378. 63331.]
+Task is 17.00% complete.
+t1_sim:[62992. 63977. 64888.] t2_sim:[60805. 60165. 57006.]
+Task is 18.00% complete.
+t1_sim:[63812. 64133. 64110.] t2_sim:[60107. 60874. 57078.]
+Task is 19.00% complete.
+t1_sim:[62071. 63596. 62416.] t2_sim:[59651. 58639. 55551.]
+Task is 20.00% complete.
+t1_sim:[62820. 63030. 63348.] t2_sim:[65311. 64054. 62295.]
+Task is 21.00% complete.
+t1_sim:[57527. 57337. 59338.] t2_sim:[62079. 60464. 56925.]
+Task is 22.00% complete.
+t1_sim:[62985. 63500. 63653.] t2_sim:[59503. 58431. 55182.]
+Task is 23.00% complete.
+t1_sim:[65127. 65902. 65659.] t2_sim:[60855. 60470. 57135.]
+Task is 24.00% complete.
+t1_sim:[64871. 66122. 66073.] t2_sim:[64882. 64427. 60770.]
+Task is 25.00% complete.
+t1_sim:[67264. 64909. 67532.] t2_sim:[60209. 59220. 55774.]
+Task is 26.00% complete.
+t1_sim:[57622. 57387. 54948.] t2_sim:[67057. 67002. 63373.]
+Task is 27.00% complete.
+t1_sim:[65954. 66691. 67342.] t2_sim:[66388. 64821. 61684.]
+Task is 28.00% complete.
+t1_sim:[57397. 58343. 58903.] t2_sim:[63083. 62596. 59378.]
+Task is 29.00% complete.
+t1_sim:[64954. 68187. 67046.] t2_sim:[59597. 60536. 56643.]
+Task is 30.00% complete.
+t1_sim:[58572. 59204. 58393.] t2_sim:[63656. 62506. 59010.]
+Task is 31.00% complete.
+t1_sim:[65503. 65487. 66635.] t2_sim:[64964. 64415. 60465.]
+Task is 32.00% complete.
+t1_sim:[59800. 59636. 59980.] t2_sim:[64606. 66085. 61335.]
+Task is 33.00% complete.
+t1_sim:[57267. 58813. 59113.] t2_sim:[56274. 56720. 55188.]
+Task is 34.00% complete.
+t1_sim:[60700. 60598. 60727.] t2_sim:[64218. 66162. 61982.]
+Task is 35.00% complete.
+t1_sim:[63579. 63916. 64939.] t2_sim:[58058. 58413. 54791.]
+Task is 36.00% complete.
+t1_sim:[65663. 66907. 64811.] t2_sim:[66623. 67254. 64429.]
+Task is 37.00% complete.
+t1_sim:[65732. 66058. 64346.] t2_sim:[61375. 61384. 57258.]
+Task is 38.00% complete.
+t1_sim:[67470. 67981. 66116.] t2_sim:[64550. 65591. 62472.]
+Task is 39.00% complete.
+t1_sim:[65650. 65374. 64479.] t2_sim:[66351. 66354. 63312.]
+Task is 40.00% complete.
+t1_sim:[66949. 64736. 65584.] t2_sim:[62555. 63391. 58986.]
+Task is 41.00% complete.
+t1_sim:[61543. 61742. 60839.] t2_sim:[57316. 56179. 53462.]
+Task is 42.00% complete.
+t1_sim:[58848. 59741. 61778.] t2_sim:[61819. 62436. 58505.]
+Task is 43.00% complete.
+t1_sim:[60972. 60009. 59551.] t2_sim:[62354. 61620. 57295.]
+Task is 44.00% complete.
+t1_sim:[62782. 62153. 65062.] t2_sim:[65705. 65213. 59700.]
+Task is 45.00% complete.
+t1_sim:[65640. 66865. 67779.] t2_sim:[65611. 67489. 62431.]
+Task is 46.00% complete.
+t1_sim:[64831. 65703. 65285.] t2_sim:[55131. 55177. 52328.]
+Task is 47.00% complete.
+t1_sim:[68334. 67008. 68398.] t2_sim:[60594. 61360. 57930.]
+Task is 48.00% complete.
+t1_sim:[65963. 65764. 65344.] t2_sim:[60313. 60779. 55836.]
+Task is 49.00% complete.
+t1_sim:[65281. 65879. 65376.] t2_sim:[61616. 63072. 59542.]
+Task is 50.00% complete.
+t1_sim:[62021. 63330. 63305.] t2_sim:[62214. 63333. 59617.]
+Task is 51.00% complete.
+t1_sim:[62809. 61338. 62200.] t2_sim:[63177. 62486. 59137.]
+Task is 52.00% complete.
+t1_sim:[63455. 63043. 63262.] t2_sim:[61805. 61944. 56840.]
+Task is 53.00% complete.
+t1_sim:[56418. 54406. 54626.] t2_sim:[67402. 68397. 64595.]
+Task is 54.00% complete.
+t1_sim:[61952. 62363. 62359.] t2_sim:[60070. 58942. 56662.]
+Task is 55.00% complete.
+t1_sim:[59780. 60018. 60410.] t2_sim:[59861. 61147. 59026.]
+Task is 56.00% complete.
+t1_sim:[68225. 64253. 66867.] t2_sim:[68603. 66646. 63228.]
+Task is 57.00% complete.
+t1_sim:[65947. 64883. 64557.] t2_sim:[59751. 60250. 56849.]
+Task is 58.00% complete.
+t1_sim:[67838. 66147. 65358.] t2_sim:[55192. 56800. 52623.]
+Task is 59.00% complete.
+t1_sim:[63944. 64140. 63756.] t2_sim:[66948. 67025. 61577.]
+Task is 60.00% complete.
+t1_sim:[64445. 64688. 67009.] t2_sim:[65736. 65633. 60443.]
+Task is 61.00% complete.
+t1_sim:[58195. 59224. 58121.] t2_sim:[58720. 59687. 56519.]
+Task is 62.00% complete.
+t1_sim:[64130. 63962. 63403.] t2_sim:[62292. 63772. 60707.]
+Task is 63.00% complete.
+t1_sim:[63930. 63755. 65612.] t2_sim:[66809. 65941. 61180.]
+Task is 64.00% complete.
+t1_sim:[64766. 64337. 65084.] t2_sim:[64503. 64132. 60213.]
+Task is 65.00% complete.
+t1_sim:[61975. 61444. 61820.] t2_sim:[63610. 61876. 58634.]
+Task is 66.00% complete.
+t1_sim:[60971. 63661. 64643.] t2_sim:[58059. 58470. 55215.]
+Task is 67.00% complete.
+t1_sim:[58213. 58510. 56935.] t2_sim:[59821. 60862. 57680.]
+Task is 68.00% complete.
+t1_sim:[63627. 61322. 61502.] t2_sim:[65665. 66773. 64023.]
+Task is 69.00% complete.
+t1_sim:[62075. 62144. 60693.] t2_sim:[63294. 63265. 60207.]
+Task is 70.00% complete.
+t1_sim:[63522. 62469. 61362.] t2_sim:[59918. 59794. 58911.]
+Task is 71.00% complete.
+t1_sim:[61857. 60492. 58451.] t2_sim:[67184. 66533. 63771.]
+Task is 72.00% complete.
+t1_sim:[67483. 66820. 65789.] t2_sim:[64515. 65283. 59950.]
+Task is 73.00% complete.
+t1_sim:[58608. 59601. 57730.] t2_sim:[66211. 65512. 62032.]
+Task is 74.00% complete.
+t1_sim:[63448. 65671. 66196.] t2_sim:[60503. 59991. 57935.]
+Task is 75.00% complete.
+t1_sim:[66390. 67279. 69205.] t2_sim:[63778. 62667. 59535.]
+Task is 76.00% complete.
+t1_sim:[62994. 63248. 60644.] t2_sim:[57372. 57474. 54449.]
+Task is 77.00% complete.
+t1_sim:[60843. 62220. 62165.] t2_sim:[59411. 60451. 57234.]
+Task is 78.00% complete.
+t1_sim:[64350. 64730. 63599.] t2_sim:[62375. 63946. 59568.]
+Task is 79.00% complete.
+t1_sim:[59547. 57666. 58881.] t2_sim:[65128. 66110. 62679.]
+Task is 80.00% complete.
+t1_sim:[68601. 67728. 67216.] t2_sim:[56020. 56839. 53821.]
+Task is 81.00% complete.
+t1_sim:[63682. 63039. 65564.] t2_sim:[61554. 60684. 58711.]
+Task is 82.00% complete.
+t1_sim:[63221. 62429. 62368.] t2_sim:[61094. 61702. 59117.]
+Task is 83.00% complete.
+t1_sim:[63050. 62865. 61647.] t2_sim:[59742. 60139. 57887.]
+Task is 84.00% complete.
+t1_sim:[62722. 62486. 63290.] t2_sim:[63529. 61904. 58803.]
+Task is 85.00% complete.
+t1_sim:[65693. 65145. 66681.] t2_sim:[61000. 60961. 57845.]
+Task is 86.00% complete.
+t1_sim:[61947. 60881. 62874.] t2_sim:[61498. 62599. 59419.]
+Task is 87.00% complete.
+t1_sim:[62109. 61446. 62575.] t2_sim:[58293. 58761. 55648.]
+Task is 88.00% complete.
+t1_sim:[61088. 63533. 62768.] t2_sim:[67567. 66330. 63571.]
+Task is 89.00% complete.
+t1_sim:[63883. 62319. 63697.] t2_sim:[64462. 66119. 61189.]
+Task is 90.00% complete.
+t1_sim:[64171. 65321. 64199.] t2_sim:[60523. 59970. 58594.]
+Task is 91.00% complete.
+t1_sim:[60117. 60256. 60712.] t2_sim:[68022. 68504. 64223.]
+Task is 92.00% complete.
+t1_sim:[63762. 64822. 62837.] t2_sim:[65945. 66147. 63021.]
+Task is 93.00% complete.
+t1_sim:[64247. 65153. 64520.] t2_sim:[59310. 59742. 55763.]
+Task is 94.00% complete.
+t1_sim:[59036. 58609. 60490.] t2_sim:[62227. 63408. 58750.]
+Task is 95.00% complete.
+t1_sim:[64709. 65699. 63898.] t2_sim:[58421. 57556. 55421.]
+Task is 96.00% complete.
+t1_sim:[62748. 62968. 62166.] t2_sim:[57846. 57538. 54027.]
+Task is 97.00% complete.
+t1_sim:[62340. 62179. 62247.] t2_sim:[66326. 64640. 61613.]
+Task is 98.00% complete.
+t1_sim:[57356. 56580. 56623.] t2_sim:[69141. 69022. 66582.]
+Task is 99.00% complete.
+t1_sim:[65118. 67014. 66712.] t2_sim:[64338. 64443. 59639.]
+Finished

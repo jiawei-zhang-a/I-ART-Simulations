@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --time=00:30:00
 #SBATCH --mem=4GB
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=1
 module purge
 
 source /scratch/jz4721/Post-prediction-Causal-Inference/venv/bin/activate
@@ -13,3 +13,4 @@ source ~/.bashrc
 
 cd ../
 python Level.py $SLURM_ARRAY_TASK_ID
+

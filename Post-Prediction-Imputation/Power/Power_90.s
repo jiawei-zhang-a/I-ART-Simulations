@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=Power-90
 #SBATCH --nodes=1
-#SBATCH --time=00:10:00
+#SBATCH --time=00:30:00
 #SBATCH --mem=4GB
 #SBATCH --cpus-per-task=4
 
@@ -15,4 +15,3 @@ source ~/.bashrc
 cd ../
 
 python3 Power.py 90 $SLURM_ARRAY_TASK_ID
-

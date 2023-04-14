@@ -47,7 +47,7 @@ def read_and_print_npz_files(directory):
 
 
 def main():
-    for i in [1, 2, 4, 5, 8, 10, 12, 14, 16, 18, 20, 32]:
+    for i in [1, 2, 4, 5, 8, 10, 12, 14, 16, 18, 20, 22, 24, 32]:
         print("beta: ", i)
         # Sum up correlations arrays
         read_and_print_npz_files(folder_path + "/" + str(i))

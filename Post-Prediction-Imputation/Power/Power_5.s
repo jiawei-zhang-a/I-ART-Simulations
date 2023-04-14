@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=Power-5
 #SBATCH --nodes=1
-#SBATCH --time=00:10:00
+#SBATCH --time=00:30:00
 #SBATCH --mem=4GB
 #SBATCH --cpus-per-task=1
 #SBATCH --output=5_%a.out

@@ -1,4 +1,5 @@
-import sys
+
+import xgboost as xgb
 import numpy as np
 import multiprocessing
 from sklearn.experimental import enable_iterative_imputer
@@ -6,29 +7,22 @@ from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 from sklearn.impute import SimpleImputer
 import multiprocessing
+import sys
 import Simulation as Generator
 import OneShot
 import warnings
-import xgboost as xgb
-import os
 
-#from cuml import XGBRegressor
- #   XGBRegressor(tree_method='gpu_hist')
-
-beta_coef = 1
+#Argument
 task_id = 1
 save_file = False
 
-def run(Nsize, U, filepath):
 
-    # Create an instance of the OneShot class
+def run(Nsize, U, filepath ):
+        # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = Nsize)
 
-    print("Begin")
-
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize/2), N_S = int(Nsize/20), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, MaskRate=0.3,Unobserved=U)
-
+    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=U)
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
     #Median imputer
@@ -56,21 +50,14 @@ def run(Nsize, U, filepath):
 
     #Save the file in numpy format
     if(save_file):
-
-        if not os.path.exists("%s/%d"%(filepath,beta_coef)):
-            # If the folder does not exist, create it
-            os.makedirs("%s/%d"%(filepath,beta_coef))
-
-        # Convert lists to numpy arrays
+    # Convert lists to numpy arrays
         p_values_median = np.array(p_values_median)
         p_values_LR = np.array(p_values_LR)
         p_values_xgboost = np.array(p_values_xgboost)
-
         # Save numpy arrays to files
-        np.save('%s/%d/p_values_median_%d.npy' % (filepath, beta_coef, task_id), p_values_median)
-        np.save('%s/%d/p_values_LR_%d.npy' % (filepath, beta_coef,task_id), p_values_LR)
-        np.save('%s/%d/p_values_xgboost_%d.npy' % (filepath, beta_coef,task_id), p_values_xgboost)      
-
+        np.save('%s/p_values_median_%d.npy' % (filepath,task_id), p_values_median)
+        np.save('%s/p_values_LR_%d.npy' % (filepath,task_id), p_values_LR)
+        np.save('%s/p_values_xgboost_%d.npy' % (filepath,task_id), p_values_xgboost)      
 
 
 
@@ -81,22 +68,16 @@ if __name__ == '__main__':
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     warnings.filterwarnings("ignore", category=UserWarning, module="numpy.core.getlimits")
 
-    if len(sys.argv) == 3:
-        beta_coef = int(sys.argv[1])
-        task_id = int(sys.argv[2])
+
+
+    if len(sys.argv) == 2:
+        task_id = int(sys.argv[1])
         save_file = True
 
-    
-    run(2000, 1 , "HPC_Power_unobserved_2000")
-    run(2000, 0 , "HPC_Power_2000")
-    run(1000, 1 , "HPC_Power_unobserved")
-    run(1000, 0 , "HPC_Power")
-    
-    
-    
-
-
-        
+    run(1000, 0 , "HPC_beta")
+    run(1000, 1 , "HPC_beta_unobserved")
+    run(2000, 0 , "HPC_beta_2000")
+    run(2000, 1 , "HPC_beta_unobserved_2000")
 
 
 

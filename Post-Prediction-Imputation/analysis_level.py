@@ -12,9 +12,8 @@ def proportions_below_threshold(p_values, threshold):
     proportion = count / len(p_values)
     return proportion
 
-def read_and_print_npz_files(directory):
+def read_and_print_npz_files(directory, file):
 
-    with open("level.result", "w") as file:
         file.write("Analysis of : " + directory + "\n")
 
         summed_p_values_median = None
@@ -88,7 +87,8 @@ def plot_p_values_distribution(p_values, imputer_name, file):
     #plt.savefig(f"{imputer_name}_distribution.png")
     #plt.show()
 
-read_and_print_npz_files('HPC_beta')
-read_and_print_npz_files('HPC_beta_unobserved')
-read_and_print_npz_files('HPC_beta_2000')
-read_and_print_npz_files('HPC_beta_unobserved_2000')
+with open("level.result", "w") as file:
+    read_and_print_npz_files('HPC_beta', file)
+    read_and_print_npz_files('HPC_beta_unobserved', file)
+    read_and_print_npz_files('HPC_beta_2000', file)
+    read_and_print_npz_files('HPC_beta_unobserved_2000', file)

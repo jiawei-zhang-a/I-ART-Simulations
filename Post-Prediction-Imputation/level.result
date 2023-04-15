@@ -1,3 +1,264 @@
+Analysis of : HPC_beta
+Mean p-values for Median Imputer:
+[5.01306807e-01 5.03865927e-01 5.01390995e-01 5.03537121e-01
+ 4.98681829e-01 5.03582489e-01 1.96659235e-19 4.67537462e-19
+ 4.55772114e-02]
+Mean p-values for LR Imputer:
+[0.50130538 0.50390714 0.50138907 0.50361012 0.5002142  0.50441051
+ 0.97159221 0.97263003 0.04337831]
+Mean p-values for XGBoost Imputer:
+[ 0.50134242  0.50390974  0.50145149  0.50359063  0.49985704  0.50386617
+ -0.04421834 -0.04357233  0.04607696]
+Plotting the distribution of the first 6 p-values for each imputer
+Median Imputer
+KstestResult(statistic=0.006328122812281234, pvalue=0.8156750604933477, statistic_location=0.7251, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0511
+Proportion of p-values below 0.1: 0.0973
+Proportion of p-values below 0.2: 0.1997
+KstestResult(statistic=0.011647924792479225, pvalue=0.13158051504379442, statistic_location=0.5324, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0496
+Proportion of p-values below 0.1: 0.1002
+Proportion of p-values below 0.2: 0.1916
+KstestResult(statistic=0.006433273327332678, pvalue=0.7997860239022068, statistic_location=0.6737, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0507
+Proportion of p-values below 0.1: 0.0962
+Proportion of p-values below 0.2: 0.2017
+KstestResult(statistic=0.009840854085408468, pvalue=0.28564410459178724, statistic_location=0.6013, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0491
+Proportion of p-values below 0.1: 0.0988
+Proportion of p-values below 0.2: 0.1932
+KstestResult(statistic=0.006370837083708447, pvalue=0.8092722167821309, statistic_location=0.702, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0481
+Proportion of p-values below 0.1: 0.0987
+Proportion of p-values below 0.2: 0.1991
+KstestResult(statistic=0.010726492649264951, pvalue=0.19870818062282536, statistic_location=0.7458, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0474
+Proportion of p-values below 0.1: 0.0982
+Proportion of p-values below 0.2: 0.2010
+LR Imputer
+KstestResult(statistic=0.006531253125312442, pvalue=0.78461897354575, statistic_location=0.694, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0512
+Proportion of p-values below 0.1: 0.0972
+Proportion of p-values below 0.2: 0.2010
+KstestResult(statistic=0.01154757475747581, pvalue=0.13785378090483513, statistic_location=0.5358, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0493
+Proportion of p-values below 0.1: 0.0997
+Proportion of p-values below 0.2: 0.1918
+KstestResult(statistic=0.0071328732873287, pvalue=0.6862919907777696, statistic_location=0.6784, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0503
+Proportion of p-values below 0.1: 0.0963
+Proportion of p-values below 0.2: 0.2025
+KstestResult(statistic=0.009646664666466687, pvalue=0.30790853067105906, statistic_location=0.543, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0493
+Proportion of p-values below 0.1: 0.0988
+Proportion of p-values below 0.2: 0.1945
+KstestResult(statistic=0.006214001400139946, pvalue=0.8324066248993216, statistic_location=0.8662, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0473
+Proportion of p-values below 0.1: 0.0994
+Proportion of p-values below 0.2: 0.2007
+KstestResult(statistic=0.011243174317431714, pvalue=0.15837543237725704, statistic_location=0.5795, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0501
+Proportion of p-values below 0.1: 0.0958
+Proportion of p-values below 0.2: 0.1963
+XGBoost Imputer
+KstestResult(statistic=0.0065885288528853, pvalue=0.7756083433167168, statistic_location=0.1213, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0515
+Proportion of p-values below 0.1: 0.0969
+Proportion of p-values below 0.2: 0.2006
+KstestResult(statistic=0.011847394739473938, pvalue=0.11980068054291826, statistic_location=0.5379, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0500
+Proportion of p-values below 0.1: 0.1005
+Proportion of p-values below 0.2: 0.1917
+KstestResult(statistic=0.006834343434343415, pvalue=0.7359437351645782, statistic_location=0.6634, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0510
+Proportion of p-values below 0.1: 0.0957
+Proportion of p-values below 0.2: 0.2020
+KstestResult(statistic=0.009745874587458792, pvalue=0.29638674212687655, statistic_location=0.551, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0491
+Proportion of p-values below 0.1: 0.0993
+Proportion of p-values below 0.2: 0.1941
+KstestResult(statistic=0.004512301230122917, pvalue=0.9864928991889007, statistic_location=0.8815, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0475
+Proportion of p-values below 0.1: 0.0988
+Proportion of p-values below 0.2: 0.2002
+KstestResult(statistic=0.010653675367536752, pvalue=0.20498238374462352, statistic_location=0.4739, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0485
+Proportion of p-values below 0.1: 0.0968
+Proportion of p-values below 0.2: 0.1989
+Analysis of : HPC_beta_unobserved
+Mean p-values for Median Imputer:
+[ 4.99042005e-01  5.04611893e-01  4.98670538e-01  5.05094094e-01
+  5.00874235e-01  5.05783370e-01  2.99588754e-20 -8.08221260e-19
+  4.72716370e-02]
+Mean p-values for LR Imputer:
+[0.49907968 0.50460606 0.49872734 0.50510768 0.49933614 0.50568836
+ 0.97441695 0.97156239 0.04627224]
+Mean p-values for XGBoost Imputer:
+[ 0.49908365  0.50463505  0.49872526  0.50509672  0.4990648   0.50581507
+ -0.04573152 -0.04431991  0.04597242]
+Plotting the distribution of the first 6 p-values for each imputer
+Median Imputer
+KstestResult(statistic=0.00884785478547856, pvalue=0.4117747580140707, statistic_location=0.4697, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0461
+Proportion of p-values below 0.1: 0.0961
+Proportion of p-values below 0.2: 0.1944
+KstestResult(statistic=0.013822852285228504, pvalue=0.043404211727686604, statistic_location=0.7853, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0463
+Proportion of p-values below 0.1: 0.0988
+Proportion of p-values below 0.2: 0.1961
+KstestResult(statistic=0.010149204920492039, pvalue=0.25269502796816146, statistic_location=0.4819, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0459
+Proportion of p-values below 0.1: 0.0959
+Proportion of p-values below 0.2: 0.1976
+KstestResult(statistic=0.012224202420242025, pvalue=0.09991018828311782, statistic_location=0.7702, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0467
+Proportion of p-values below 0.1: 0.0990
+Proportion of p-values below 0.2: 0.1962
+KstestResult(statistic=0.008868916891689171, pvalue=0.40878954728359984, statistic_location=0.3197, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0471
+Proportion of p-values below 0.1: 0.1007
+Proportion of p-values below 0.2: 0.1994
+KstestResult(statistic=0.011833723372337235, pvalue=0.12057945784216595, statistic_location=0.6746, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0481
+Proportion of p-values below 0.1: 0.0965
+Proportion of p-values below 0.2: 0.1921
+LR Imputer
+KstestResult(statistic=0.009146864686468636, pvalue=0.370616880580817, statistic_location=0.4595, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0463
+Proportion of p-values below 0.1: 0.0964
+Proportion of p-values below 0.2: 0.1945
+KstestResult(statistic=0.012521512151215108, pvalue=0.08622697699795778, statistic_location=0.7974, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0462
+Proportion of p-values below 0.1: 0.0987
+Proportion of p-values below 0.2: 0.1955
+KstestResult(statistic=0.010248884888488796, pvalue=0.24266650762566666, statistic_location=0.4786, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0457
+Proportion of p-values below 0.1: 0.0956
+Proportion of p-values below 0.2: 0.1980
+KstestResult(statistic=0.011523502350235026, pvalue=0.1393941208057573, statistic_location=0.7765, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0472
+Proportion of p-values below 0.1: 0.0994
+Proportion of p-values below 0.2: 0.1961
+KstestResult(statistic=0.006551365136513665, pvalue=0.7814664427028863, statistic_location=0.5071, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0472
+Proportion of p-values below 0.1: 0.0971
+Proportion of p-values below 0.2: 0.1980
+KstestResult(statistic=0.012438733873387342, pvalue=0.08986862022485309, statistic_location=0.6251, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0449
+Proportion of p-values below 0.1: 0.0945
+Proportion of p-values below 0.2: 0.1984
+XGBoost Imputer
+KstestResult(statistic=0.008946464646464647, pvalue=0.3979093119166548, statistic_location=0.4557, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0464
+Proportion of p-values below 0.1: 0.0966
+Proportion of p-values below 0.2: 0.1949
+KstestResult(statistic=0.013421662166216541, pvalue=0.05402302932286851, statistic_location=0.7968, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0460
+Proportion of p-values below 0.1: 0.0976
+Proportion of p-values below 0.2: 0.1954
+KstestResult(statistic=0.009849534953495387, pvalue=0.2846762722457695, statistic_location=0.4855, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0458
+Proportion of p-values below 0.1: 0.0963
+Proportion of p-values below 0.2: 0.1979
+KstestResult(statistic=0.011624592459245964, pvalue=0.13301799545886628, statistic_location=0.7657, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0468
+Proportion of p-values below 0.1: 0.0988
+Proportion of p-values below 0.2: 0.1954
+KstestResult(statistic=0.009453595359535938, pvalue=0.3312125024343049, statistic_location=0.5265, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0476
+Proportion of p-values below 0.1: 0.0978
+Proportion of p-values below 0.2: 0.1970
+KstestResult(statistic=0.012731243124312508, pvalue=0.07755170026474878, statistic_location=0.7003, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0469
+Proportion of p-values below 0.1: 0.0952
+Proportion of p-values below 0.2: 0.1979
+Analysis of : HPC_beta_2000
+Mean p-values for Median Imputer:
+[ 5.05833563e-01  5.03104490e-01  5.05722952e-01  5.03128943e-01
+  5.01784868e-01  5.04426043e-01 -5.69125342e-19 -3.00268708e-19
+  4.68046805e-02]
+Mean p-values for LR Imputer:
+[0.50583672 0.50315917 0.50568558 0.50319307 0.50368001 0.50333169
+ 0.97584919 0.97437001 0.04780478]
+Mean p-values for XGBoost Imputer:
+[ 0.50581163  0.50314348  0.50567742  0.50317329  0.50278619  0.50302975
+ -0.0613955  -0.0601932   0.04970497]
+Plotting the distribution of the first 6 p-values for each imputer
+Median Imputer
+KstestResult(statistic=0.010673847384738477, pvalue=0.20322920045677428, statistic_location=0.2722, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0470
+Proportion of p-values below 0.1: 0.0974
+Proportion of p-values below 0.2: 0.1949
+KstestResult(statistic=0.010964736473647319, pvalue=0.1792161005043721, statistic_location=0.3636, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0488
+Proportion of p-values below 0.1: 0.1007
+Proportion of p-values below 0.2: 0.1949
+KstestResult(statistic=0.01313128312831291, pvalue=0.06304155119786115, statistic_location=0.7003, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0461
+Proportion of p-values below 0.1: 0.0971
+Proportion of p-values below 0.2: 0.1940
+KstestResult(statistic=0.012352515251525198, pvalue=0.09379775588469386, statistic_location=0.4872, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0488
+Proportion of p-values below 0.1: 0.1009
+Proportion of p-values below 0.2: 0.1959
+KstestResult(statistic=0.005941884188418789, pvalue=0.8697754519495453, statistic_location=0.5871, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0479
+Proportion of p-values below 0.1: 0.0975
+Proportion of p-values below 0.2: 0.1998
+KstestResult(statistic=0.012849994999500014, pvalue=0.07297536808787708, statistic_location=0.5129, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0495
+Proportion of p-values below 0.1: 0.1009
+Proportion of p-values below 0.2: 0.1990
+LR Imputer
+KstestResult(statistic=0.0108302830283028, pvalue=0.19002342488728285, statistic_location=0.708, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0463
+Proportion of p-values below 0.1: 0.0983
+Proportion of p-values below 0.2: 0.1946
+KstestResult(statistic=0.011457945794579427, pvalue=0.14365961372217384, statistic_location=0.432, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0491
+Proportion of p-values below 0.1: 0.1007
+Proportion of p-values below 0.2: 0.1949
+KstestResult(statistic=0.013030603060306012, pvalue=0.06645552956501555, statistic_location=0.707, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0460
+Proportion of p-values below 0.1: 0.0971
+Proportion of p-values below 0.2: 0.1939
+KstestResult(statistic=0.011859745974597435, pvalue=0.11910065552703542, statistic_location=0.4144, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0487
+Proportion of p-values below 0.1: 0.1009
+Proportion of p-values below 0.2: 0.1952
+KstestResult(statistic=0.01075120512051203, pvalue=0.1966129643909006, statistic_location=0.4987, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0475
+Proportion of p-values below 0.1: 0.0984
+Proportion of p-values below 0.2: 0.1961
+KstestResult(statistic=0.010475437543754379, pvalue=0.22098239620058102, statistic_location=0.2561, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0504
+Proportion of p-values below 0.1: 0.0996
+Proportion of p-values below 0.2: 0.1941
+XGBoost Imputer
+KstestResult(statistic=0.010729212921292142, pvalue=0.19847670281923657, statistic_location=0.7186, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0469
+Proportion of p-values below 0.1: 0.0976
+Proportion of p-values below 0.2: 0.1950
+KstestResult(statistic=0.010858605860586068, pvalue=0.18770558291054562, statistic_location=0.4248, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0484
+Proportion of p-values below 0.1: 0.1008
+Proportion of p-values below 0.2: 0.1954
+KstestResult(statistic=0.013430443044304408, pvalue=0.053768583345111476, statistic_location=0.709, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0460
+Proportion of p-values below 0.1: 0.0971
+Proportion of p-values below 0.2: 0.1947
+KstestResult(statistic=0.012052775277527739, pvalue=0.10859012770125454, statistic_location=0.4843, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0483
+Proportion of p-values below 0.1: 0.1011
+Proportion of p-values below 0.2: 0.1958
+KstestResult(statistic=0.008932303230323013, pvalue=0.39988310965794327, statistic_location=0.6859, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0471
+Proportion of p-values below 0.1: 0.0977
+Proportion of p-values below 0.2: 0.1991
+KstestResult(statistic=0.009555695569556932, pvalue=0.3187436561637972, statistic_location=0.4526, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0522
+Proportion of p-values below 0.1: 0.0975
+Proportion of p-values below 0.2: 0.1963
 Analysis of : HPC_beta_unobserved_2000
 Mean p-values for Median Imputer:
 [5.04442584e-01 4.99289969e-01 5.04722072e-01 4.99308711e-01

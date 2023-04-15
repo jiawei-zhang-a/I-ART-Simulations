@@ -1,10 +1,9 @@
 import numpy as np
 import os
-folder_path = 'HPC_beta'
-
 
 def read_and_print_npz_files(directory):
     
+    print("Analysis of : " + directory)
 
     summed_p_values_median = None
     summed_p_values_LR = None
@@ -38,18 +37,22 @@ def read_and_print_npz_files(directory):
                     summed_p_values_xgboost += p_values
 
     # Print the summed arrays
-    print("Summed p-values for Median Imputer:")
+    print("Mean p-values for Median Imputer:")
     print(summed_p_values_median/N)
-    print("Summed p-values for LR Imputer:")
+    print("Mean p-values for LR Imputer:")
     print(summed_p_values_LR/N)
-    print("Summed p-values for XGBoost Imputer:")
+    print("Mean p-values for XGBoost Imputer:")
     print(summed_p_values_xgboost/N)
 
 
 def main():
-    for i in [1, 2, 4, 5, 8, 10, 12, 14, 16, 18, 20, 22, 24, 32]:
+    for i in [4, 6, 8, 10, 12, 14]:
         print("beta: ", i)
         # Sum up correlations arrays
-        read_and_print_npz_files(folder_path + "/" + str(i))
+
+        read_and_print_npz_files('HPC_beta/' + str(i))
+        read_and_print_npz_files('HPC_beta_unobserved/' + str(i))
+        read_and_print_npz_files('HPC_beta_2000/' + str(i))
+        read_and_print_npz_files('HPC_beta_unobserved_2000/' + str(i))
 
 main()

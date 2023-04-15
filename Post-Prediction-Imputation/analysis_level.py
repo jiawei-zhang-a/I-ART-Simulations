@@ -5,6 +5,7 @@ import scipy
 
 threshold_005 = 0.05
 threshold_010 = 0.10
+threshold_020 = 0.20
 
 def proportions_below_threshold(p_values, threshold):
     count = sum(1 for p in p_values if p < threshold)
@@ -12,6 +13,8 @@ def proportions_below_threshold(p_values, threshold):
     return proportion
 
 def read_and_print_npz_files(directory):
+
+    print("Analysis of : " + directory)
     
     summed_p_values_median = None
     summed_p_values_LR = None
@@ -52,11 +55,11 @@ def read_and_print_npz_files(directory):
                 p_values_xgboost.append(list(p_values))
 
     # Print the summed arrays
-    print("Summed p-values for Median Imputer:")
+    print("Mean p-values for Median Imputer:")
     print(summed_p_values_median/N)
-    print("Summed p-values for LR Imputer:")
+    print("Mean p-values for LR Imputer:")
     print(summed_p_values_LR/N)
-    print("Summed p-values for XGBoost Imputer:")
+    print("Mean p-values for XGBoost Imputer:")
     print(summed_p_values_xgboost/N)
     
     # Plot the distribution of the first 6 p-values for each imputer
@@ -73,17 +76,23 @@ def plot_p_values_distribution(p_values, imputer_name):
     p_values = np.array(p_values)
     fig, axs = plt.subplots(1, 6, figsize=(12, 4), tight_layout=True)
 
-    for i in range(6):
+    for i in range(4,6):
         axs[i].hist(p_values[:,i])
         axs[i].set_title(f"p-value {i+1}")
         print(scipy.stats.kstest(p_values[:,i], 'uniform'))
 
         proportion_below_005 = proportions_below_threshold(p_values[:,i], threshold_005)
         proportion_below_010 = proportions_below_threshold(p_values[:,i], threshold_010)
+        proportion_below_020 = proportions_below_threshold(p_values[:,i], threshold_020)
 
         print(f"Proportion of p-values below {threshold_005}: {proportion_below_005:.4f}")
         print(f"Proportion of p-values below {threshold_010}: {proportion_below_010:.4f}")
+        print(f"Proportion of p-values below {threshold_020}: {proportion_below_020:.4f}")
 
     #fig.suptitle(f"Distribution of first 6 p-values for {imputer_name}")
     #plt.show()
-read_and_print_npz_files('HPC_result_unobserved')
+
+read_and_print_npz_files('HPC_beta')
+read_and_print_npz_files('HPC_beta_unobserved')
+read_and_print_npz_files('HPC_beta_2000')
+read_and_print_npz_files('HPC_beta_unobserved_2000')

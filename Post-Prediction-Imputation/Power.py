@@ -86,10 +86,14 @@ if __name__ == '__main__':
         task_id = int(sys.argv[2])
         save_file = True
 
-    run(1000, 0 , "HPC_Power")
-    run(1000, 1 , "HPC_Power_unobserved")
-    run(2000, 0 , "HPC_Power_2000")
+    
     run(2000, 1 , "HPC_Power_unobserved_2000")
+    run(2000, 0 , "HPC_Power_2000")
+    run(1000, 1 , "HPC_Power_unobserved")
+    run(1000, 0 , "HPC_Power")
+    
+    
+    
 
 
         

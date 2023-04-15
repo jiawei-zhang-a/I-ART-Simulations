@@ -1,9 +1,9 @@
 import numpy as np
 import os
 
-def read_and_print_npz_files(directory):
+def read_and_print_npz_files(directory, file):
     
-    print("Analysis of : " + directory)
+    file.write("Analysis of : " + directory + "\n")
 
     summed_p_values_median = None
     summed_p_values_LR = None
@@ -36,23 +36,21 @@ def read_and_print_npz_files(directory):
                 else:
                     summed_p_values_xgboost += p_values
 
-    # Print the summed arrays
-    print("Mean p-values for Median Imputer:")
-    print(summed_p_values_median/N)
-    print("Mean p-values for LR Imputer:")
-    print(summed_p_values_LR/N)
-    print("Mean p-values for XGBoost Imputer:")
-    print(summed_p_values_xgboost/N)
-
+    file.write("Mean p-values for Median Imputer:\n")
+    file.write(str(summed_p_values_median/N) + "\n")
+    file.write("Mean p-values for LR Imputer:\n")
+    file.write(str(summed_p_values_LR/N) + "\n")
+    file.write("Mean p-values for XGBoost Imputer:\n")
+    file.write(str(summed_p_values_xgboost/N) + "\n")
 
 def main():
-    for i in [4, 6, 8, 10, 12, 14]:
-        print("beta: ", i)
-        # Sum up correlations arrays
-
-        read_and_print_npz_files('HPC_beta/' + str(i))
-        read_and_print_npz_files('HPC_beta_unobserved/' + str(i))
-        read_and_print_npz_files('HPC_beta_2000/' + str(i))
-        read_and_print_npz_files('HPC_beta_unobserved_2000/' + str(i))
+    #for i in [4, 6, 8, 10, 12, 14]:
+    for i in [1]:
+        with open("power.result", "a") as file:
+            file.write("beta: " + str(i) + "\n")
+            read_and_print_npz_files('HPC_Power/' + str(i), file)
+            read_and_print_npz_files('HPC_Power_unobserved/' + str(i), file)
+            read_and_print_npz_files('HPC_Power_2000/' + str(i), file)
+            read_and_print_npz_files('HPC_Power_unobserved_2000/' + str(i), file)
 
 main()

@@ -44,7 +44,7 @@ def read_and_print_npz_files(directory, file):
     file.write(str(summed_p_values_xgboost/N) + "\n")
 
 def main():
-    for i in [4, 6, 8, 10, 12, 14]:
+    for i in [4, 6, 8, 10, 12, 14, 16]:
         with open("power.result", "a") as file:
             file.write("beta: " + str(i) + "\n")
             read_and_print_npz_files('HPC_Power/' + str(i), file)

@@ -6,8 +6,9 @@ from statsmodels.stats.multitest import multipletests
 
 class OneShotTest:
     #load data
-    def __init__(self,N):
+    def __init__(self,N,Single = True):
         self.N = N
+        self.Single = Single
 
     #split based on strata
     def split_df(self,df):
@@ -221,7 +222,10 @@ class OneShotTest:
         p32 = np.mean([p[5] for p in p_list], axis=0)
         
         # perform Holm-Bonferroni correction
-        reject = self.holm_bonferroni([p31, p32])
+        if self.Single:
+            reject = self.holm_bonferroni([p31, p32])
+        else:
+            reject = self.holm_bonferroni([p11, p12, p21, p22, p31, p32])
 
         return p11, p12, p21, p22, p31, p32, corr_G1, corr_G2, reject
     
@@ -319,7 +323,10 @@ class OneShotTest:
         p32 = np.mean(t2_sim[:,2] >= t2_obs[2], axis=0)
 
         # perform Holm-Bonferroni correction
-        reject = self.holm_bonferroni([p31, p32])
+        if self.Single:
+            reject = self.holm_bonferroni([p31, p32])
+        else:
+            reject = self.holm_bonferroni([p11, p12, p21, p22, p31, p32])
 
         return p11, p12, p21, p22, p31, p32, corr_G1, corr_G2, reject
     

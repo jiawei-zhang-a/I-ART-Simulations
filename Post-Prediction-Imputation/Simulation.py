@@ -4,7 +4,7 @@ from scipy.special import expit
 
 
 class DataGenerator:
-  def __init__(self, N, N_T, N_S, beta_11, beta_12, beta_21, beta_22, beta_23, beta_31, MaskRate, Unobserved = True):
+  def __init__(self, N, N_T, N_S, beta_11, beta_12, beta_21, beta_22, beta_23, beta_31, MaskRate, Unobserved = True, Single = True):
     self.N = N
     self.N_T = N_T
     self.N_S = N_S
@@ -16,6 +16,7 @@ class DataGenerator:
     self.beta_31 = beta_31
     self.MaskRate = MaskRate
     self.Unobserved = Unobserved
+    self.Single = Single
 
   def GenerateX(self):
       # generate Xn1 and Xn2
@@ -218,7 +219,7 @@ class DataGenerator:
     Y = self.GenerateY(X, U, Z)
 
     # Generate M
-    M = self.GenerateM(X, U, Y)
+    M = self.GenerateM(X, U, Y, single = self.Single)
 
     return X, Z, U, Y, M, S
 

@@ -19,7 +19,11 @@ beta_coef = 1
 task_id = 1
 save_file = False
 
-def run(Nsize, U, filepath):
+def run(Nsize, Unobserved, Single, filepath):
+
+    # If the folder does not exist, create it
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
 
     # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = Nsize)
@@ -27,7 +31,7 @@ def run(Nsize, U, filepath):
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize/2), N_S = int(Nsize/20), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, MaskRate=0.3,Unobserved=U)
+    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=Unobserved, Single=Single)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
@@ -87,10 +91,10 @@ if __name__ == '__main__':
         save_file = True
 
     
-    run(2000, 1 , "HPC_Power_unobserved_2000")
-    run(2000, 0 , "HPC_Power_2000")
-    run(1000, 1 , "HPC_Power_unobserved")
-    run(1000, 0 , "HPC_Power")
+    run(200, Unobserved = 1, Single = False, filepath = "HPC_Power_unobserved_2000" + "_multi")
+    run(2000, Unobserved = 0, Single = False , filepath = "HPC_Power_2000" + "_multi")
+    run(1000, Unobserved = 1, Single = False , filepath = "HPC_Power_unobserved" + "_multi")
+    run(1000, Unobserved = 0, Single = False, filepath = "HPC_Power" + "_multi")
     
     
     

@@ -17,12 +17,12 @@ task_id = 1
 save_file = False
 
 
-def run(Nsize, U, filepath ):
+def run(Nsize, Unobserved, Single, filepath ):
         # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = Nsize)
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=U)
+    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=Unobserved, Single=Single)
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
     #Median imputer
@@ -74,10 +74,10 @@ if __name__ == '__main__':
         task_id = int(sys.argv[1])
         save_file = True
 
-    run(1000, 0 , "HPC_beta")
-    run(1000, 1 , "HPC_beta_unobserved")
-    run(2000, 0 , "HPC_beta_2000")
-    run(2000, 1 , "HPC_beta_unobserved_2000")
+    run(2000, Unobserved = 1, Single = False, filepath = "HPC_beta_unobserved_2000" + "_multi")
+    run(2000, Unobserved = 0, Single = False , filepath = "HPC_beta_2000" + "_multi")
+    run(1000, Unobserved = 1, Single = False , filepath = "HPC_beta_unobserved" + "_multi")
+    run(1000, Unobserved = 0, Single = False, filepath = "HPC_beta" + "_multi")
 
 
 

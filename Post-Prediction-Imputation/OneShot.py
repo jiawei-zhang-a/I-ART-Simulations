@@ -6,7 +6,7 @@ from statsmodels.stats.multitest import multipletests
 
 class OneShotTest:
     #load data
-    def __init__(self,N,Single = True):
+    def __init__(self,N,Single):
         self.N = N
         self.Single = Single
 

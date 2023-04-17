@@ -11,6 +11,7 @@ import sys
 import Simulation as Generator
 import OneShot
 import warnings
+import os
 
 #Argument
 task_id = 1
@@ -20,6 +21,10 @@ save_file = False
 def run(Nsize, Unobserved, Single, filepath ):
         # Create an instance of the OneShot class
     Framework = OneShot.OneShotTest(N = Nsize)
+
+        # If the folder does not exist, create it
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
 
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=Unobserved, Single=Single)

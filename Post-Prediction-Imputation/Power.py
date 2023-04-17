@@ -26,7 +26,7 @@ def run(Nsize, Unobserved, Single, filepath):
         os.makedirs(filepath)
 
     # Create an instance of the OneShot class
-    Framework = OneShot.OneShotTest(N = Nsize)
+    Framework = OneShot.OneShotTest(N = Nsize, Single=Single)
 
     print("Begin")
 

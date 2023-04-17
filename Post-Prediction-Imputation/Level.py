@@ -20,7 +20,7 @@ save_file = False
 
 def run(Nsize, Unobserved, Single, filepath ):
         # Create an instance of the OneShot class
-    Framework = OneShot.OneShotTest(N = Nsize)
+    Framework = OneShot.OneShotTest(N = Nsize, Single=Single)
 
         # If the folder does not exist, create it
     if not os.path.exists(filepath):

@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 
 
 class DataGenerator:
-  def __init__(self, N = 1000, N_T = 500, N_S = 50, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1, MaskRate = 0.3, Unobserved = True, Single = True, verbose = False):
+  def __init__(self,*, N = 1000, N_T = 500, N_S = 50, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, verbose = False):
     self.N = N
     self.N_T = N_T
     self.N_S = N_S
@@ -16,6 +16,7 @@ class DataGenerator:
     self.beta_22 = beta_22
     self.beta_23 = beta_23
     self.beta_31 = beta_31
+    self.beta_32 = beta_32
     self.MaskRate = MaskRate
     self.Unobserved = Unobserved
     self.Single = Single
@@ -174,14 +175,28 @@ class DataGenerator:
               for p_3 in range(1,6):
                 sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
-          M_lamda[i][0] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.sin(Y[i, 0]))
           
-        lambda1 = np.percentile(M_lamda[:,0], 100 * (1-self.MaskRate))
+          M_lamda[i][0] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.sin(Y[i, 0]))
+        
+        lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
-        for i in range(self.N):
-          values = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.sin(Y[i, 0]))
-          M[i][0] = (values[0] > lambda1)
-          return M
+        for i in range(n):
+          sum3 = 0
+          for p in range(1,6):
+              sum3 += p * X[i,p-1] 
+          sum3 = (1.0  / np.sqrt(5)) * sum3
+
+          sum4 = 0
+          for p in range(1,6):
+            for p_2 in range(1,6):
+              for p_3 in range(1,6):
+                sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
+          sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
+
+          if (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.sin(Y[i, 0])) > lambda1:
+            M[i][0] = 1
+
+        return M
 
       else:
         M = np.zeros((n, 3))
@@ -223,8 +238,31 @@ class DataGenerator:
         lambda2 = np.percentile(M_lamda[:,1], 100 * (1-self.MaskRate))
         lambda3 = np.percentile(M_lamda[:,2], 100 * (1-self.MaskRate))
             
-        for i in range(self.N):
+        for i in range(n):
             values = np.zeros(3)
+            sum1 = 0
+            for p in range(1,6):
+              for p_2 in range(1,6):
+                sum1 += X[i,p-1] * np.power(X[i,p_2-1],2)
+            sum1 = (1.0  / np.sqrt(5 * 5)) * sum1
+            
+            sum2 = 0
+            for p in range(1,6):
+              for p_2 in range(1,6):
+                sum2 += X[i,p-1] * X[i,p_2-1]
+            sum2 = (1.0  / np.sqrt(5 * 5)) * sum2
+
+            sum3 = 0
+            for p in range(1,6):
+                sum3 += p * X[i,p-1] 
+            sum3 = (1.0  / np.sqrt(5)) * sum3
+
+            sum4 = 0
+            for p in range(1,6):
+              for p_2 in range(1,6):
+                for p_3 in range(1,6):
+                  sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
+            sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
             values[0] = (1.0  / np.sqrt(5))* np.exp(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.sin(Y[i, 0])
             values[1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i, 0] + (Y[i, 0]**3)/2 + Y[i, 1])
             values[2] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.sin(Y[i, 1]) + np.absolute(Y[i, 2]))
@@ -232,7 +270,7 @@ class DataGenerator:
             M[i][0] = (values[0] > lambda1)
             M[i][1] =  (values[1] > lambda2)
             M[i][2] =  (values[2] > lambda3)
-            
+
         return M
   
   def GenerateData(self):  

@@ -19,14 +19,17 @@ Nsize = 1000
 print("Begin")
 
 # Simulate data
-DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=0, Single=1)
+DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, beta_32 = 0, MaskRate=0.3,Unobserved=0, Single=0)
 
-X, Z, U, Y, M, S = DataGen.GenerateData(mode = 2)
+X, Z, U, Y, M, S = DataGen.GenerateData()
 
 df = pd.DataFrame(Y)
 print(df.describe())
 
 df = pd.DataFrame(X)
+print(df.describe())
+
+df = pd.DataFrame(M)
 print(df.describe())
 
         

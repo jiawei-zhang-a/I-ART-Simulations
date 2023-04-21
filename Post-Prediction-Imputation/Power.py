@@ -31,7 +31,7 @@ def run(Nsize, Unobserved, Single, filepath):
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, MaskRate=0.3,Unobserved=Unobserved, Single=Single)
+    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0, beta_32 = 0, MaskRate=0.3,Unobserved=Unobserved, Single=Single)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 

@@ -59,7 +59,7 @@ def run(Nsize, Unobserved, Single, filepath ):
         p_values_xgboost = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
     else:
         p_values_xgboost = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
-        
+
     print("Finished")
 
     #Save the file in numpy format
@@ -88,15 +88,15 @@ if __name__ == '__main__':
         task_id = int(sys.argv[1])
         save_file = True
 
-    run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_Power_unobserved_2000" + "_single")
-    run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_Power_2000" + "_single")
-    run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_Power_unobserved_1000" + "_single")
-    run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_Power_1000" + "_single")
+    run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_level_unobserved_2000" + "_single")
+    run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_level_2000" + "_single")
+    run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_level_unobserved_1000" + "_single")
+    run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_level_1000" + "_single")
 
-    run(2000, Unobserved = 1, Single = False, filepath = "Result/HPC_beta_unobserved_2000" + "_multi")
-    run(2000, Unobserved = 0, Single = False , filepath = "Result/HPC_beta_2000" + "_multi")
-    run(1000, Unobserved = 1, Single = False , filepath = "Result/HPC_beta_unobserved_1000" + "_multi")
-    run(1000, Unobserved = 0, Single = False, filepath = "Result/HPC_beta_1000" + "_multi")
+    run(2000, Unobserved = 1, Single = False, filepath = "Result/HPC_level_unobserved_2000" + "_multi")
+    run(2000, Unobserved = 0, Single = False , filepath = "Result/HPC_level_2000" + "_multi")
+    run(1000, Unobserved = 1, Single = False , filepath = "Result/HPC_level_unobserved_1000" + "_multi")
+    run(1000, Unobserved = 0, Single = False, filepath = "Result/HPC_level_1000" + "_multi")
 
 
 

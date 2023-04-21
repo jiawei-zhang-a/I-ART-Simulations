@@ -79,10 +79,15 @@ if __name__ == '__main__':
         task_id = int(sys.argv[1])
         save_file = True
 
+    run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_Power_unobserved_2000" + "_single")
+    run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_Power_2000" + "_single")
+    run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_Power_unobserved_1000" + "_single")
+    run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_Power_1000" + "_single")
+
     run(2000, Unobserved = 1, Single = False, filepath = "Result/HPC_beta_unobserved_2000" + "_multi")
     run(2000, Unobserved = 0, Single = False , filepath = "Result/HPC_beta_2000" + "_multi")
-    run(1000, Unobserved = 1, Single = False , filepath = "Result/HPC_beta_unobserved" + "_multi")
-    run(1000, Unobserved = 0, Single = False, filepath = "Result/HPC_beta" + "_multi")
+    run(1000, Unobserved = 1, Single = False , filepath = "Result/HPC_beta_unobserved_1000" + "_multi")
+    run(1000, Unobserved = 0, Single = False, filepath = "Result/HPC_beta_1000" + "_multi")
 
 
 

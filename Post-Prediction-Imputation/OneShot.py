@@ -36,20 +36,20 @@ class OneShotTest:
 
         return any_rejected
 
-    def get_corr(self, G, df, indexY, Y):
+    def get_corr(self, G, df, indexY, Y,lenY):
         # Get the imputed data Y and indicator Z
         df_imputed = G.transform(df)
-        y = df_imputed[:, indexY:df_imputed.shape[1]]
+        y = df_imputed[:, indexY:indexY+lenY]
 
         # Initialize the lists to store imputed and truth values for missing positions
-        y_imputed = [[] for _ in range(3)]
-        y_truth = [[] for _ in range(3)]
+        y_imputed = [[] for _ in range(Y.shape[1])]
+        y_truth = [[] for _ in range(Y.shape[1])]
 
         # Iterate over the rows and columns to find missing values
         for i in range(df.shape[0]):
-            for j in range(3):
+            for j in range(lenY):
                 # Check if the value in the last three columns of df is missing (you can replace 'your_missing_value' with the appropriate value or condition)
-                if np.isnan(df.iloc[i, -3 + j]):
+                if np.isnan(df.iloc[i, -lenY + j]):
                     y_imputed[j].append(y[i, j])
                     y_truth[j].append(Y[i, j])
 
@@ -59,7 +59,7 @@ class OneShotTest:
 
         # Calculate the correlation between the imputed data and the observed data
         corr = []
-        for i in range(3):
+        for i in range(lenY):
             if len(y_imputed[i]) > 0 and len(y_truth[i]) > 0:
                 val = np.corrcoef(y_imputed[i], y_truth[i])[0, 1]
                 if np.isnan(val):
@@ -94,15 +94,15 @@ class OneShotTest:
         
         return np.array(t)
 
-    def getT(self, G, df, indexY):
+    def getT(self, G, df, indexY, lenY):
         
         # Get the imputed data Y and indicator Z
         df_imputed = G.transform(df)
-        y = df_imputed[:, indexY:df_imputed.shape[1]]
+        y = df_imputed[:, indexY:indexY + lenY]
         z = df_imputed[:, 0]
         
         t = []
-        for i in range(3):
+        for i in range(lenY):
             #the Wilcoxon rank sum test
             t.append(self.T(z.reshape(-1,),y[:,i].reshape(-1,)))
 
@@ -113,8 +113,8 @@ class OneShotTest:
         X, Y_masked, G1, G2, t1_obs, t2_obs, L, verbose = args
 
         # simulate data and calculate test statistics
-        t1_sim = np.zeros((L,3))
-        t2_sim = np.zeros((L,3))
+        t1_sim = np.zeros((L,Y_masked.shape[1]))
+        t2_sim = np.zeros((L,Y_masked.shape[1]))
 
         for l in range(L):
 
@@ -131,10 +131,10 @@ class OneShotTest:
             df2_sim = pd.concat([pd.DataFrame(Z_2), df2_sim], axis=1)
 
             # get the test statistics in part 1
-            t1_sim[l] = self.getT(G2, df1_sim, Z_1.shape[1] + X.shape[1])
+            t1_sim[l] = self.getT(G2, df1_sim, Z_1.shape[1] + X.shape[1], lenY = Y_masked.shape[1])
 
             # get the test statistics in part 2
-            t2_sim[l] = self.getT(G1, df2_sim, Z_2.shape[1] + X.shape[1])
+            t2_sim[l] = self.getT(G1, df2_sim, Z_2.shape[1] + X.shape[1], lenY = Y_masked.shape[1])
 
             # Calculate the completeness percentage
             if l % 100 == 0:
@@ -144,13 +144,22 @@ class OneShotTest:
                     print("t1_sim:"+str(t1_sim[l]), "t2_sim:"+str(t2_sim[l]))
                     print(f"Task is {completeness:.2f}% complete.")
 
-        # calculate exact p-values for each outcome
-        p11 = np.mean(t1_sim[:,0] >= t1_obs[0], axis=0)
-        p12 = np.mean(t2_sim[:,0] >= t2_obs[0], axis=0)
-        p21 = np.mean(t1_sim[:,1] >= t1_obs[1], axis=0)
-        p22 = np.mean(t2_sim[:,1] >= t2_obs[1], axis=0)
-        p31 = np.mean(t1_sim[:,2] >= t1_obs[2], axis=0)
-        p32 = np.mean(t2_sim[:,2] >= t2_obs[2], axis=0)
+        if self.Single:
+            # calculate exact p-values for each outcome
+            p11 = 1
+            p12 = 1
+            p21 = 1
+            p22 = 1  
+            p31 = np.mean(t1_sim[:,0] >= t1_obs[0], axis=0)
+            p32 = np.mean(t2_sim[:,0] >= t2_obs[0], axis=0)
+        else:
+            # calculate exact p-values for each outcome
+            p11 = np.mean(t1_sim[:,0] >= t1_obs[0], axis=0)
+            p12 = np.mean(t2_sim[:,0] >= t2_obs[0], axis=0)
+            p21 = np.mean(t1_sim[:,1] >= t1_obs[1], axis=0)
+            p22 = np.mean(t2_sim[:,1] >= t2_obs[1], axis=0)
+            p31 = np.mean(t1_sim[:,2] >= t1_obs[2], axis=0)
+            p32 = np.mean(t2_sim[:,2] >= t2_obs[2], axis=0)            
         
         return p11, p12, p21, p22, p31, p32
 
@@ -187,18 +196,18 @@ class OneShotTest:
         df1, df2 = self.split_df(df)
 
         # re-impute the missing values and calculate the observed test statistics in part 2
-        t2_obs = np.zeros(3)
+        t2_obs = np.zeros(Y_masked.shape[1])
         G1.fit(df1)
-        t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1])
+        t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
         # re-impute the missing values and calculate the observed test statistics in part 1
-        t1_obs = np.zeros(3)
+        t1_obs = np.zeros(Y_masked.shape[1])
         G2.fit(df2)
-        t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1])
+        t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
         # get the correlation of G1 and G2
-        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1], Y[df1.shape[0]:,:])
-        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1], Y[0:df1.shape[0],:])
+        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1], Y[df1.shape[0]:,:], lenY=Y.shape[1])
+        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1], Y[0:df1.shape[0],:], lenY=Y.shape[1])
 
         #print train end
         if verbose:
@@ -214,6 +223,7 @@ class OneShotTest:
         args_list = [(X, Y_masked, G1, G2, t1_obs, t2_obs, int(L / n_jobs), verbose)] * n_jobs
         with multiprocessing.Pool(processes=n_jobs) as pool:
             p_list = pool.map(self.worker, args_list)
+        
         p11 = np.mean([p[0] for p in p_list], axis=0)
         p12 = np.mean([p[1] for p in p_list], axis=0)
         p21 = np.mean([p[2] for p in p_list], axis=0)
@@ -224,6 +234,7 @@ class OneShotTest:
         # perform Holm-Bonferroni correction
         if self.Single:
             reject = self.holm_bonferroni([p31, p32])
+            
         else:
             reject = self.holm_bonferroni([p11, p12, p21, p22, p31, p32])
 
@@ -261,18 +272,18 @@ class OneShotTest:
         df1, df2 = self.split_df(df)
 
         # re-impute the missing values and calculate the observed test statistics in part 2
-        t2_obs = np.zeros(3)
+        t2_obs = np.zeros(Y_masked.shape[1])
         G1.fit(df1)
-        t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1])
+        t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
         # re-impute the missing values and calculate the observed test statistics in part 1
-        t1_obs = np.zeros(3)
+        t1_obs = np.zeros(Y_masked.shape[1])
         G2.fit(df2)
-        t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1])
+        t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
         # get the correlation of G1 and G2
-        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:])
-        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:])
+        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:], lenY=Y.shape[1])
+        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:], lenY=Y.shape[1])
 
         #print train end
         if verbose:
@@ -281,8 +292,8 @@ class OneShotTest:
             print("Training end")
 
         # simulate data and calculate test statistics
-        t1_sim = np.zeros((L,3))
-        t2_sim = np.zeros((L,3))
+        t1_sim = np.zeros((L,Y.shape[1]))
+        t2_sim = np.zeros((L,Y.shape[1]))
 
         for l in range(L):
 
@@ -300,10 +311,10 @@ class OneShotTest:
             
             
             # get the test statistics in part 1
-            t1_sim[l] = self.getT(G2, df1_sim, Z.shape[1] + X.shape[1])
+            t1_sim[l] = self.getT(G2, df1_sim, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
             
             # get the test statistics in part 2
-            t2_sim[l] = self.getT(G1, df2_sim,  Z.shape[1] + X.shape[1])
+            t2_sim[l] = self.getT(G1, df2_sim,  Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
             # Calculate the completeness percentage
             if l % 100 == 0:
@@ -313,19 +324,22 @@ class OneShotTest:
                     print(f"Task is {completeness:.2f}% complete.")
                     print("t1_sim:"+str(t1_sim[l]), "t2_sim:"+str(t2_sim[l]))
 
-
-        # calculate exact p-values for each outcome
-        p11 = np.mean(t1_sim[:,0] >= t1_obs[0], axis=0)
-        p12 = np.mean(t2_sim[:,0] >= t2_obs[0], axis=0)
-        p21 = np.mean(t1_sim[:,1] >= t1_obs[1], axis=0)
-        p22 = np.mean(t2_sim[:,1] >= t2_obs[1], axis=0)
-        p31 = np.mean(t1_sim[:,2] >= t1_obs[2], axis=0)
-        p32 = np.mean(t2_sim[:,2] >= t2_obs[2], axis=0)
-
         # perform Holm-Bonferroni correction
         if self.Single:
+            p11 = 1
+            p12 = 1
+            p21 = 1
+            p22 = 1  
+            p31 = np.mean(t1_sim[:,0] >= t1_obs[0], axis=0)
+            p32 = np.mean(t2_sim[:,0] >= t2_obs[0], axis=0)
             reject = self.holm_bonferroni([p31, p32])
         else:
+            p11 = np.mean(t1_sim[:,0] >= t1_obs[0], axis=0)
+            p12 = np.mean(t2_sim[:,0] >= t2_obs[0], axis=0)
+            p21 = np.mean(t1_sim[:,1] >= t1_obs[1], axis=0)
+            p22 = np.mean(t2_sim[:,1] >= t2_obs[1], axis=0)
+            p31 = np.mean(t1_sim[:,2] >= t1_obs[2], axis=0)
+            p32 = np.mean(t2_sim[:,2] >= t2_obs[2], axis=0)
             reject = self.holm_bonferroni([p11, p12, p21, p22, p31, p32])
 
         return p11, p12, p21, p22, p31, p32, corr_G1, corr_G2, reject

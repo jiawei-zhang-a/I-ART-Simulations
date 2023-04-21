@@ -48,7 +48,7 @@ def run(Nsize, Unobserved, Single, filepath):
     #LR imputer
     BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge())
     BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge())
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=1)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=1)
     # Append p-values to corresponding lists
     if Single:
         p_values_LR = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]

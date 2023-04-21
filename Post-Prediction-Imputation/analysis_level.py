@@ -63,8 +63,9 @@ def read_and_print_npz_files(directory, file):
         plot_p_values_distribution(p_values_median, "Median Imputer", file)
         file.write("LR Imputer\n")
         plot_p_values_distribution(p_values_LR, "LR Imputer", file)
-        file.write("XGBoost Imputer\n")
+        file.write("XGBoost Imputer\n\n")
         plot_p_values_distribution(p_values_xgboost, "XGBoost Imputer", file)
+
 
 def plot_p_values_distribution(p_values, imputer_name, file):
     p_values = np.array(p_values)
@@ -88,7 +89,9 @@ def plot_p_values_distribution(p_values, imputer_name, file):
     #plt.show()
 
 with open("level.result", "w") as file:
-    read_and_print_npz_files('HPC_beta', file)
-    read_and_print_npz_files('HPC_beta_unobserved', file)
-    read_and_print_npz_files('HPC_beta_2000', file)
-    read_and_print_npz_files('HPC_beta_unobserved_2000', file)
+
+    read_and_print_npz_files('HPC_beta_multi', file)
+    read_and_print_npz_files('HPC_beta_unobserved_multi', file)
+    read_and_print_npz_files('HPC_beta_2000_multi', file)
+    read_and_print_npz_files('HPC_beta_unobserved_2000_multi', file)
+    

@@ -38,21 +38,21 @@ def run(Nsize, Unobserved, Single, filepath):
     #Median imputer
     median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
     median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=1)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=1)
     # Append p-values to corresponding lists
     p_values_median = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
     #LR imputer
     BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge())
     BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge())
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=1)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=1)
     # Append p-values to corresponding lists
     p_values_LR = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
     #XGBoost
     XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor())
     XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor())
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=1)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test_parallel(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=1)
     # Append p-values to corresponding lists
     p_values_xgboost = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
@@ -85,18 +85,22 @@ if __name__ == '__main__':
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     warnings.filterwarnings("ignore", category=UserWarning, module="numpy.core.getlimits")
 
-    if len(sys.argv) == 3:
+    if len(sys.argv) >= 2:
         beta_coef = int(sys.argv[1])
-        task_id = int(sys.argv[2])
-        save_file = True
+        if len(sys.argv) == 3:
+            task_id = int(sys.argv[2])
+            save_file = True
 
-    
-    run(200, Unobserved = 1, Single = False, filepath = "HPC_Power_unobserved_2000" + "_multi")
-    run(2000, Unobserved = 0, Single = False , filepath = "HPC_Power_2000" + "_multi")
-    run(1000, Unobserved = 1, Single = False , filepath = "HPC_Power_unobserved" + "_multi")
-    run(1000, Unobserved = 0, Single = False, filepath = "HPC_Power" + "_multi")
-    
-    
+
+    run(1000, Unobserved = 1, Single = False, filepath = "Result/HPC_Power_unobserved_2000" + "_single")
+    run(1000, Unobserved = 0, Single = False , filepath = "Result/HPC_Power_2000" + "_single")
+
+    """
+    run(200, Unobserved = 1, Single = False, filepath = "Result/HPC_Power_unobserved_2000" + "_multi")
+    run(2000, Unobserved = 0, Single = False , filepath = "Result/HPC_Power_2000" + "_multi")
+    run(1000, Unobserved = 1, Single = False , filepath = "Result/HPC_Power_unobserved" + "_multi")
+    run(1000, Unobserved = 0, Single = False, filepath = "Result/HPC_Power" + "_multi")
+    """    
     
 
 

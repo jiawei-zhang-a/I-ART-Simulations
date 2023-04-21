@@ -1,7 +1,6 @@
 import numpy as np
 from mv_laplace import MvLaplaceSampler
-from scipy.special import expit
-from sklearn.preprocessing import StandardScaler
+import pandas as pd
 
 
 
@@ -83,20 +82,20 @@ class DataGenerator:
     #def sum1():
     sum1 = np.zeros(self.N)
     for p in range(1,6):
-      sum1 += np.sqrt(p) * np.sin(X[:,p-1])
+      sum1 += np.sin(X[:,p-1])
     sum1 = (1.0 / np.sqrt(5)) * sum1
 
     #def sum2():
     sum2 = np.zeros(self.N)
     for p in range(1,6):
       for p_2 in range(1,6):
-        sum2 += X[:,p-1] * np.power(X[:,p_2-1],2)
+        sum2 += X[:,p-1] * X[:,p_2-1]
     sum2 = (1.0 / np.sqrt(5 * 5)) * sum2
 
     #def sum3():
     sum3 = np.zeros(self.N)
     for p in range(1,6):
-      sum3 += np.cos(p) * X[:,p-1]
+      sum3 += X[:,p-1]
     sum3 = (1.0 / np.sqrt(5)) * sum3
 
     #def sum4():
@@ -130,6 +129,22 @@ class DataGenerator:
     U_n2 = U[:,1]
     Z = Z.reshape(-1,)
 
+    if self.verbose:
+      Y_n1_Z = (self.beta_11 * Z + self.beta_12 * Z * sum1)
+      Y_n1_X = sum2
+      Y_n1_U = np.sin(U_n1) + U_n2
+
+      Y_n2_Z = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z * U_n1 * U_n2)
+      Y_n2_X = sum3 + sum4
+      Y_n2_U = self.beta_23 * Z * U_n1 * U_n2
+
+      Y_n3_Z = (self.beta_31 * Z + self.beta_32 * Z * sum5)
+      Y_n3_X = sum6 + sum7
+      Y_n3_U = U_n1 * U_n2
+
+      data = pd.DataFrame({'Y_n1_Z': Y_n1_Z, 'Y_n1_X': Y_n1_X, 'Y_n1_U': Y_n1_U, 'Y_n2_Z': Y_n2_Z, 'Y_n2_X': Y_n2_X, 'Y_n2_U': Y_n2_U, 'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U})
+      print(data.describe())
+    
     if self.Unobserved:
       # Calculate Y_n1
       Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2 + np.sin(U_n1) + U_n2) 
@@ -138,17 +153,17 @@ class DataGenerator:
       Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z * U_n1 * U_n2 + sum3 + sum4) 
 
       # Compute Yn3
-      Y_n3 = (self.beta_31 * Z + self.beta_32 * Z * sum5  + sum6 + sum7 + X[:,0] * X[:,1] * np.sin(U_n1 * U_n2)) 
+      Y_n3 = (self.beta_31 * Z + self.beta_32 * Z * sum5  + sum6 + sum7 + U_n1 * U_n2)
 
     else:
       # Calculate Y_n1
-      Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2) 
+      Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1  + sum2) 
 
       # Compute Yn2
       Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z + sum3 + sum4) 
 
       # Compute Yn3
-      Y_n3 = (self.beta_31 * Z + self.beta_32 * Z * sum5 + sum6 + sum7 + X[:,0] * X[:,1]) 
+      Y_n3 = (self.beta_31 * Z + self.beta_32 * Z * sum5 + sum6 + sum7) 
     
     if self.Single:
       Y = Y_n3.reshape(-1, 1)
@@ -202,11 +217,17 @@ class DataGenerator:
         M = np.zeros((n, 3))
         M_lamda = np.zeros((n, 3))
 
+        #for verbose
+        if self.verbose:
+          M_lamda_Y = np.zeros((n, 3))
+          M_lamda_X = np.zeros((n, 3))
+          M_lamda_U = np.zeros((n, 3))
+
         for i in range(n):
             sum1 = 0
             for p in range(1,6):
               for p_2 in range(1,6):
-                sum1 += X[i,p-1] * np.power(X[i,p_2-1],2)
+                sum1 += X[i,p-1] * X[i,p_2-1]
             sum1 = (1.0  / np.sqrt(5 * 5)) * sum1
             
             sum2 = 0
@@ -227,11 +248,34 @@ class DataGenerator:
                   sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
             sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
 
-            M_lamda[i][0] = (1.0  / np.sqrt(5))* np.exp(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.sin(Y[i, 0])
+            M_lamda[i][0] = (1.0  / np.sqrt(5))* np.sin(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.sin(Y[i, 0])
 
-            M_lamda[i][1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i, 0] + (Y[i, 0]**3)/2 + Y[i, 1])
+            M_lamda[i][1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i, 0] + Y[i, 0] + Y[i, 1])
 
             M_lamda[i][2] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.sin(Y[i, 1]) + np.absolute(Y[i, 2]))
+
+            if self.verbose:
+              M_lamda_Y[i][0] = np.sin(Y[i, 0])
+              M_lamda_X[i][0] = (1.0  / np.sqrt(5))* np.sin(X[i, :]).sum() + sum1
+              M_lamda_U[i][0] = np.sin(Y[i, 0])
+
+              M_lamda_Y[i][1] =  Y[i, 0] + Y[i, 1]
+              M_lamda_X[i][1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 )
+              M_lamda_U[i][1] = (U[i, 0])
+
+              M_lamda_Y[i][2] = ( Y[i, 0] + np.sin(Y[i, 1]) + np.absolute(Y[i, 2]))
+              M_lamda_X[i][2] = (sum3 + sum4)
+              M_lamda_U[i][2] = ( np.sin(U[i, 0]) * U[i, 1] )
+
+        if self.verbose:
+          data = pd.DataFrame(M_lamda_Y, columns=['Y1', 'Y2', 'Y3'])
+          data['X1'] = M_lamda_X[:,0]
+          data['X2'] = M_lamda_X[:,1]
+          data['X3'] = M_lamda_X[:,2]
+          data['U1'] = M_lamda_U[:,0]
+          data['U2'] = M_lamda_U[:,1]
+          data['U3'] = M_lamda_U[:,2]
+          print(data.describe())
 
         # calculate 1 - Maskrate percentile
         lambda1 = np.percentile(M_lamda[:,0], 100 * (1-self.MaskRate))
@@ -243,7 +287,7 @@ class DataGenerator:
             sum1 = 0
             for p in range(1,6):
               for p_2 in range(1,6):
-                sum1 += X[i,p-1] * np.power(X[i,p_2-1],2)
+                sum1 += X[i,p-1] * X[i,p_2-1]
             sum1 = (1.0  / np.sqrt(5 * 5)) * sum1
             
             sum2 = 0
@@ -263,8 +307,8 @@ class DataGenerator:
                 for p_3 in range(1,6):
                   sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
             sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
-            values[0] = (1.0  / np.sqrt(5))* np.exp(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.sin(Y[i, 0])
-            values[1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i, 0] + (Y[i, 0]**3)/2 + Y[i, 1])
+            values[0] = (1.0  / np.sqrt(5))* np.sin(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + np.sin(Y[i, 0])
+            values[1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i, 0] + Y[i, 0] + Y[i, 1])
             values[2] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.sin(Y[i, 1]) + np.absolute(Y[i, 2]))
 
             M[i][0] = (values[0] > lambda1)

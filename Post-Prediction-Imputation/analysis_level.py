@@ -89,13 +89,13 @@ def plot_p_values_distribution(p_values, imputer_name, file):
     #plt.savefig(f"{imputer_name}_distribution.png")
     #plt.show()
 
-with open("Result/level.result", "w") as file:
+with open("level.result", "w") as file:
 
+    read_and_print_npz_files('Result/HPC_level_1000_unobserved_multi', file)
     read_and_print_npz_files('Result/HPC_level_1000_multi', file)
+    read_and_print_npz_files('Result/HPC_level_2000_unobserved_multi', file)
     read_and_print_npz_files('Result/HPC_level_2000_multi', file)
-    read_and_print_npz_files('Result/HPC_level_1000_multi', file)
-    read_and_print_npz_files('Result/HPC_level_1000_multi', file)
-    read_and_print_npz_files('Result/HPC_level_1000_multi', file)
-    read_and_print_npz_files('Result/HPC_level_2000_multi', file)
-    read_and_print_npz_files('Result/HPC_level_1000_multi', file)
-    read_and_print_npz_files('Result/HPC_level_1000_multi', file)    
+    read_and_print_npz_files('Result/HPC_level_1000_unobserved_single', file)
+    read_and_print_npz_files('Result/HPC_level_1000_single', file)
+    read_and_print_npz_files('Result/HPC_level_2000_unobserved_single', file)
+    read_and_print_npz_files('Result/HPC_level_2000_single', file)    

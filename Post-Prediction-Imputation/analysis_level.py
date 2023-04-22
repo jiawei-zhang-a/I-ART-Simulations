@@ -72,7 +72,7 @@ def plot_p_values_distribution(p_values, imputer_name, file):
     p_values = np.array(p_values)
     fig, axs = plt.subplots(1, 6, figsize=(12, 4), tight_layout=True)
 
-    for i in range(3,6):
+    for i in range(0,6):
         axs[i].hist(p_values[:,i])
         axs[i].set_title(f"p-value {i+1}")
         file.write(str(scipy.stats.kstest(p_values[:,i], 'uniform')) + "\n")

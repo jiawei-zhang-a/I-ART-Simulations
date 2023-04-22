@@ -44,12 +44,16 @@ def read_and_print_npz_files(directory, file):
     file.write(str(summed_p_values_xgboost/N) + "\n")
 
 def main():
-    for i in [4, 6, 8, 10, 12, 14, 16]:
+    for coef in np.arange(0.02,0.2,0.02):
         with open("power.result", "a") as file:
-            file.write("beta: " + str(i) + "\n")
-            read_and_print_npz_files('HPC_Power/' + str(i), file)
-            read_and_print_npz_files('HPC_Power_unobserved/' + str(i), file)
-            read_and_print_npz_files('HPC_Power_2000/' + str(i), file)
-            read_and_print_npz_files('HPC_Power_unobserved_2000/' + str(i), file)
+            file.write("beta: " + str(coef) + "\n")
+            read_and_print_npz_files("Result/HPC_power_unobserved_1000_single/%f"%coef, file)
+            read_and_print_npz_files("Result/HPC_power_1000_single/%f"%coef, file)
+            read_and_print_npz_files("Result/HPC_power_unobserved_2000_single/%f"%coef, file)
+            read_and_print_npz_files("Result/HPC_power_2000_single/%f"%coef, file)
+            read_and_print_npz_files("Result/HPC_power_unobserved_2000_multi/%f"%coef, file)
+            read_and_print_npz_files("Result/HPC_power_2000_multi/%f"%coef, file)
+            read_and_print_npz_files("Result/HPC_power_unobserved_1000_multi/%f"%coef, file)
+            read_and_print_npz_files("Result/HPC_power_1000_multi/%f"%coef, file)
 
 main()

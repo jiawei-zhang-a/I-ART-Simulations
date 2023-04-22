@@ -91,11 +91,11 @@ def plot_p_values_distribution(p_values, imputer_name, file):
 
 with open("level.result", "w") as file:
 
-    read_and_print_npz_files('Result/HPC_level_1000_unobserved_multi', file)
+    read_and_print_npz_files('Result/HPC_level_unobserved_1000_multi', file)
     read_and_print_npz_files('Result/HPC_level_1000_multi', file)
-    read_and_print_npz_files('Result/HPC_level_2000_unobserved_multi', file)
+    read_and_print_npz_files('Result/HPC_level_unobserved_2000_multi', file)
     read_and_print_npz_files('Result/HPC_level_2000_multi', file)
-    read_and_print_npz_files('Result/HPC_level_1000_unobserved_single', file)
+    read_and_print_npz_files('Result/HPC_level_unobserved_1000_single', file)
     read_and_print_npz_files('Result/HPC_level_1000_single', file)
-    read_and_print_npz_files('Result/HPC_level_2000_unobserved_single', file)
+    read_and_print_npz_files('Result/HPC_level_unobserved_2000_single', file)
     read_and_print_npz_files('Result/HPC_level_2000_single', file)    

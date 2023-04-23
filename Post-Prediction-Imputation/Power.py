@@ -101,7 +101,7 @@ if __name__ == '__main__':
         exit()
 
 
-    for coef in np.arange(0.02,0.2,0.02):
+    for coef in np.arange(0.2,0.4,0.02):
         beta_coef = coef
         run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")
         run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_1000" + "_single")

@@ -37,23 +37,32 @@ def read_and_print_npz_files(directory, file):
                     summed_p_values_xgboost += p_values
 
     file.write("Mean p-values for Median Imputer:\n")
-    file.write(str(summed_p_values_median/N) + "\n")
+    file.write(str(summed_p_values_median[:,8]/N) + "\n")
     file.write("Mean p-values for LR Imputer:\n")
-    file.write(str(summed_p_values_LR/N) + "\n")
+    file.write(str(summed_p_values_LR[:,8]/N) + "\n")
     file.write("Mean p-values for XGBoost Imputer:\n")
-    file.write(str(summed_p_values_xgboost/N) + "\n")
+    file.write(str(summed_p_values_xgboost[:,8]/N) + "\n")
 
 def main():
     for coef in np.arange(0.02,0.2,0.02):
         with open("power.result", "a") as file:
             file.write("beta: " + str(coef) + "\n")
             read_and_print_npz_files("Result/HPC_power_unobserved_1000_single/%f"%coef, file)
+            file.write("\n")
             read_and_print_npz_files("Result/HPC_power_1000_single/%f"%coef, file)
+            file.write("\n")
             read_and_print_npz_files("Result/HPC_power_unobserved_2000_single/%f"%coef, file)
+            file.write("\n")
             read_and_print_npz_files("Result/HPC_power_2000_single/%f"%coef, file)
+            file.write("\n")
             read_and_print_npz_files("Result/HPC_power_unobserved_2000_multi/%f"%coef, file)
+            file.write("\n")
             read_and_print_npz_files("Result/HPC_power_2000_multi/%f"%coef, file)
+            file.write("\n")
             read_and_print_npz_files("Result/HPC_power_unobserved_1000_multi/%f"%coef, file)
+            file.write("\n")
             read_and_print_npz_files("Result/HPC_power_1000_multi/%f"%coef, file)
+            file.write("\n\n")
+
 
 main()

@@ -1,8 +1,7 @@
 import numpy as np
 from mv_laplace import MvLaplaceSampler
 import pandas as pd
-
-
+from scipy.stats import logistic
 
 class DataGenerator:
   def __init__(self,*, N = 1000, N_T = 500, N_S = 50, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, verbose = False):
@@ -82,7 +81,7 @@ class DataGenerator:
     #def sum1():
     sum1 = np.zeros(self.N)
     for p in range(1,6):
-      sum1 += np.sin(X[:,p-1])
+      sum1 += logistic.cdf(X[:,p-1])
     sum1 = (1.0 / np.sqrt(5)) * sum1
 
     #def sum2():
@@ -102,7 +101,7 @@ class DataGenerator:
     sum4 = np.zeros(self.N)
     for p in range(1,6):
       for p_2 in range(1,6):
-        sum4 += X[:,p-1] * np.cos(X[:,p_2-1])
+        sum4 += X[:,p-1] * logistic.cdf(X[:,p_2-1])
     sum4 = (1.0 / np.sqrt(5 * 5)) * sum4
 
     #def sum5():
@@ -122,7 +121,7 @@ class DataGenerator:
     for p in range(1,6):
       for p_2 in range(1,6):
         for p_3 in range(1,6):
-          sum7 += X[:,p-1] * X[:,p_2-1] * np.cos(X[:,p_3-1])
+          sum7 += X[:,p-1] * X[:,p_2-1] * logistic.cdf(X[:,p_3-1])
     sum7 = (1.0  / np.sqrt(5 * 5 * 5)) * sum7
 
     U_n1 = U[:,0]
@@ -160,7 +159,7 @@ class DataGenerator:
       Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1  + sum2) 
 
       # Compute Yn2
-      Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z + sum3 + sum4) 
+      Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + sum3 + sum4) 
 
       # Compute Yn3
       Y_n3 = (self.beta_31 * Z + self.beta_32 * Z * sum5 + sum6 + sum7) 

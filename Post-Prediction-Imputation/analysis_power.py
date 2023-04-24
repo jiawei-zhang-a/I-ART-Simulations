@@ -43,7 +43,7 @@ def read_and_print_npz_files(directory, file):
     file.write("Mean p-values for XGBoost Imputer:\n")
     file.write(str(summed_p_values_xgboost/N) + "\n")
 
-def read_and_print_npz_files(directory):
+def read_npz_files(directory):
     summed_p_values_median = None
     summed_p_values_LR = None
     summed_p_values_xgboost = None

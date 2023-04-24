@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-
+"""
 data = [
     [4, 0.1385, 0.141, 0.2405],
     [6, 0.199, 0.287, 0.4295],
@@ -20,9 +20,11 @@ data_with_U = [
     [14, 0.6975, 0.8535, 0.9105],
     [16, 0.7825, 0.939, 0.9345]
 ]
-
+"""
 def plot_results(data, data_with_U):
     columns = ['beta', 'Median', 'Linear', 'XGBoost']
+    data =  [[row[0], row[1], row[2], row[3]] for row in data]
+    data_with_U =  [[row[0], row[1], row[2], row[3]] for row in data_with_U]
 
     df = pd.DataFrame(data, columns=columns)
     df_with_U = pd.DataFrame(data_with_U, columns=columns)

@@ -31,7 +31,7 @@ def run(Nsize, Unobserved, Single, filepath):
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.3,Unobserved=Unobserved, Single=Single)
+    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
@@ -46,8 +46,8 @@ def run(Nsize, Unobserved, Single, filepath):
         p_values_median = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
     #LR imputer
-    BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge())
-    BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge())
+    BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=50)
+    BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=50)
     p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=1)
     # Append p-values to corresponding lists
     if Single:
@@ -56,8 +56,8 @@ def run(Nsize, Unobserved, Single, filepath):
         p_values_LR = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
         
     #XGBoost
-    XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor())
-    XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor())
+    XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=50)
+    XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=50)
     p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=1)
     # Append p-values to corresponding lists
     if Single:
@@ -101,10 +101,10 @@ if __name__ == '__main__':
         exit()
 
 
-    for coef in np.arange(0.2,0.4,0.02):
+    for coef in np.arange(0.02,0.2,0.02):
         beta_coef = coef
-        run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")
         run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_1000" + "_single")
+        run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_2000" + "_single")
         run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_2000" + "_single")
         run(2000, Unobserved = 1, Single = False, filepath = "Result/HPC_power_unobserved_2000" + "_multi")

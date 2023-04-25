@@ -88,6 +88,9 @@ if __name__ == '__main__':
         task_id = int(sys.argv[1])
         save_file = True
 
+    if os.path.exists("Result") == False:
+        os.mkdir("Result")
+
     run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_level_unobserved_2000" + "_single")
     run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_level_2000" + "_single")
     run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_level_unobserved_1000" + "_single")

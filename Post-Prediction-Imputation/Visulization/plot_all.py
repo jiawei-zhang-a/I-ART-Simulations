@@ -2,13 +2,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def plot_results(data, data_with_U):
-    columns = ['beta', 'I50_Median', 'I50_Linear', 'I50_XGBoost', 'I100_Median', 'I100_Linear', 'I100_XGBoost']
+    columns = ['beta', 'I50_Median', 'I50_Linear', 'I50_XGBoost', 'I50_Oracle', 'I100_Median', 'I100_Linear', 'I100_XGBoost', 'I100_Oracle']
     df = pd.DataFrame(data, columns=columns)
     df_with_U = pd.DataFrame(data_with_U, columns=columns)
 
     plt.figure(figsize=(12, 8))
 
-    colors = {'Median': 'blue', 'Linear': 'red', 'XGBoost': 'green'}
+    colors = {'Median': 'blue', 'Linear': 'red', 'XGBoost': 'green', 'Oracle': 'purple'}
     linestyles = {'I50': '-', 'I100': '--'}
 
     for col in columns[1:]:

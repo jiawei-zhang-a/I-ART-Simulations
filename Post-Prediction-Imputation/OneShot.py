@@ -96,10 +96,17 @@ class OneShotTest:
 
     def getT(self, G, df, indexY, lenY):
         
-        # Get the imputed data Y and indicator Z
-        df_imputed = G.transform(df)
-        y = df_imputed[:, indexY:indexY + lenY]
-        z = df_imputed[:, 0]
+        if G is None:
+            # Get the imputed data Y and indicator Z
+            #df_imputed = np.array(df)
+            df_imputed = df.to_numpy()
+            y = df_imputed[:, indexY:indexY + lenY]
+            z = df_imputed[:, 0]
+        else:
+            # Get the imputed data Y and indicator Z
+            df_imputed = G.transform(df)
+            y = df_imputed[:, indexY:indexY + lenY]
+            z = df_imputed[:, 0]
         
         t = []
         for i in range(lenY):
@@ -110,7 +117,7 @@ class OneShotTest:
 
     def worker(self, args):
         # unpack the arguments
-        X, Y_masked, G1, G2, t1_obs, t2_obs, L, verbose = args
+        X, Y, Y_masked, G1, G2, t1_obs, t2_obs, L, verbose = args
 
         # simulate data and calculate test statistics
         t1_sim = np.zeros((L,Y_masked.shape[1]))
@@ -119,7 +126,10 @@ class OneShotTest:
         for l in range(L):
 
             # simulate treatment indicators in parts 1 and 2
-            df_sim = pd.DataFrame(np.concatenate((X, Y_masked), axis=1))
+            if G1 is None or G2 is None:
+                df_sim = pd.DataFrame(np.concatenate((X, Y), axis=1))
+            else:
+                df_sim = pd.DataFrame(np.concatenate((X, Y_masked), axis=1))
             
             # split the simulated data into two parts
             df1_sim, df2_sim = self.split_df(df_sim)
@@ -180,7 +190,8 @@ class OneShotTest:
         p1: 1D array of exact p-values for testing Fisher's sharp null in part 1
         p2: 1D array of exact p-values for testing Fisher's sharp null in part 2
         """
-            # Calculate the number of worker processes
+
+        # Calculate the number of worker processes
         if n_jobs is None or n_jobs < 1:
             n_jobs = multiprocessing.cpu_count()
         #print train start
@@ -190,25 +201,37 @@ class OneShotTest:
         # create data a whole data frame
         Y_masked = np.ma.masked_array(Y, mask=M)
         Y_masked = Y_masked.filled(np.nan)
-        df = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
-        
+
+        if G1 == None or G2 == None:
+            df = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
+        else:
+            df = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))   
+
         # split the data into two parts
         df1, df2 = self.split_df(df)
 
         # re-impute the missing values and calculate the observed test statistics in part 2
         t2_obs = np.zeros(Y_masked.shape[1])
-        G1.fit(df1)
+        if G1 != None:
+            G1.fit(df1)
         t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
         # re-impute the missing values and calculate the observed test statistics in part 1
         t1_obs = np.zeros(Y_masked.shape[1])
-        G2.fit(df2)
+        if G2 != None:
+            G2.fit(df2)
         t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
         # get the correlation of G1 and G2
-        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1], Y[df1.shape[0]:,:], lenY=Y.shape[1])
-        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1], Y[0:df1.shape[0],:], lenY=Y.shape[1])
-
+        if G1 != None:
+            corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:], lenY=Y.shape[1])
+        else:
+            corr_G1 = [1,1,1]
+        if G2 != None:
+            corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:], lenY=Y.shape[1])
+        else:
+            corr_G2 = [1,1,1]
+        
         #print train end
         if verbose:
             print("t1_obs:"+str(t1_obs), "t2_obs:"+str(t2_obs))
@@ -220,7 +243,7 @@ class OneShotTest:
             print(f"Number of jobs: {n_jobs}")
 
         # simulate data and calculate test statistics in parallel
-        args_list = [(X, Y_masked, G1, G2, t1_obs, t2_obs, int(L / n_jobs), verbose)] * n_jobs
+        args_list = [(X, Y, Y_masked, G1, G2, t1_obs, t2_obs, int(L / n_jobs), verbose)] * n_jobs
         with multiprocessing.Pool(processes=n_jobs) as pool:
             p_list = pool.map(self.worker, args_list)
         
@@ -266,24 +289,35 @@ class OneShotTest:
         Y_masked = np.ma.masked_array(Y, mask=M)
         Y_masked = Y_masked.filled(np.nan)
     
-        df = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
+        if G1 == None or G2 == None:
+            df = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
+        else:
+            df = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
         
         # split the data into two parts
         df1, df2 = self.split_df(df)
 
         # re-impute the missing values and calculate the observed test statistics in part 2
         t2_obs = np.zeros(Y_masked.shape[1])
-        G1.fit(df1)
+        if G1 != None:
+            G1.fit(df1)
         t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
         # re-impute the missing values and calculate the observed test statistics in part 1
         t1_obs = np.zeros(Y_masked.shape[1])
-        G2.fit(df2)
+        if G2 != None:
+            G2.fit(df2)
         t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
 
         # get the correlation of G1 and G2
-        corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:], lenY=Y.shape[1])
-        corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:], lenY=Y.shape[1])
+        if G1 != None:
+            corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:], lenY=Y.shape[1])
+        else:
+            corr_G1 = [1,1,1]
+        if G2 != None:
+            corr_G2 = self.get_corr(G2, df1, Z.shape[1] + X.shape[1],Y[0:df1.shape[0],:], lenY=Y.shape[1])
+        else:
+            corr_G2 = [1,1,1]
 
         #print train end
         if verbose:
@@ -298,7 +332,10 @@ class OneShotTest:
         for l in range(L):
 
             # simulate treatment indicators in parts 1 and 2
-            df_sim = pd.DataFrame(np.concatenate((X, Y_masked), axis=1))
+            if G1 == None or G2 == None:
+                df_sim = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
+            else:
+                df_sim = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
             
             # split the simulated data into two parts
             df1_sim, df2_sim = self.split_df(df_sim)
@@ -343,5 +380,3 @@ class OneShotTest:
             reject = self.holm_bonferroni([p11, p12, p21, p22, p31, p32])
 
         return p11, p12, p21, p22, p31, p32, corr_G1, corr_G2, reject
-    
-

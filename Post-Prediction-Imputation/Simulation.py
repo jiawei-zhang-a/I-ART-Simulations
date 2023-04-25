@@ -44,16 +44,11 @@ class DataGenerator:
       return X
 
   def GenerateU(self):
-      # generate Un1
-      mean = 1/2
+      # generate U
+      mean = 0
       std = 1
-      U_n1 = np.random.normal(mean, std,self.N)
-
-      # generate Un2
-      U_n2 = np.random.binomial(1, 2/3, self.N)
-
-      # combine all generated variables into a single matrix
-      U = np.concatenate((U_n1.reshape(-1, 1), U_n2.reshape(-1, 1)), axis=1)
+      U = np.random.normal(mean, std, self.N)
+      U = U.reshape(-1, 1)
 
       return U
 
@@ -81,7 +76,7 @@ class DataGenerator:
     #def sum1():
     sum1 = np.zeros(self.N)
     for p in range(1,6):
-      sum1 += logistic.cdf(X[:,p-1])
+      sum1 += pow(X[:,p-1],3)
     sum1 = (1.0 / np.sqrt(5)) * sum1
 
     #def sum2():
@@ -101,7 +96,7 @@ class DataGenerator:
     sum4 = np.zeros(self.N)
     for p in range(1,6):
       for p_2 in range(1,6):
-        sum4 += X[:,p-1] * logistic.cdf(X[:,p_2-1])
+        sum4 += X[:,p-1] * logistic.cdf(1 - X[:,p_2-1])
     sum4 = (1.0 / np.sqrt(5 * 5)) * sum4
 
     #def sum5():
@@ -124,35 +119,34 @@ class DataGenerator:
           sum7 += X[:,p-1] * X[:,p_2-1] * logistic.cdf(X[:,p_3-1])
     sum7 = (1.0  / np.sqrt(5 * 5 * 5)) * sum7
 
-    U_n1 = U[:,0]
-    U_n2 = U[:,1]
+    U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
     if self.verbose:
       Y_n1_Z = (self.beta_11 * Z + self.beta_12 * Z * sum1)
       Y_n1_X = sum2
-      Y_n1_U = np.sin(U_n1) + U_n2
+      Y_n1_U = np.sin(U)
 
-      Y_n2_Z = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z * U_n1 * U_n2)
+      Y_n2_Z = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z * U)
       Y_n2_X = sum3 + sum4
-      Y_n2_U = self.beta_23 * Z * U_n1 * U_n2
+      Y_n2_U = self.beta_23 * Z * U
 
       Y_n3_Z = (self.beta_31 * Z + self.beta_32 * Z * sum5)
       Y_n3_X = sum6 + sum7
-      Y_n3_U = U_n1 * U_n2
+      Y_n3_U = U
 
       data = pd.DataFrame({'Y_n1_Z': Y_n1_Z, 'Y_n1_X': Y_n1_X, 'Y_n1_U': Y_n1_U, 'Y_n2_Z': Y_n2_Z, 'Y_n2_X': Y_n2_X, 'Y_n2_U': Y_n2_U, 'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U})
       print(data.describe())
     
     if self.Unobserved:
       # Calculate Y_n1
-      Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2 + np.sin(U_n1) + U_n2) 
+      Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2 + np.sin(U) )
 
       # Compute Yn2
-      Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z * U_n1 * U_n2 + sum3 + sum4) 
+      Y_n2 = (self.beta_21 * Z + self.beta_22 * Z * X[:,0] + self.beta_23 * Z * U + sum3 + sum4) 
 
       # Compute Yn3
-      Y_n3 = (self.beta_31 * Z + self.beta_32 * Z * sum5  + sum6 + sum7 + U_n1 * U_n2)
+      Y_n3 = (self.beta_31 * Z + self.beta_32 * Z * sum5  + sum6 + sum7 + U)
 
     else:
       # Calculate Y_n1
@@ -172,6 +166,8 @@ class DataGenerator:
     return Y
 
   def GenerateM(self, X, U, Y, single = True):
+      
+      U = U.reshape(-1,)
       n = X.shape[0]
 
       if single:
@@ -190,7 +186,7 @@ class DataGenerator:
                 sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
           
-          M_lamda[i][0] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.logistic.cdf(Y[i, 0]))
+          M_lamda[i][0] = (sum3 + sum4 + np.sin(U[i])  + Y[i, 0] + logistic.cdf(Y[i, 0]))
         
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
@@ -207,7 +203,7 @@ class DataGenerator:
                 sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
 
-          if (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + np.logistic.cdf(Y[i, 0])) > lambda1:
+          if (sum3 + sum4 + np.sin(U[i]) + Y[i, 0] + logistic.cdf(Y[i, 0])) > lambda1:
             M[i][0] = 1
 
         return M
@@ -247,24 +243,24 @@ class DataGenerator:
                   sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
             sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
 
-            M_lamda[i][0] = (1.0  / np.sqrt(5))* logistic.cdf(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + logistic.cdf(Y[i, 0])
+            M_lamda[i][0] = (1.0  / np.sqrt(5))* logistic.cdf(X[i, :]).sum() + sum1 + np.sin(U[i])**3 + logistic.cdf(Y[i, 0])
 
-            M_lamda[i][1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i, 0] + Y[i, 0] + Y[i, 1])
+            M_lamda[i][1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i] + Y[i, 0] + Y[i, 1])
 
-            M_lamda[i][2] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + logistic.cdf(Y[i, 1]) + np.absolute(Y[i, 2]))
+            M_lamda[i][2] = (sum3 + sum4 + np.sin(U[i]) + Y[i, 0] + logistic.cdf(Y[i, 1]) + np.absolute(Y[i, 2]))
 
             if self.verbose:
-              M_lamda_Y[i][0] = np.sin(Y[i, 0])
-              M_lamda_X[i][0] = (1.0  / np.sqrt(5))* np.sin(X[i, :]).sum() + sum1
-              M_lamda_U[i][0] = np.sin(Y[i, 0])
+              M_lamda_Y[i][0] = logistic.cdf(Y[i, 0])
+              M_lamda_X[i][0] = (1.0  / np.sqrt(5))* logistic.cdf(X[i, :]).sum() + sum1
+              M_lamda_U[i][0] = np.sin(U[i])**3
 
               M_lamda_Y[i][1] =  Y[i, 0] + Y[i, 1]
               M_lamda_X[i][1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 )
-              M_lamda_U[i][1] = (U[i, 0])
+              M_lamda_U[i][1] = (U[i])
 
-              M_lamda_Y[i][2] = ( Y[i, 0] + np.sin(Y[i, 1]) + np.absolute(Y[i, 2]))
+              M_lamda_Y[i][2] = ( Y[i, 0] + logistic.cdf(Y[i, 1]) + np.absolute(Y[i, 2]))
               M_lamda_X[i][2] = (sum3 + sum4)
-              M_lamda_U[i][2] = ( np.sin(U[i, 0]) * U[i, 1] )
+              M_lamda_U[i][2] = ( np.sin(U[i]))
 
         if self.verbose:
           data = pd.DataFrame(M_lamda_Y, columns=['Y1', 'Y2', 'Y3'])
@@ -306,9 +302,9 @@ class DataGenerator:
                 for p_3 in range(1,6):
                   sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
             sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
-            values[0] = (1.0  / np.sqrt(5))* logistic.cdf(X[i, :]).sum() + sum1 + np.sin(U[i, 0])**3 + U[i, 1] + logistic.cdf(Y[i, 0])
-            values[1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i, 0] + Y[i, 0] + Y[i, 1])
-            values[2] = (sum3 + sum4 + np.sin(U[i, 0]) * U[i, 1] + Y[i, 0] + logistic.cdf(Y[i, 1]) + np.absolute(Y[i, 2]))
+            values[0] = (1.0  / np.sqrt(5))* logistic.cdf(X[i, :]).sum() + sum1 + np.sin(U[i])**3 + logistic.cdf(Y[i, 0])
+            values[1] = (1.0  / np.sqrt(5))*((X[i, :]**3).sum() + sum2 + U[i] + Y[i, 0] + Y[i, 1])
+            values[2] = (sum3 + sum4 + np.sin(U[i]) + Y[i, 0] + logistic.cdf(Y[i, 1]) + np.absolute(Y[i, 2]))
 
             M[i][0] = (values[0] > lambda1)
             M[i][1] =  (values[1] > lambda2)

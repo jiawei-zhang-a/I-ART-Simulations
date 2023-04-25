@@ -18,6 +18,7 @@ import os
 beta_coef = None
 task_id = 1
 save_file = False
+max_iter = 10
 
 def run(Nsize, Unobserved, Single, filepath):
 
@@ -35,10 +36,18 @@ def run(Nsize, Unobserved, Single, filepath):
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
+    # Oracle 
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=None, G2=None,verbose=0)
+    # Append p-values to corresponding lists
+    if Single:
+        p_values_oracle = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
+    else:
+        p_values_oracle = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
+    
     #Median imputer
     median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
     median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=1)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
     # Append p-values to corresponding lists
     if Single:
         p_values_median = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
@@ -46,9 +55,9 @@ def run(Nsize, Unobserved, Single, filepath):
         p_values_median = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
     #LR imputer
-    BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=50)
-    BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=50)
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=1)
+    BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
+    BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
     # Append p-values to corresponding lists
     if Single:
         p_values_LR = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
@@ -56,9 +65,9 @@ def run(Nsize, Unobserved, Single, filepath):
         p_values_LR = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
         
     #XGBoost
-    XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=50)
-    XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=50)
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=1)
+    XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
+    XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
     # Append p-values to corresponding lists
     if Single:
         p_values_xgboost = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
@@ -74,11 +83,13 @@ def run(Nsize, Unobserved, Single, filepath):
             os.makedirs("%s/%f"%(filepath,beta_coef))
 
         # Convert lists to numpy arrays
+        p_values_oracle = np.array(p_values_oracle)
         p_values_median = np.array(p_values_median)
         p_values_LR = np.array(p_values_LR)
         p_values_xgboost = np.array(p_values_xgboost)
 
         # Save numpy arrays to files
+        np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), p_values_oracle)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), p_values_median)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef,task_id), p_values_LR)
         np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef,task_id), p_values_xgboost)      
@@ -100,18 +111,22 @@ if __name__ == '__main__':
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
 
+    if os.path.exists("Result") == False:
+        os.mkdir("Result")
 
     for coef in np.arange(0.02,0.2,0.02):
         beta_coef = coef
-        run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_1000" + "_single")
+        #run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_1000" + "_single")
+        """
         run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_2000" + "_single")
         run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_2000" + "_single")
+         """ 
         run(2000, Unobserved = 1, Single = False, filepath = "Result/HPC_power_unobserved_2000" + "_multi")
         run(2000, Unobserved = 0, Single = False , filepath = "Result/HPC_power_2000" + "_multi")
         run(1000, Unobserved = 1, Single = False , filepath = "Result/HPC_power_unobserved_1000" + "_multi")
         run(1000, Unobserved = 0, Single = False, filepath = "Result/HPC_power_1000" + "_multi")  
-
+      
 
         
 

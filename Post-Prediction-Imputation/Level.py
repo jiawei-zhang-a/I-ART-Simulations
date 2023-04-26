@@ -29,6 +29,14 @@ def run(Nsize, Unobserved, Single, filepath ):
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = 0, beta_12 = 0, beta_21 = 0, beta_22 = 0, beta_23 = 0, beta_31 = 0,beta_32=0, MaskRate=0.5,Unobserved=Unobserved, Single=Single)
     X, Z, U, Y, M, S = DataGen.GenerateData()
+    
+    # Oracle 
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=None, G2=None,verbose=0)
+    # Append p-values to corresponding lists
+    if Single:
+        p_values_oracle = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
+    else:
+        p_values_oracle = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
     #Median imputer
     median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
@@ -65,10 +73,12 @@ def run(Nsize, Unobserved, Single, filepath ):
     #Save the file in numpy format
     if(save_file):
     # Convert lists to numpy arrays
+        p_values_oracle = np.array(p_values_oracle)
         p_values_median = np.array(p_values_median)
         p_values_LR = np.array(p_values_LR)
         p_values_xgboost = np.array(p_values_xgboost)
         # Save numpy arrays to files
+        np.save('%s/p_values_oracle_%d.npy' % (filepath,task_id), p_values_oracle)
         np.save('%s/p_values_median_%d.npy' % (filepath,task_id), p_values_median)
         np.save('%s/p_values_LR_%d.npy' % (filepath,task_id), p_values_LR)
         np.save('%s/p_values_xgboost_%d.npy' % (filepath,task_id), p_values_xgboost)      

@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=Level
 #SBATCH --nodes=1
-#SBATCH --time=08:00:00
+#SBATCH --time=08:59:00
 #SBATCH --mem=4GB
 #SBATCH --cpus-per-task=1
 #SBATCH --output=Runtime/%a.out

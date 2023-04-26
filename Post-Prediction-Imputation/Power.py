@@ -36,6 +36,8 @@ def run(Nsize, Unobserved, Single, filepath):
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
+    print(X.shape, Z.shape, U.shape, Y.shape)
+
     # Oracle 
     p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, G1=None, G2=None,verbose=0)
     # Append p-values to corresponding lists

@@ -333,9 +333,9 @@ class OneShotTest:
 
             # simulate treatment indicators in parts 1 and 2
             if G1 == None or G2 == None:
-                df_sim = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
+                df_sim = pd.DataFrame(np.concatenate((X, Y), axis=1))
             else:
-                df_sim = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
+                df_sim = pd.DataFrame(np.concatenate((X, Y_masked), axis=1))
             
             # split the simulated data into two parts
             df1_sim, df2_sim = self.split_df(df_sim)

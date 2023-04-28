@@ -72,3 +72,4 @@ def test_store_and_read_data(tmpdir):
     assert M.shape == (N, 3)
     assert S.shape == (N,)
 
+

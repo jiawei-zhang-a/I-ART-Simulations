@@ -65,7 +65,7 @@ class OneShotTest:
                 if np.isnan(val):
                     corr.append(0)
                 else:
-                    corr.append(val)
+                    corr.append(abs(val))
             else:
                 corr.append(None)
         return corr

@@ -96,28 +96,46 @@ class OneShotTest:
         for i in range(n):
             t += sorted_list[i][0] * (i + 1)
         
-        return np.array(t)
+        return t
 
-    def getT(self, G, df, indexY, lenY):
-        
+    def split(self, y, z, M):
+        #print(y,z,M)
+        missing_indices = M[:].astype(bool)
+        non_missing_indices = ~missing_indices
+
+        y_missing = y[missing_indices].reshape(-1,)
+        y_non_missing = y[non_missing_indices].reshape(-1,)
+
+        z_missing = z[missing_indices].reshape(-1,)
+        z_non_missing = z[non_missing_indices].reshape(-1,)
+
+        return y_missing, y_non_missing, z_missing, z_non_missing
+
+    def getT(self, G, df, indexY, lenY, M):
         if G is None:
-            # Get the imputed data Y and indicator Z
-            #df_imputed = np.array(df)
             df_imputed = df.to_numpy()
             y = df_imputed[:, indexY:indexY + lenY]
             z = df_imputed[:, 0]
         else:
-            # Get the imputed data Y and indicator Z
             df_imputed = G.transform(df)
             y = df_imputed[:, indexY:indexY + lenY]
             z = df_imputed[:, 0]
-        
+
         t = []
         for i in range(lenY):
-            #the Wilcoxon rank sum test
-            t.append(self.T(z.reshape(-1,),y[:,i].reshape(-1,)))
+            # Split the data into missing and non-missing parts using the split function
+            y_missing, y_non_missing, z_missing, z_non_missing = self.split(y[:,i], z, M[:,i])
+            
+            # Calculate T for missing and non-missing parts
+            t_missing = self.T(z_missing, y_missing.reshape(-1,))
+            t_non_missing = self.T(z_non_missing, y_non_missing.reshape(-1,))
+
+            # Sum the T values for both parts
+            t_combined = t_missing + t_non_missing
+            t.append(t_combined)
 
         return t
+
 
     def worker(self, args):
         # unpack the arguments
@@ -300,13 +318,13 @@ class OneShotTest:
         t2_obs = np.zeros(Y_masked.shape[1])
         if G1 != None:
             G1.fit(df1)
-        t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
+        t2_obs = self.getT(G1, df2, Z.shape[1] + X.shape[1], lenY = Y.shape[1], M = M[df1.shape[0]:df.shape[0],:])
 
         # re-impute the missing values and calculate the observed test statistics in part 1
         t1_obs = np.zeros(Y_masked.shape[1])
         if G2 != None:
             G2.fit(df2)
-        t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
+        t1_obs = self.getT(G2, df1, Z.shape[1] + X.shape[1], lenY = Y.shape[1], M = M[0:df1.shape[0],:])
 
         # get the correlation of G1 and G2
         corr_G1 = self.get_corr(G1, df2, Z.shape[1] + X.shape[1],Y[df1.shape[0]:,:], lenY=Y.shape[1])
@@ -341,10 +359,10 @@ class OneShotTest:
             
             
             # get the test statistics in part 1
-            t1_sim[l] = self.getT(G2, df1_sim, Z.shape[1] + X.shape[1], lenY = Y.shape[1])
+            t1_sim[l] = self.getT(G2, df1_sim, Z.shape[1] + X.shape[1], lenY = Y.shape[1], M = M[0:df1.shape[0],:])
             
             # get the test statistics in part 2
-            t2_sim[l] = self.getT(G1, df2_sim,  Z.shape[1] + X.shape[1], lenY = Y.shape[1])
+            t2_sim[l] = self.getT(G1, df2_sim,  Z.shape[1] + X.shape[1], lenY = Y.shape[1], M = M[df1.shape[0]:df.shape[0],:])
 
             # Calculate the completeness percentage
             if l % 100 == 0:

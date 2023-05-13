@@ -19,7 +19,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 10
-L = 1000
+L = 500
 
 def run(Nsize, Unobserved, Single, filepath):
 
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     if os.path.exists("Result") == False:
         os.mkdir("Result")
 
-    for coef in np.arange(0.01,0.3,0.03):
+    for coef in np.arange(0.3,0.8,0.06):
         beta_coef = coef
         run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_1000" + "_single")
         run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")

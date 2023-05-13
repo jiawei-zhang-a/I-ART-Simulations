@@ -94,7 +94,7 @@ def read_npz_files(directory):
     return results
 
 def main():
-    for coef in np.arange(0.01, 0.18, 0.01):
+    for coef in np.arange(0.01, 0.3, 0.03):
         with open("power.result", "a") as file:
             file.write("beta: " + str(coef) + "\n")
             read_and_print_npz_files("Result/HPC_power_unobserved_1000_single/%f" % coef, file)
@@ -105,14 +105,7 @@ def main():
             file.write("\n")
             read_and_print_npz_files("Result/HPC_power_2000_single/%f" % coef, file)
             file.write("\n")
-            read_and_print_npz_files("Result/HPC_power_unobserved_2000_multi/%f" % coef, file)
-            file.write("\n")
-            read_and_print_npz_files("Result/HPC_power_2000_multi/%f" % coef, file)
-            file.write("\n")
-            read_and_print_npz_files("Result/HPC_power_unobserved_1000_multi/%f" % coef, file)
-            file.write("\n")
-            read_and_print_npz_files("Result/HPC_power_1000_multi/%f" % coef, file)
-            file.write("\n\n")
+
 
 main()
 

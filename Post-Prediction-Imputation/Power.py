@@ -40,7 +40,8 @@ def run(Nsize, Unobserved, Single, filepath):
     print(X.shape, Z.shape, U.shape, Y.shape)
 
     # Oracle 
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, L=L, G1=None, G2=None,verbose=0)
+    print("Oracle")
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, L=L, G1=None, G2=None,verbose=1)
     # Append p-values to corresponding lists
     if Single:
         p_values_oracle = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
@@ -48,9 +49,10 @@ def run(Nsize, Unobserved, Single, filepath):
         p_values_oracle = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
     
     #Median imputer
+    print("Median")
     median_imputer_1 = SimpleImputer(missing_values=np.nan, strategy='median')
     median_imputer_2 = SimpleImputer(missing_values=np.nan, strategy='median')
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y,L=L, G1=median_imputer_1, G2=median_imputer_2,verbose=0)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y,L=L, G1=median_imputer_1, G2=median_imputer_2,verbose=1)
     # Append p-values to corresponding lists
     if Single:
         p_values_median = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
@@ -58,9 +60,10 @@ def run(Nsize, Unobserved, Single, filepath):
         p_values_median = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
 
     #LR imputer
+    print("LR")
     BayesianRidge_1 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
     BayesianRidge_2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, L=L,G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=0)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y, L=L,G1=BayesianRidge_1, G2=BayesianRidge_2,verbose=1)
     # Append p-values to corresponding lists
     if Single:
         p_values_LR = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]
@@ -68,9 +71,10 @@ def run(Nsize, Unobserved, Single, filepath):
         p_values_LR = [ p11, p12, p21, p22, p31, p32, corr1[2], corr2[2],reject ]
         
     #XGBoost
+    print("XGBoost")
     XGBoost_1= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
     XGBoost_2= IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
-    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y,L=L, G1=XGBoost_1, G2=XGBoost_2,verbose=0)
+    p11, p12, p21, p22, p31, p32, corr1, corr2, reject = Framework.one_shot_test(Z, X, M, Y,L=L, G1=XGBoost_1, G2=XGBoost_2,verbose=1)
     # Append p-values to corresponding lists
     if Single:
         p_values_xgboost = [ p11, p12, p21, p22, p31, p32, corr1[0], corr2[0],reject ]

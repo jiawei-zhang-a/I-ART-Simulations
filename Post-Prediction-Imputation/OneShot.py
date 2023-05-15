@@ -368,9 +368,12 @@ class OneShotTest:
             if l % 100 == 0:
                 completeness = l / L * 100  
                 
-                if verbose:
-                    print(f"Task is {completeness:.2f}% complete.")
-                    print("t1_sim:"+str(t1_sim[l]), "t2_sim:"+str(t2_sim[l]))
+                #if verbose:
+                    #print(f"Task is {completeness:.2f}% complete.")
+                    #print("t1_sim:"+str(t1_sim[l]), "t2_sim:"+str(t2_sim[l]))
+
+        if verbose:
+            print("t1_sim:"+str(np.mean(t1_sim)), "t2_sim:"+str(np.mean(t2_sim)))
 
         # perform Holm-Bonferroni correction
         if self.Single:

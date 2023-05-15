@@ -86,10 +86,14 @@ def read_npz_files(directory):
                     summed_p_values_oracle += p_values
 
     results = {
-        'median': summed_p_values_median[8] / N,
-        'lr': summed_p_values_LR[8] / N,
-        'xgboost': summed_p_values_xgboost[8] / N,
-        'oracle': summed_p_values_oracle[8] / N
+        'median_power': summed_p_values_median[1] / N,
+        'median_corr': summed_p_values_median[2] / N,
+        'lr_power': summed_p_values_LR[1] / N,
+        'lr_corr': summed_p_values_LR[2] / N,
+        'xgboost_power': summed_p_values_xgboost[1] / N,
+        'xgboost_corr': summed_p_values_xgboost[2] / N,
+        'oracle_power': summed_p_values_oracle[1] / N,
+        'oracle_corr': summed_p_values_oracle[2] / N
     }
     return results
 
@@ -107,5 +111,5 @@ def main():
             file.write("\n")
 
 
-main()
+#main()
 

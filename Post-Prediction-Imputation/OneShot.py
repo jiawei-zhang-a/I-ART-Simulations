@@ -64,12 +64,11 @@ class OneShotTest:
         n = len(z)
         t = 0
         #O(N^2) version
+        for i in range(n):
+            rank = sum(1 for n_prime in range(N) if y[i] >= y[n_prime])
+            t += z[i] * rank
+        return t
         """
-        for n in range(N):
-            rank = sum(1 for n_prime in range(N) if Y[n] >= Y[n_prime])
-            T += Z[n] * rank
-        """
-
         #O(N*Log(N)) version
         my_list = []
         for i in range(n):
@@ -79,8 +78,9 @@ class OneShotTest:
         #Calculate
         for i in range(n):
             t += sorted_list[i][0] * (i + 1)
-        
-        return np.array(t)
+        return t
+        """
+
     def getCombinedT(self, y, z, lenY):
         t = []
         for i in range(lenY):

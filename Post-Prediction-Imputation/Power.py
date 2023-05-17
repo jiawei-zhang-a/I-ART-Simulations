@@ -47,7 +47,7 @@ def run(Nsize, Unobserved, Single, filepath):
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p_values, reject, corr_G = Framework.one_shot_test(Z, X, M, Y,L=L, G = median_imputer,verbose=0)
+    p_values, reject, corr_G = Framework.one_shot_test(Z, X, M, Y,L=L, G = median_imputer,verbose=1)
     # Append p-values to corresponding lists
     values_median = [ *p_values, reject, corr_G]
 
@@ -63,14 +63,14 @@ def run(Nsize, Unobserved, Single, filepath):
     #LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.one_shot_test(Z, X, M, Y, L=L,G=BayesianRidge,verbose=0)
+    p_values, reject, corr_G = Framework.one_shot_test(Z, X, M, Y, L=L,G=BayesianRidge,verbose=1)
     # Append p-values to corresponding lists
     values_LR = [ *p_values, reject, corr_G]
 
     #XGBoost
     print("XGBoost")
     XGBoost = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.one_shot_test(Z, X, M, Y,L=L, G=XGBoost,verbose=0)
+    p_values, reject, corr_G = Framework.one_shot_test(Z, X, M, Y,L=L, G=XGBoost,verbose=1)
     # Append p-values to corresponding lists
     values_xgboost = [ *p_values, reject, corr_G]
     print("Finished")
@@ -113,8 +113,11 @@ if __name__ == '__main__':
 
     for coef in np.arange(0.01,0.5,0.05):
         beta_coef = coef
-        run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_1000" + "_single")
-        run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")
-        run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_2000" + "_single")
-        run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_2000" + "_single")
-
+        #run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_1000" + "_single")
+        #run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")
+        #run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_2000" + "_single")
+        #run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_2000" + "_single")
+        run(1000, Unobserved = 0, Single = 0 , filepath = "Result/HPC_power_1000" + "_multi")
+        run(1000, Unobserved = 1, Single = 0, filepath = "Result/HPC_power_unobserved_1000" + "_multi")
+        run(2000, Unobserved = 1, Single = 0, filepath = "Result/HPC_power_unobserved_2000" + "_multi")
+        run(2000, Unobserved = 0, Single = 0 , filepath = "Result/HPC_power_2000" + "_multi")

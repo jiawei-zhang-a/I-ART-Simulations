@@ -19,8 +19,8 @@ import os
 beta_coef = None
 task_id = 1
 save_file = False
-max_iter = 10
-L = 200
+max_iter = 3
+L = 100
 
 def run(Nsize, Unobserved, Single, filepath):
 

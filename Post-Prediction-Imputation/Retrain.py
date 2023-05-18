@@ -173,11 +173,11 @@ class RetrainTest:
         Y_masked = np.ma.masked_array(Y, mask=M)
         Y_masked = Y_masked.filled(np.nan)
 
-
         if G == None:
             df = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
         else:
             df = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
+            G_clones = [clone(G) for _ in range(1000)]
             G.fit(df)
 
         # lenY is the number of how many columns are Y
@@ -210,20 +210,13 @@ class RetrainTest:
             # simulate treatment indicators
             Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
 
-            #clone an instance copy of G
-            G_clone = None
-            if G is not None:
-                # Clone G
-                G_clone = clone(G)
-            
-
-            if G_clone == None:
+            if G_clones[i] == None:
                 df = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
             else:
                 df = pd.DataFrame(np.concatenate((Z_sim, X, Y_masked), axis=1))
-                G_clone.fit(df)
-
-            y_imputed = self.getY(G_clone, df, indexY, lenY)
+                G_clones[i].fit(df)
+            
+            y_imputed = self.getY(G_clones[i], df, indexY, lenY)
 
             # get the test statistics 
             t_sim[l] = self.getT(y_imputed, Z_sim, lenY, M)

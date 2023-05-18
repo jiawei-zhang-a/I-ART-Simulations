@@ -118,13 +118,13 @@ class DataGenerator:
           sum7 += X[:,p-1] * X[:,p_2-1] * logistic.cdf(X[:,p_3-1])
     sum7 = (1.0  / np.sqrt(5 * 5 * 5)) * sum7
 
-    #def sum7(): 
-    sum7 = np.zeros(self.N)
+    #def sum8(): 
+    sum8 = np.zeros(self.N)
     for p in range(1,6):
       for p_2 in range(1,6):
         for p_3 in range(1,6):
           sum7 += X[:,p-1] * X[:,p_2-1] * np.sin(X[:,p_3-1])
-    sum7 = (1.0  / np.sqrt(5 * 5 * 5)) * sum7    
+    sum8 = (1.0  / np.sqrt(5 * 5 * 5)) * sum7    
 
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
@@ -193,7 +193,7 @@ class DataGenerator:
                 sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
           
-          M_lamda[i][0] = (sum3 + sum4  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + np.sin(U))
+          M_lamda[i][0] = (sum3 + sum4  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + np.sin(U[i]))
         
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
@@ -210,7 +210,7 @@ class DataGenerator:
                 sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
 
-          if (sum3 + sum4  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + np.sin(U)) > lambda1:
+          if (sum3 + sum4  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + np.sin(U[i])) > lambda1:
             M[i][0] = 1
 
         return M

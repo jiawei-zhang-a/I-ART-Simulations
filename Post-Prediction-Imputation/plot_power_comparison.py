@@ -10,7 +10,7 @@ def main(type):
     corr_data = []
     corr_data_with_U = []    
 
-    for coef in np.arange(0.01,0.3,0.05):
+    for coef in np.arange(0.01,0.5,0.05):
         row_power = [coef]
         row_corr = [coef]
         row_with_U_power = [coef]

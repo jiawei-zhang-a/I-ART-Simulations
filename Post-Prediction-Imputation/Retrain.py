@@ -9,9 +9,9 @@ class RetrainTest:
     def __init__(self,N):
         self.N = N
 
-    def holm_bonferroni(self,p_values):
+    def holm_bonferroni(self,p_values, alpha = 0.05):
         # Perform the Holm-Bonferroni correction
-        reject, corrected_p_values, _, _ = multipletests(p_values, alpha=0.05, method='holm')
+        reject, corrected_p_values, _, _ = multipletests(p_values, alpha=alpha, method='holm')
 
         # Check if any null hypothesis can be rejected
         any_rejected = any(reject)
@@ -165,10 +165,6 @@ class RetrainTest:
 
         """
 
-        #print train start
-        if verbose:
-            print("Training start")
-
         # create data a whole data frame
         Y_masked = np.ma.masked_array(Y, mask=M)
         Y_masked = Y_masked.filled(np.nan)
@@ -184,7 +180,7 @@ class RetrainTest:
         lenY = Y_masked.shape[1]
 
         # indexY is the index of the first column of Y
-        indexY = X.shape[1]
+        indexY = Z.shape[1] + X.shape[1]
 
         # N is the number of rows of the data frame
         N = df.shape[0]
@@ -200,7 +196,6 @@ class RetrainTest:
         if verbose:
             print("t_obs:"+str(t_obs))
             print("corr_G:"+str(corr_G))
-            print("Training end")
 
         # simulate data and calculate test statistics
         t_sim = np.zeros((L,Y.shape[1]))
@@ -209,25 +204,26 @@ class RetrainTest:
             
             # simulate treatment indicators
             Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
-
-            if G_clones[i] == None:
+            
+            if G == None:
                 df = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
+                y_imputed = self.getY(G, df, indexY, lenY)
+
             else:
                 df = pd.DataFrame(np.concatenate((Z_sim, X, Y_masked), axis=1))
-                G_clones[i].fit(df)
-            
-            y_imputed = self.getY(G_clones[i], df, indexY, lenY)
+                G_clones[l].fit(df)
+                y_imputed = self.getY(G_clones[l], df, indexY, lenY)
 
             # get the test statistics 
             t_sim[l] = self.getT(y_imputed, Z_sim, lenY, M)
 
         if verbose:
-            print("t_sim:"+str(np.mean(t_sim)))
+            print("t_sims_mean:"+str(np.mean(t_sim)))
 
         # perform Holm-Bonferroni correction
         p_values = []
         for i in range(lenY):
             p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
-        reject = self.holm_bonferroni(p_values)
+        reject = self.holm_bonferroni(p_values,alpha = 0.2)
         
         return p_values, reject, corr_G

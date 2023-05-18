@@ -7,7 +7,6 @@ from sklearn import linear_model
 from sklearn.impute import SimpleImputer
 import multiprocessing
 import Simulation as Generator
-import OneShot
 import Retrain
 import warnings
 import xgboost as xgb
@@ -40,7 +39,7 @@ def run(Nsize, Unobserved, Single, filepath):
 
     # Oracle 
     print("Oracle")
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = None,verbose=0)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = None,verbose=1)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject, corr_G]
     print(values_oracle)
@@ -51,15 +50,6 @@ def run(Nsize, Unobserved, Single, filepath):
     p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y,L=L, G = median_imputer,verbose=1)
     # Append p-values to corresponding lists
     values_median = [ *p_values, reject, corr_G]
-
-    """
-    #Mean imputer
-    print("Mean")
-    mean_imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
-    p_values, reject, corr_G = Framework.one_shot_test(Z, X, M, Y,L=L, G = mean_imputer,verbose=1)
-    # Append p-values to corresponding lists
-    values_median = [ *p_values, reject, corr_G]
-    """
 
     #LR imputer
     print("LR")

@@ -8,7 +8,7 @@ setup(
     version="0.1.0",
     author="",
     author_email="",
-    description="post-prediction data imputation framework",
+    description="post-prediction data imputation power test framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/jiawei-zhang-a/Post-prediction-Causal-Inference",
@@ -23,9 +23,10 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         'mv-laplace',
-        'matplotlib',
-        'numpy',
         'pandas',
+        'numpy',
+        'scikit-learn',
         'xgboost',
+        'statsmodels',
     ],
 )

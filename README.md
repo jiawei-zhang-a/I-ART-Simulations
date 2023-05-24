@@ -47,3 +47,9 @@ Get started
 The method used to semi-supervised learning for the imputation is 
 
 KNN,Missforest,XGBoost,NN,RidgeRegression,Kernel Approximation,Mean and median
+
+
+#build 
+python setup.py sdist bdist_wheel
+
+twine upload dist/*

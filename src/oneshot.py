@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import multiprocessing
-from statsmodels.stats.multitest import multipletests
+from statsmodels.stats.multitest import multipletests\\
 
 class OneShotTest:
     #load data
@@ -65,7 +65,7 @@ class OneShotTest:
         t = 0
         #O(N^2) version
         for i in range(n):
-            rank = sum(1 for n_prime in range(N) if y[i] >= y[n_prime])
+            rank = sum(1 for n_prime in range(n) if y[i] >= y[n_prime])
             t += z[i] * rank
         return t
         """

@@ -4,7 +4,7 @@ import pandas as pd
 from scipy.stats import logistic
 
 class DataGenerator:
-  def __init__(self,*, N = 1000, N_T = 500, N_S = 50, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, verbose = False):
+  def __init__(self,*, N = 1000, N_T = 500, N_S = 50, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, verbose = False, bias = False):
     self.N = N
     self.N_T = N_T
     self.N_S = N_S
@@ -19,6 +19,7 @@ class DataGenerator:
     self.Unobserved = Unobserved
     self.Single = Single
     self.verbose = verbose
+    self.bias = bias
 
   def GenerateX(self):
       # generate Xn1 and Xn2
@@ -172,6 +173,90 @@ class DataGenerator:
 
     return Y
 
+  def GenerateY_noZ(self, X, U):
+        
+    #def sum1():
+    sum1 = np.zeros(self.N)
+    for p in range(1,6):
+      sum1 += pow(X[:,p-1],3)
+    sum1 = (1.0 / np.sqrt(5)) * sum1
+
+    #def sum2():
+    sum2 = np.zeros(self.N)
+    for p in range(1,6):
+      for p_2 in range(1,6):
+        sum2 += X[:,p-1] * X[:,p_2-1]
+    sum2 = (1.0 / np.sqrt(5 * 5)) * sum2
+
+    #def sum3():
+    sum3 = np.zeros(self.N)
+    for p in range(1,6):
+      sum3 += X[:,p-1]
+    sum3 = (1.0 / np.sqrt(5)) * sum3
+
+    #def sum4():
+    sum4 = np.zeros(self.N)
+    for p in range(1,6):
+      for p_2 in range(1,6):
+        sum4 += X[:,p-1] * logistic.cdf(1 - X[:,p_2-1])
+    sum4 = (1.0 / np.sqrt(5 * 5)) * sum4
+
+    #def sum5():
+    sum5 = np.zeros(self.N)
+    for p in range(1,6):
+      sum5 += np.absolute(X[:,p-1])
+    sum5 = (1.0  / np.sqrt(5)) * sum5
+
+    #def sum6(): 
+    sum6 = np.zeros(self.N)
+    for p in range(1,6):
+      sum6 += X[:,p-1]
+    sum6 = (1.0  / np.sqrt(5)) * sum6
+
+    #def sum7(): 
+    sum7 = np.zeros(self.N)
+    for p in range(1,6):
+      for p_2 in range(1,6):
+        for p_3 in range(1,6):
+          sum7 += X[:,p-1] * X[:,p_2-1] * logistic.cdf(X[:,p_3-1])
+    sum7 = (1.0  / np.sqrt(5 * 5 * 5)) * sum7
+
+    #def sum8(): 
+    sum8 = np.zeros(self.N)
+    for p in range(1,6):
+      for p_2 in range(1,6):
+        for p_3 in range(1,6):
+          sum7 += X[:,p-1] * X[:,p_2-1] * np.sin(X[:,p_3-1])
+    sum8 = (1.0  / np.sqrt(5 * 5 * 5)) * sum7    
+
+    U = U.reshape(-1,)
+    
+    if self.Unobserved:
+      # Calculate Y_n1
+      Y_n1 = (sum2 + np.sin(U) )
+
+      # Compute Yn2
+      Y_n3 =  sum3 + sum4 + sum8
+
+      # Compute Yn3
+      Y_n2 = (sum6 + sum7 + U)
+
+    else:
+      # Calculate Y_n1
+      Y_n1 = ( sum2) 
+
+      # Compute Yn2
+      Y_n3 = sum3 + sum4 + sum8
+
+      # Compute Yn3
+      Y_n2 = ( sum6 + sum7) 
+    
+    if self.Single:
+      Y = Y_n3.reshape(-1, 1)
+    else:
+      Y = np.concatenate((Y_n1.reshape(-1, 1), Y_n2.reshape(-1, 1),Y_n3.reshape(-1, 1)), axis=1) 
+
+    return Y
   def GenerateM(self, X, U, Y, single = True):
       
       U = U.reshape(-1,)
@@ -337,10 +422,13 @@ class DataGenerator:
     # Generate Y
     Y = self.GenerateY(X, U, Z)
 
+    # Generate Y_noZ
+    Y_noZ = self.GenerateY_noZ(X, U)
+
     # Generate M
     M = self.GenerateM(X, U, Y, single = self.Single)
 
-    return X, Z, U, Y, M, S
+    return X, Z, U, Y, Y_noZ, M, S
 
   def StoreData(self,file):
     # Generate data

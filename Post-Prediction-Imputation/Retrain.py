@@ -18,13 +18,17 @@ class RetrainTest:
 
         return any_rejected
 
-    def getY(self, G, df, indexY ,lenY):
+    def getY(self, G, df_Z, df_noZ, indexY ,lenY):
         if G:
-            df_imputed = G.transform(df)
+            G2 = clone(G)
+            df_imputed = G.fit_transform(df_Z)
+            df_noZ_imputed = G2.fit_transform(df_noZ)
+            
         else:
-            df_imputed = df.to_numpy()
+            df_imputed = df_Z.to_numpy()
+            df_noZ_imputed = df_noZ.to_numpy()
 
-        y = df_imputed[:,indexY:indexY+lenY]
+        y = df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
         return y
 
     def get_corr(self, G, df, Y, indexY, lenY):
@@ -137,7 +141,7 @@ class RetrainTest:
             t_non_missing = self.T(z_non_missing, y_non_missing.reshape(-1,))
 
             # Sum the T values for both parts
-            t_combined = t_missing + t_non_missing
+            t_combined = t_missing + 0
             if verbose:
                 print("t_non_missing:",t_non_missing)
                 print("t_missing:",t_missing)
@@ -145,7 +149,14 @@ class RetrainTest:
 
         return t
 
-    def retrain_test(self, Z, X, M, Y, G,  L=10000, verbose = False):
+    def retrain_test(self, Z, X, M, Y, Y_noZ, G,  L=10000, verbose = False):
+        if G == None:
+            return self.retrain_test_oracle(Z, X, M, Y,Y_noZ, G, L, verbose)   
+        else:
+            return self.retrain_test_imputed(Z, X, M, Y, G, L, verbose)
+        
+
+    def retrain_test_oracle(self, Z, X, M, Y,Y_noZ, G,  L=10000, verbose = False):
         """
         A retrain framework for testing H_0.
 
@@ -165,32 +176,96 @@ class RetrainTest:
 
         """
 
-        # create data a whole data frame
-        Y_masked = np.ma.masked_array(Y, mask=M)
-        Y_masked = Y_masked.filled(np.nan)
-
-        if G == None:
-            df = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-        else:
-            df = pd.DataFrame(np.concatenate((Z, X, Y_masked), axis=1))
-            G_clones = [clone(G) for _ in range(1000)]
-            G.fit(df)
+        df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
 
         # lenY is the number of how many columns are Y
-        lenY = Y_masked.shape[1]
+        lenY = Y.shape[1]
 
         # indexY is the index of the first column of Y
         indexY = Z.shape[1] + X.shape[1]
 
         # N is the number of rows of the data frame
-        N = df.shape[0]
+        N = df_Z.shape[0]
 
         # re-impute the missing values and calculate the observed test statistics in part 2
-        y_imputed = self.getY(G, df, indexY, lenY)
-        t_obs = self.getT(y_imputed, Z, lenY, M, verbose = verbose)
+        bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
+        t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
+
+        #print train end
+        if verbose:
+            print("t_obs:"+str(t_obs))
+        corr_G = self.get_corr(G, df_Z, Y, indexY, lenY)
+        # simulate data and calculate test statistics
+        t_sim = np.zeros((L,Y.shape[1]))
+
+        for l in range(L):
+            
+            # simulate treatment indicators
+            Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
+            
+            df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
+            bias = self.getY(G, df_Z,df_noZ, indexY, lenY)
+
+            # get the test statistics 
+            t_sim[l] = self.getT(bias, Z_sim, lenY, M)
+
+        if verbose:
+            print("t_sims_mean:"+str(np.mean(t_sim)))
+
+        # perform Holm-Bonferroni correction
+        p_values = []
+        for i in range(lenY):
+            p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
+        reject = self.holm_bonferroni(p_values,alpha = 0.2)
+        
+        return p_values, reject, corr_G
+
+    def retrain_test_imputed(self, Z, X, M, Y, G,  L=10000, verbose = False):
+        """
+        A retrain framework for testing H_0.
+
+        Args:
+        Z: 2D array of observed treatment indicators
+        X: 2D array of observed covariates
+        M: 2D array of observed missing indicators
+        Y: 2D array of observed values for K outcomes
+        G: a function that takes (Z, X, M, Y_k) as input and returns the imputed value for outcome k
+        L: number of Monte Carlo simulations (default is 10000)
+        verbose: a boolean indicating whether to print training start and end (default is False)
+
+        Returns:
+        p_values: a 1D array of p-values for lenY outcomes
+        reject: a boolean indicating whether the null hypothesis is rejected for each outcome
+        corr: a 1D array of correlations between the imputed and observed values for lenY outcomes
+
+        """
+
+        # mask Y
+        Y = np.ma.masked_array(Y, mask=M)
+        Y = Y.filled(np.nan)
+
+
+
+        df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
+        G_clones = [clone(G) for _ in range(1000)]
+
+        # lenY is the number of how many columns are Y
+        lenY = Y.shape[1]
+
+        # indexY is the index of the first column of Y
+        indexY = Z.shape[1] + X.shape[1]
+
+        # N is the number of rows of the data frame
+        N = df_Z.shape[0]
+
+        # re-impute the missing values and calculate the observed test statistics in part 2
+        bias = self.getY(G, df_Z,df_noZ, indexY, lenY)
+        t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
 
         # get the correlation of G1 and G2
-        corr_G = self.get_corr(G, df, Y, indexY, lenY)
+        corr_G = self.get_corr(G, df_Z, Y, indexY, lenY)
 
         #print train end
         if verbose:
@@ -205,17 +280,11 @@ class RetrainTest:
             # simulate treatment indicators
             Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
             
-            if G == None:
-                df = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
-                y_imputed = self.getY(G, df, indexY, lenY)
-
-            else:
-                df = pd.DataFrame(np.concatenate((Z_sim, X, Y_masked), axis=1))
-                G_clones[l].fit(df)
-                y_imputed = self.getY(G_clones[l], df, indexY, lenY)
+            df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
+            bias = self.getY(G_clones[l], df_Z, df_noZ, indexY, lenY)
 
             # get the test statistics 
-            t_sim[l] = self.getT(y_imputed, Z_sim, lenY, M)
+            t_sim[l] = self.getT(bias, Z_sim, lenY, M)
 
         if verbose:
             print("t_sims_mean:"+str(np.mean(t_sim)))

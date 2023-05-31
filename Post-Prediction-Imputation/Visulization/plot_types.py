@@ -18,7 +18,7 @@ def plot_results(data, data_with_U):
         ax1.plot(df['beta'], df[col], marker='o', label=col, color=colors[col])
 
     ax1.set_xlabel('Beta')
-    ax1.set_ylabel('Absolute Error')
+    ax1.set_ylabel('Power(covariate adjusted)')
     ax1.set_title('Performance of Imputation Methods for Varying Beta (I=50, No U)')
     ax1.legend()
     ax1.grid()
@@ -28,7 +28,7 @@ def plot_results(data, data_with_U):
         ax2.plot(df_with_U['beta'], df_with_U[col], marker='o', label=col, color=colors[col])
 
     ax2.set_xlabel('Beta')
-    ax2.set_ylabel('Absolute Error')
+    ax2.set_ylabel('Power(covariate adjusted)')
     ax2.set_title('Performance of Imputation Methods for Varying Beta (I=50, With U)')
     ax2.legend()
     ax2.grid()

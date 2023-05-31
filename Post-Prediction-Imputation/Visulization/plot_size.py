@@ -18,7 +18,7 @@ def plot_results(data):
         plt.plot(df['beta'], df[col], marker='o', label=col, color=colors[method], linestyle=linestyle)
 
     plt.xlabel('Beta')
-    plt.ylabel('Absolute Error')
+    plt.ylabel('Power(covariate adjusted)')
     plt.title('Performance of Imputation Methods for Varying Beta')
     plt.legend()
     plt.grid()

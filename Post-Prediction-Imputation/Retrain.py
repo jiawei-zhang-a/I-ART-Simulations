@@ -6,6 +6,8 @@ from sklearn.base import clone
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn import linear_model
+import xgboost as xgb
+
 
 class RetrainTest:
     #load data
@@ -32,10 +34,13 @@ class RetrainTest:
             #df_noZ_imputed = df_noZ.to_numpy()
 
         
-        df_noZ_imputed = df_noZ.to_numpy()
+        #df_noZ_imputed = df_noZ.to_numpy()
+        
+        G2 = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=3)
+        df_noZ_imputed = G2.fit_transform(df_noZ)
 
         y = df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
-        
+
         return y
 
     def get_corr(self, G, df, Y, indexY, lenY):
@@ -183,7 +188,7 @@ class RetrainTest:
         Y_copy = np.ma.masked_array(Y_copy, mask=M)
         Y_copy = Y_copy.filled(fill_value=np.nan)
 
-        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_copy), axis=1))
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
@@ -252,7 +257,7 @@ class RetrainTest:
         Y = Y.filled(np.nan)
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
         G_clones = [clone(G) for _ in range(L)]
 
         # lenY is the number of how many columns are Y

@@ -31,10 +31,11 @@ class RetrainTest:
             df_imputed = df_Z.to_numpy()
             #df_noZ_imputed = df_noZ.to_numpy()
 
-        G2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
-        df_noZ_imputed = G2.fit_transform(df_noZ)
+        
+        df_noZ_imputed = df_noZ.to_numpy()
 
         y = df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
+        
         return y
 
     def get_corr(self, G, df, Y, indexY, lenY):
@@ -151,12 +152,12 @@ class RetrainTest:
 
     def retrain_test(self, Z, X, M, Y, Y_noZ, G,  L=10000, verbose = False):
         if G == None:
-            return self.retrain_test_oracle(Z, X, M, Y, G, L, verbose)   
+            return self.retrain_test_oracle(Z, X, M, Y, Y_noZ, G, L, verbose)   
         else:
-            return self.retrain_test_imputed(Z, X, M, Y, G, L, verbose)
+            return self.retrain_test_imputed(Z, X, M, Y, Y_noZ, G, L, verbose)
         
 
-    def retrain_test_oracle(self, Z, X, M, Y, G,  L=10000, verbose = False):
+    def retrain_test_oracle(self, Z, X, M, Y, Y_noZ, G,  L=10000, verbose = False):
         """
         A retrain framework for testing H_0.
 
@@ -182,7 +183,7 @@ class RetrainTest:
         Y_copy = np.ma.masked_array(Y_copy, mask=M)
         Y_copy = Y_copy.filled(fill_value=np.nan)
 
-        df_noZ = pd.DataFrame(np.concatenate((X, Y_copy), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
@@ -226,7 +227,7 @@ class RetrainTest:
         
         return p_values, reject, corr_G
 
-    def retrain_test_imputed(self, Z, X, M, Y, G,  L=10000, verbose = False):
+    def retrain_test_imputed(self, Z, X, M, Y, Y_noZ, G,  L=10000, verbose = False):
         """
         A retrain framework for testing H_0.
 
@@ -251,7 +252,7 @@ class RetrainTest:
         Y = Y.filled(np.nan)
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-        df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
         G_clones = [clone(G) for _ in range(L)]
 
         # lenY is the number of how many columns are Y
@@ -264,7 +265,7 @@ class RetrainTest:
         N = df_Z.shape[0]
 
         # re-impute the missing values and calculate the observed test statistics in part 2
-        bias = self.getY(G, df_Z,df_noZ, indexY, lenY)
+        bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
         t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
 
         # get the correlation of G1 and G2

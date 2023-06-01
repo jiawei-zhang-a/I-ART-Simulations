@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 from statsmodels.stats.multitest import multipletests
 from sklearn.base import clone
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+from sklearn import linear_model
 
 class RetrainTest:
     #load data
@@ -20,13 +23,16 @@ class RetrainTest:
 
     def getY(self, G, df_Z, df_noZ, indexY ,lenY):
         if G:
-            G2 = clone(G)
+            #G2 = clone(G)
             df_imputed = G.fit_transform(df_Z)
-            df_noZ_imputed = G2.fit_transform(df_noZ)
+            #df_noZ_imputed = G2.fit_transform(df_noZ)
             
         else:
             df_imputed = df_Z.to_numpy()
-            df_noZ_imputed = df_noZ.to_numpy()
+            #df_noZ_imputed = df_noZ.to_numpy()
+
+        G2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
+        df_noZ_imputed = G2.fit_transform(df_noZ)
 
         y = df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
         return y
@@ -67,12 +73,7 @@ class RetrainTest:
         #the Wilcoxon rank sum test
         n = len(z)
         t = 0
-        #O(N^2) version
-        for i in range(n):
-            rank = sum(1 for n_prime in range(N) if y[i] >= y[n_prime])
-            t += z[i] * rank
-        return t
-        """
+
         #O(N*Log(N)) version
         my_list = []
         for i in range(n):
@@ -83,7 +84,6 @@ class RetrainTest:
         for i in range(n):
             t += sorted_list[i][0] * (i + 1)
         return t
-        """
 
     def getCombinedT(self, y, z, lenY):
         t = []
@@ -141,7 +141,7 @@ class RetrainTest:
             t_non_missing = self.T(z_non_missing, y_non_missing.reshape(-1,))
 
             # Sum the T values for both parts
-            t_combined = t_missing + 0
+            t_combined = t_missing + t_non_missing
             if verbose:
                 print("t_non_missing:",t_non_missing)
                 print("t_missing:",t_missing)
@@ -151,12 +151,12 @@ class RetrainTest:
 
     def retrain_test(self, Z, X, M, Y, Y_noZ, G,  L=10000, verbose = False):
         if G == None:
-            return self.retrain_test_oracle(Z, X, M, Y,Y_noZ, G, L, verbose)   
+            return self.retrain_test_oracle(Z, X, M, Y, G, L, verbose)   
         else:
             return self.retrain_test_imputed(Z, X, M, Y, G, L, verbose)
         
 
-    def retrain_test_oracle(self, Z, X, M, Y,Y_noZ, G,  L=10000, verbose = False):
+    def retrain_test_oracle(self, Z, X, M, Y, G,  L=10000, verbose = False):
         """
         A retrain framework for testing H_0.
 
@@ -177,7 +177,12 @@ class RetrainTest:
         """
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
+
+        Y_copy = np.copy(Y)
+        Y_copy = np.ma.masked_array(Y_copy, mask=M)
+        Y_copy = Y_copy.filled(fill_value=np.nan)
+
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_copy), axis=1))
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
@@ -205,7 +210,7 @@ class RetrainTest:
             Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
             
             df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
-            bias = self.getY(G, df_Z,df_noZ, indexY, lenY)
+            bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
 
             # get the test statistics 
             t_sim[l] = self.getT(bias, Z_sim, lenY, M)
@@ -245,11 +250,9 @@ class RetrainTest:
         Y = np.ma.masked_array(Y, mask=M)
         Y = Y.filled(np.nan)
 
-
-
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
         df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
-        G_clones = [clone(G) for _ in range(1000)]
+        G_clones = [clone(G) for _ in range(L)]
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]

@@ -35,7 +35,6 @@ class RetrainTest:
 
         
         #df_noZ_imputed = df_noZ.to_numpy()
-        
         G2 = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=3)
         df_noZ_imputed = G2.fit_transform(df_noZ)
 

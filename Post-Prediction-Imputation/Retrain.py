@@ -183,11 +183,10 @@ class RetrainTest:
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
 
-        Y_copy = np.copy(Y)
-        Y_copy = np.ma.masked_array(Y_copy, mask=M)
-        Y_copy = Y_copy.filled(fill_value=np.nan)
+        Y_noZ = np.ma.masked_array(Y_noZ, mask=M)
+        Y_noZ = Y_noZ.filled(fill_value=np.nan)
 
-        df_noZ = pd.DataFrame(np.concatenate((X, Y_copy), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
@@ -252,11 +251,11 @@ class RetrainTest:
         """
 
         # mask Y
-        Y = np.ma.masked_array(Y, mask=M)
-        Y = Y.filled(np.nan)
+        Y_noZ = np.ma.masked_array(Y_noZ, mask=M)
+        Y_noZ = Y_noZ.filled(np.nan)
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-        df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
         G_clones = [clone(G) for _ in range(L)]
 
         # lenY is the number of how many columns are Y

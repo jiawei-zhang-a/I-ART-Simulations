@@ -34,7 +34,7 @@ class RetrainTest:
             #df_noZ_imputed = df_noZ.to_numpy()
 
         #df_noZ_imputed = df_noZ.to_numpy()
-        G2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
+        G2 = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=3) #IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
         df_noZ_imputed = G2.fit_transform(df_noZ)
 
         y = df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
@@ -203,6 +203,7 @@ class RetrainTest:
         #print train end
         if verbose:
             print("t_obs:"+str(t_obs))
+            print("Permutation Start")
         corr_G = self.get_corr(G, df_Z, Y, indexY, lenY)
         # simulate data and calculate test statistics
         t_sim = np.zeros((L,Y.shape[1]))
@@ -216,10 +217,11 @@ class RetrainTest:
             bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
 
             # get the test statistics 
-            t_sim[l] = self.getT(bias, Z_sim, lenY, M)
+            t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=False)
 
         if verbose:
             print("t_sims_mean:"+str(np.mean(t_sim)))
+            print("\n")
 
         # perform Holm-Bonferroni correction
         p_values = []
@@ -279,6 +281,7 @@ class RetrainTest:
         if verbose:
             print("t_obs:"+str(t_obs))
             print("corr_G:"+str(corr_G))
+            print("Permutation Start")
 
         # simulate data and calculate test statistics
         t_sim = np.zeros((L,Y.shape[1]))
@@ -292,10 +295,11 @@ class RetrainTest:
             bias = self.getY(G_clones[l], df_Z, df_noZ, indexY, lenY)
 
             # get the test statistics 
-            t_sim[l] = self.getT(bias, Z_sim, lenY, M)
+            t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=False)
 
         if verbose:
             print("t_sims_mean:"+str(np.mean(t_sim)))
+            print("\n")
 
         # perform Holm-Bonferroni correction
         p_values = []

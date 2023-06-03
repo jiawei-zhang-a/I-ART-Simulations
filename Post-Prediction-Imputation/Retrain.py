@@ -35,7 +35,7 @@ class RetrainTest:
 
         
         #df_noZ_imputed = df_noZ.to_numpy()
-        G2 = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=3)
+        G2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
         df_noZ_imputed = G2.fit_transform(df_noZ)
 
         y = df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
@@ -146,7 +146,7 @@ class RetrainTest:
             t_non_missing = self.T(z_non_missing, y_non_missing.reshape(-1,))
 
             # Sum the T values for both parts
-            t_combined = t_missing #+ t_non_missing
+            t_combined = t_missing + t_non_missing
             if verbose:
                 print("t_non_missing:",t_non_missing)
                 print("t_missing:",t_missing)
@@ -183,10 +183,10 @@ class RetrainTest:
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
 
-        Y_noZ = np.ma.masked_array(Y_noZ, mask=M)
-        Y_noZ = Y_noZ.filled(fill_value=np.nan)
+        Y_copy = np.ma.masked_array(Y, mask=M)
+        Y_copy = Y_copy.filled(np.nan)
 
-        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_copy), axis=1))
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
@@ -251,11 +251,12 @@ class RetrainTest:
         """
 
         # mask Y
-        Y_noZ = np.ma.masked_array(Y_noZ, mask=M)
-        Y_noZ = Y_noZ.filled(np.nan)
+
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-        df_noZ = pd.DataFrame(np.concatenate((X, Y_noZ), axis=1))
+
+
+        df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
         G_clones = [clone(G) for _ in range(L)]
 
         # lenY is the number of how many columns are Y
@@ -291,7 +292,7 @@ class RetrainTest:
             bias = self.getY(G_clones[l], df_Z, df_noZ, indexY, lenY)
 
             # get the test statistics 
-            t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=True)
+            t_sim[l] = self.getT(bias, Z_sim, lenY, M)
 
         if verbose:
             print("t_sims_mean:"+str(np.mean(t_sim)))

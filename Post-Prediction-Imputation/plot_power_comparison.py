@@ -7,7 +7,7 @@ from Visulization import plot_all, plot_size, plot_types, plot_unobserved, plot_
 def main(type):
     power_data_with_U = [] 
 
-    for coef in np.arange(0.00,0.6,0.05):
+    for coef in np.arange(0.0,0.5,0.05):
         row_with_U_power = [coef]
         for directory in ["Result/HPC_power_unobserved_1000_single/%f" % (coef)]:
             results = read_npz_files(directory)

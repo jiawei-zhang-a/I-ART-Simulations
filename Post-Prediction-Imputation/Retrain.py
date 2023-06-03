@@ -33,7 +33,6 @@ class RetrainTest:
             df_imputed = df_Z.to_numpy()
             #df_noZ_imputed = df_noZ.to_numpy()
 
-        
         #df_noZ_imputed = df_noZ.to_numpy()
         G2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
         df_noZ_imputed = G2.fit_transform(df_noZ)
@@ -251,7 +250,8 @@ class RetrainTest:
         """
 
         # mask Y
-
+        Y = np.ma.masked_array(Y, mask=M)
+        Y = Y.filled(np.nan)
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
 

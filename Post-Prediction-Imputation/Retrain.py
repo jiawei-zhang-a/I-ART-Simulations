@@ -146,7 +146,7 @@ class RetrainTest:
             t_non_missing = self.T(z_non_missing, y_non_missing.reshape(-1,))
 
             # Sum the T values for both parts
-            t_combined = t_missing + t_non_missing
+            t_combined = t_missing #+ t_non_missing
             if verbose:
                 print("t_non_missing:",t_non_missing)
                 print("t_missing:",t_missing)

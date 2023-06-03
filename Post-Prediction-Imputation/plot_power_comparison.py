@@ -8,7 +8,7 @@ def main(type):
     power_data = []
     power_data_with_U = [] 
 
-    for coef in np.arange(0.00,0.3,0.05):
+    for coef in np.arange(0.00,0.2,0.05):
         row_power = [coef]
         row_with_U_power = [coef]
         for directory in ["Result/HPC_power_1000_%s/%f" % (type,coef),

@@ -291,7 +291,7 @@ class RetrainTest:
             bias = self.getY(G_clones[l], df_Z, df_noZ, indexY, lenY)
 
             # get the test statistics 
-            t_sim[l] = self.getT(bias, Z_sim, lenY, M)
+            t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=True)
 
         if verbose:
             print("t_sims_mean:"+str(np.mean(t_sim)))

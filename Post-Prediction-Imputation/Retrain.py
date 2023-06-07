@@ -11,8 +11,9 @@ import xgboost as xgb
 
 class RetrainTest:
     #load data
-    def __init__(self,N):
+    def __init__(self,N,covariance_adjustment):
         self.N = N
+        self.covariance_adjustment = covariance_adjustment # 0 = Null, 1 = LR, 2 = XG
 
     def holm_bonferroni(self,p_values, alpha = 0.05):
         # Perform the Holm-Bonferroni correction
@@ -34,12 +35,16 @@ class RetrainTest:
             #df_noZ_imputed = df_noZ.to_numpy()
 
         #df_noZ_imputed = df_noZ.to_numpy()
-        G2 = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=3) #IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
-        df_noZ_imputed = G2.fit_transform(df_noZ)
-
-        y = df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
-
-        return y
+        if self.covariance_adjustment == 0:
+            return df_imputed[:,indexY:indexY+lenY]
+        if self.covariance_adjustment == 1:
+            G2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3) #IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=3)#
+            df_noZ_imputed = G2.fit_transform(df_noZ)
+            return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
+        if self.covariance_adjustment == 2:
+            G2 = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=3)
+            df_noZ_imputed = G2.fit_transform(df_noZ)
+            return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
 
     def get_corr(self, G, df, Y, indexY, lenY):
         # Get the imputed data Y and indicator Z

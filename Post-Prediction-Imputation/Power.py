@@ -21,14 +21,14 @@ save_file = False
 max_iter = 3
 L = 100
 
-def run(Nsize, Unobserved, Single, filepath):
+def run(Nsize, Unobserved, Single, filepath, adjust):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
     # Create an instance of the OneShot class
-    Framework = Retrain.RetrainTest(N = Nsize)
+    Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
 
     print("Begin")
 
@@ -103,6 +103,8 @@ if __name__ == '__main__':
     if os.path.exists("Result") == False:
         os.mkdir("Result")
 
-    for coef in np.arange(0.0,0.4,0.05):
+    for coef in np.arange(0.2,0.4,0.05):
         beta_coef = coef
-        run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")
+        run(1000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single", adjust = 0)
+        run(1000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_unobserved_1000_LR" + "_single", adjust = 1)
+        run(1000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_unobserved_1000_xgboost" + "_single", adjust = 2)

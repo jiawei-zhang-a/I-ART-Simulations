@@ -26,13 +26,10 @@ class RetrainTest:
 
     def getY(self, G, df_Z, df_noZ, indexY ,lenY):
         if G:
-            #G2 = clone(G)
             df_imputed = G.fit_transform(df_Z)
-            #df_noZ_imputed = G2.fit_transform(df_noZ)
             
         else:
             df_imputed = df_Z.to_numpy()
-            #df_noZ_imputed = df_noZ.to_numpy()
 
         #df_noZ_imputed = df_noZ.to_numpy()
         if self.covariance_adjustment == 0:

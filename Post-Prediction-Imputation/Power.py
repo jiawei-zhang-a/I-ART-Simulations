@@ -103,7 +103,7 @@ if __name__ == '__main__':
     if os.path.exists("Result") == False:
         os.mkdir("Result")
 
-    for coef in np.arange(0.2,0.4,0.05):
+    for coef in np.arange(0.0,0.5,0.05):
         beta_coef = coef
         run(1000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single", adjust = 0)
         run(1000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_unobserved_1000_LR" + "_single", adjust = 1)

@@ -17,9 +17,6 @@ def main(type):
 
     plot( power_data_with_U)
 
-
-
-
 def plot(data_with_U):
     plot_only.plot_results(data_with_U)
     
@@ -28,7 +25,7 @@ def main2(type):
     Power_data_with_LR_adjusted = []
     Power_data_with_XGBoost_adjusted = []
 
-    for coef in np.arange(0.2,0.5,0.05):
+    for coef in np.arange(0.0,0.5,0.05):
         row_power = [coef]
         row_power_with_LR_adjusted = [coef]
         row_power_with_XGBoost_adjusted = [coef]
@@ -47,6 +44,10 @@ def main2(type):
         Power_data.append(row_power)
         Power_data_with_LR_adjusted.append(row_power_with_LR_adjusted)
         Power_data_with_XGBoost_adjusted.append(row_power_with_XGBoost_adjusted)
+    print(Power_data)
+    print(Power_data_with_LR_adjusted)
+    print(Power_data_with_XGBoost_adjusted)
+    
     plot_covariance.plot_results(Power_data, Power_data_with_LR_adjusted, Power_data_with_XGBoost_adjusted)
 
 main2("single")

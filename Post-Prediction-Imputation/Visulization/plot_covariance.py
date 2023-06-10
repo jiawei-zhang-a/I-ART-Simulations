@@ -6,29 +6,63 @@ def plot_results(data, data_LR_adjusted, data_xgboost_adjusted):
     data_LR_adjusted =  [[row[0], row[1], row[2], row[3], row[4]] for row in data_LR_adjusted]
     data_xgboost_adjusted =  [[row[0], row[1], row[2], row[3], row[4]] for row in data_xgboost_adjusted]
     
-    columns = ['beta', 'Median', 'Linear', 'XGBoost', 'Oracle', 'Median_LR', 'Linear_LR', 'XGBoost_LR', 'I100_Oracle_LR', 'Median_XGBoost', 'Linear_XGBoost', 'XGBoost_XGBoost', 'I100_Oracle_XGBoost']
+    columns = [['beta', 'Median', 'Linear', 'XGBoost', 'Oracle'], ['beta', 'Median_LR', 'Linear_LR', 'XGBoost_LR', 'Oracle_LR'], ['beta', 'Median_XGBoost', 'Linear_XGBoost', 'XGBoost_XGBoost', 'Oracle_XGBoost']]
 
-    df = pd.DataFrame(data, columns=columns)
-    df_LR_adjusted = pd.DataFrame(data_LR_adjusted, columns=columns)
-    df_xgboost_adjusted = pd.DataFrame(data_xgboost_adjusted, columns=columns)
-
-    plt.figure(figsize=(12, 8))
+    df = pd.DataFrame(data, columns=columns[0])
+    df_LR_adjusted = pd.DataFrame(data_LR_adjusted, columns=columns[1])
+    df_xgboost_adjusted = pd.DataFrame(data_xgboost_adjusted, columns=columns[2])
 
     colors = {'Median': 'blue', 'Linear': 'red', 'XGBoost': 'green', 'Oracle': 'purple'}
-    linestyles = {'Original': '-', 'LR_adjusted': '--', 'XGBoost_adjusted': '-.'}
 
-    for col in columns[1:]:
-        method = col.split('_')[1]
-        dataset = col.split('_')[0]
-        linestyle = linestyles[dataset]
-        plt.plot(df['beta'], df[col], marker='o', label=col, color=colors[method], linestyle=linestyle)
-        plt.plot(df_LR_adjusted['beta'], df_LR_adjusted[col], marker='o', label=col + " with LR", color=colors[method], linestyle=linestyle, alpha=0.5)
-        plt.plot(df_xgboost_adjusted['beta'], df_xgboost_adjusted[col], marker='o', label=col + " with XGBoost", color=colors[method], linestyle=linestyle, alpha=0.5)
+    dfs = [df, df_LR_adjusted, df_xgboost_adjusted]
+    titles = ['Performance of Original Data', 'Performance of LR Adjusted Data', 'Performance of XGBoost Adjusted Data']
 
-    plt.xlabel('Beta')
-    plt.ylabel('Absolute Error')
-    plt.title('Performance of Imputation Methods for Varying Beta')
-    plt.legend()
-    plt.grid()
+    for i in range(3):
+        plt.figure(figsize=(12, 8))
+        for col in dfs[i].columns[1:]:
+            method = col.split('_')[0]
+            plt.plot(dfs[i]['beta'], dfs[i][col], marker='o', label=col, color=colors[method])
+        plt.xlabel('Beta')
+        plt.ylabel('Absolute Error')
+        plt.title(titles[i])
+        plt.legend()
+        plt.grid()
+        plt.show()
 
-    plt.show()
+def plot_results0(data, data_LR_adjusted, data_xgboost_adjusted):
+    data = [[row[0], row[1], row[2], row[3], row[4]] for row in data]
+    data_LR_adjusted = [[row[0], row[1], row[2], row[3], row[4]] for row in data_LR_adjusted]
+    data_xgboost_adjusted = [[row[0], row[1], row[2], row[3], row[4]] for row in data_xgboost_adjusted]
+    
+    columns = ['beta', 'Median', 'Linear', 'XGBoost', 'Oracle']
+    columns_LR = ['beta', 'Median_LR', 'Linear_LR', 'XGBoost_LR', 'Oracle_LR']
+    columns_XGBoost = ['beta', 'Median_XGBoost', 'Linear_XGBoost', 'XGBoost_XGBoost', 'Oracle_XGBoost']
+    
+    df = pd.DataFrame(data, columns=columns)
+    df_LR = pd.DataFrame(data_LR_adjusted, columns=columns_LR)
+    df_XGBoost = pd.DataFrame(data_xgboost_adjusted, columns=columns_XGBoost)
+
+    linestyles = ['-', '--', '-.']
+    datasets = [df, df_LR, df_XGBoost]
+    labels = ['Original', 'LR Adjusted', 'XGBoost Adjusted']
+
+    methods = ['Median', 'Linear', 'XGBoost', 'Oracle']
+    adjusted_methods = ['_LR', '_XGBoost']
+
+    for method in methods:
+        plt.figure(figsize=(10, 6))
+        
+        # Original data
+        plt.plot(df['beta'], df[method], linestyle=linestyles[0], marker='o', label=f'{method} {labels[0]}')
+        
+        # Adjusted data
+        for i, adj_method in enumerate(adjusted_methods, start=1):
+            column_name = method + adj_method  # example: 'Median_LR'
+            plt.plot(datasets[i]['beta'], datasets[i][column_name], linestyle=linestyles[i], marker='o', label=f'{method} {labels[i]}')
+
+        plt.title(f'{method} Method Comparison')
+        plt.xlabel('Beta')
+        plt.ylabel('Absolute Error')
+        plt.legend()
+        plt.grid()
+        plt.show()

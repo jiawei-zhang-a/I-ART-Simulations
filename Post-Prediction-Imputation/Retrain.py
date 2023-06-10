@@ -155,14 +155,14 @@ class RetrainTest:
 
         return t
 
-    def retrain_test(self, Z, X, M, Y, Y_noZ, G,  L=10000, verbose = False):
+    def retrain_test(self, Z, X, M, Y, G,  L=10000, verbose = False):
         if G == None:
-            return self.retrain_test_oracle(Z, X, M, Y, Y_noZ, G, L, verbose)   
+            return self.retrain_test_oracle(Z, X, M, Y, G, L, verbose)   
         else:
-            return self.retrain_test_imputed(Z, X, M, Y, Y_noZ, G, L, verbose)
+            return self.retrain_test_imputed(Z, X, M, Y, G, L, verbose)
         
 
-    def retrain_test_oracle(self, Z, X, M, Y, Y_noZ, G,  L=10000, verbose = False):
+    def retrain_test_oracle(self, Z, X, M, Y, G,  L=10000, verbose = False):
         """
         A retrain framework for testing H_0.
 
@@ -233,7 +233,7 @@ class RetrainTest:
         
         return p_values, reject, corr_G
 
-    def retrain_test_imputed(self, Z, X, M, Y, Y_noZ, G,  L=10000, verbose = False):
+    def retrain_test_imputed(self, Z, X, M, Y, G,  L=10000, verbose = False):
         """
         A retrain framework for testing H_0.
 

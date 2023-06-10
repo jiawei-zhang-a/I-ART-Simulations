@@ -35,11 +35,11 @@ def run(Nsize, Unobserved, Single, filepath, adjust):
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single)
 
-    X, Z, U, Y,Y_noZ, M, S = DataGen.GenerateData()
+    X, Z, U, Y, M, S = DataGen.GenerateData()
 
     # Oracle 
     print("Oracle")
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y,Y_noZ, L=L, G = None,verbose=1)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = None,verbose=1)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject, corr_G]
     print(values_oracle)
@@ -48,21 +48,21 @@ def run(Nsize, Unobserved, Single, filepath, adjust):
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y,Y_noZ,L=L, G = median_imputer,verbose=1)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = median_imputer,verbose=1)
     # Append p-values to corresponding lists
     values_median = [ *p_values, reject, corr_G]
 
     #LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y,Y_noZ, L=L,G=BayesianRidge,verbose=1)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L,G=BayesianRidge,verbose=1)
     # Append p-values to corresponding lists
     values_LR = [ *p_values, reject, corr_G]
 
     #XGBoost
     print("XGBoost")
     XGBoost = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y,Y_noZ, L=L, G=XGBoost,verbose=1)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G=XGBoost,verbose=1)
     # Append p-values to corresponding lists
     values_xgboost = [ *p_values, reject, corr_G]
     print("Finished")

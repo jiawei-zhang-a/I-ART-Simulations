@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def plot_results(data, data_LR_adjusted, data_xgboost_adjusted):
+def plot_results0(data, data_LR_adjusted, data_xgboost_adjusted):
     data =  [[row[0], row[1], row[2], row[3], row[4]] for row in data]
     data_LR_adjusted =  [[row[0], row[1], row[2], row[3], row[4]] for row in data_LR_adjusted]
     data_xgboost_adjusted =  [[row[0], row[1], row[2], row[3], row[4]] for row in data_xgboost_adjusted]
@@ -29,7 +29,7 @@ def plot_results(data, data_LR_adjusted, data_xgboost_adjusted):
         plt.grid()
         plt.show()
 
-def plot_results0(data, data_LR_adjusted, data_xgboost_adjusted):
+def plot_results(data, data_LR_adjusted, data_xgboost_adjusted):
     data = [[row[0], row[1], row[2], row[3], row[4]] for row in data]
     data_LR_adjusted = [[row[0], row[1], row[2], row[3], row[4]] for row in data_LR_adjusted]
     data_xgboost_adjusted = [[row[0], row[1], row[2], row[3], row[4]] for row in data_xgboost_adjusted]

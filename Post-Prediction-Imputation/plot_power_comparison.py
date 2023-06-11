@@ -47,8 +47,9 @@ def main2(type):
     print(Power_data)
     print(Power_data_with_LR_adjusted)
     print(Power_data_with_XGBoost_adjusted)
-    
+
     plot_covariance.plot_results(Power_data, Power_data_with_LR_adjusted, Power_data_with_XGBoost_adjusted)
+    plot_covariance.plot_results2(Power_data, Power_data_with_LR_adjusted, Power_data_with_XGBoost_adjusted)
 
 main2("single")
 

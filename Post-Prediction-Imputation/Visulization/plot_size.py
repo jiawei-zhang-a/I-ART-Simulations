@@ -18,16 +18,12 @@ def plot_results(data):
         dataset = col.split('_')[0]
         linestyle = linestyles[dataset]
         plt.plot(df['beta'], df[col], marker='o', label=col, color=colors[method], linestyle=linestyle)
+        if col == "I50_Oracle" or col == "I2000_Oracle" or col == "I20000_Oracle":
+            plt.xlabel('Beta')
+            plt.ylabel('Power(covariate adjusted)')
+            plt.title('Performance of Imputation Methods for Varying Beta')
+            plt.legend()
+            plt.grid()
 
-    plt.xlabel('Beta')
-    plt.ylabel('Power(covariate adjusted)')
-    plt.title('Performance of Imputation Methods for Varying Beta')
-    plt.legend()
-    plt.grid()
+            plt.show()
 
-    plt.show()
-
-# You can update your data accordingly
-data = [
-    # These are example values, adjust them according to your data
-    [4, 0.1385, 0.141, 0.2405, 0.125, 0.1, 0.2, 0.3, 0.4, 0.

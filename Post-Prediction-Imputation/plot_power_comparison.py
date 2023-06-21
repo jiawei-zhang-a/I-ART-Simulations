@@ -29,7 +29,7 @@ def main2(type):
             results = read_npz_files(directory)
             row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power'], results['oracle_power']])
 
-        for directory in [ "Result/Result/HPC_power_2000_single/%f" % (coef)]:
+        for directory in [ "Result/HPC_power_2000_single/%f" % (coef)]:
             results = read_npz_files(directory)
             row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power'], results['oracle_power']])
 

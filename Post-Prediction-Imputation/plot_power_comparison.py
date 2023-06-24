@@ -11,7 +11,7 @@ def main(type):
         row_with_U_power = [coef]
         for directory in ["Result/HPC_power_unobserved_1000_single/%f" % (coef)]:
             results = read_npz_files(directory)
-            row_with_U_power.extend([results['median_power'], results['lr_power'], results['xgboost_power'], results['oracle_power']])
+            row_with_U_power.extend([results['median_power'], results['lr_power'], results['xgboost_power']])
 
         power_data_with_U.append(row_with_U_power)
 
@@ -27,15 +27,15 @@ def main2(type):
         row_power = [coef]
         for directory in ["Result/HPC_power_50_single/%f" % (coef)]:
             results = read_npz_files(directory)
-            row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power'], results['oracle_power']])
+            row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power']])
 
         for directory in [ "Result/HPC_power_2000_single/%f" % (coef)]:
             results = read_npz_files(directory)
-            row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power'], results['oracle_power']])
+            row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power']])
 
         for directory in [ "Result/HPC_power_20000_single/%f" % (coef)]:
             results = read_npz_files(directory)
-            row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power'], results['oracle_power']])
+            row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power']])
 
         Power_data.append(row_power)
     print(Power_data)

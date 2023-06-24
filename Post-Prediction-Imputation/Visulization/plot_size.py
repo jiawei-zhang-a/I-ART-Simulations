@@ -2,28 +2,45 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def plot_results(data):
-    columns = ['beta', 'I50_Median', 'I50_Linear', 'I50_XGBoost', 'I50_Oracle', 
-               'I2000_Median', 'I2000_Linear', 'I2000_XGBoost', 'I2000_Oracle', 
-               'I20000_Median', 'I20000_Linear', 'I20000_XGBoost', 'I20000_Oracle']
+    columns = ['beta', 'Size50_Median', 'Size50_Linear', 'Size50_XGBoost', 
+               'Size2000_Median', 'Size2000_Linear', 'Size2000_XGBoost', 
+               'Size20000_Median', 'Size20000_Linear', 'Size20000_XGBoost']
 
     df = pd.DataFrame(data, columns=columns)
 
     plt.figure(figsize=(10, 6))
 
     colors = {'Median': 'blue', 'Linear': 'red', 'XGBoost': 'green', 'Oracle': 'purple'}
-    linestyles = {'I50': '-', 'I2000': '--', 'I20000': ':'}
+    linestyles = {'Size50': '-', 'Size2000': '--', 'Size20000': ':'}
 
     for col in columns[1:]:
         method = col.split('_')[1]
         dataset = col.split('_')[0]
         linestyle = linestyles[dataset]
         plt.plot(df['beta'], df[col], marker='o', label=col, color=colors[method], linestyle=linestyle)
-        if col == "I50_Oracle" or col == "I2000_Oracle" or col == "I20000_Oracle":
+        
+        if col == "Size50_XGBoost":
             plt.xlabel('Beta')
-            plt.ylabel('Power(covariate adjusted)')
-            plt.title('Performance of Imputation Methods for Varying Beta')
+            plt.ylabel('Power')
+            plt.title('Small Size(50)')
             plt.legend()
             plt.grid()
-
             plt.show()
+
+        if col == "Size2000_XGBoost":
+            plt.xlabel('Beta')
+            plt.ylabel('Power')
+            plt.title('Medium Size(2000)')
+            plt.legend()
+            plt.grid()
+            plt.show()
+
+        if col == "Size20000_XGBoost":
+            plt.xlabel('Beta')
+            plt.ylabel('Power')
+            plt.title('Large Size(20000)')
+            plt.legend()
+            plt.grid()
+            plt.show()
+        
 

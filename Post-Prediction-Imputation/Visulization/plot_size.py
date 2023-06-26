@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
+
 def plot_results(data):
     columns = ['beta', 'Size50_Median', 'Size50_Linear', 'Size50_XGBoost', 
                'Size2000_Median', 'Size2000_Linear', 'Size2000_XGBoost', 

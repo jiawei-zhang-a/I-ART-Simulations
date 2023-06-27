@@ -153,7 +153,7 @@ class DataGenerator:
       # Compute Yn2
       #Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum1 + sum3 + sum4
       #Y_n3 = self.beta_32 * Z +  sum3 + sum4
-      Y_n3 = self.beta_32 * Z +  sum3
+      Y_n3 = self.beta_32 * Z +  sum3 + U
       # Compute Yn3
       Y_n2 = (self.beta_31 * Z + self.beta_32 * Z * sum5  + sum6 + sum7 + U)
 
@@ -164,7 +164,7 @@ class DataGenerator:
       # Compute Yn2
       #Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum1 + sum3 + sum4
       #Y_n3 = self.beta_32 * Z +  sum3 + sum4
-      Y_n3 = self.beta_32 * Z +  sum3
+      Y_n3 = self.beta_32 * Z +  sum3 + U
       # Compute Yn3
       Y_n2 = (self.beta_31 * Z + self.beta_32 * Z * sum5 + sum6 + sum7) 
     
@@ -190,14 +190,18 @@ class DataGenerator:
               sum3 += p * X[i,p-1] 
           sum3 = (1.0  / np.sqrt(5)) * sum3
 
+          """
           sum4 = 0
           for p in range(1,6):
             for p_2 in range(1,6):
               for p_3 in range(1,6):
                 sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
-          
-          M_lamda[i][0] = sum3 + sum4  #+ Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) )
+          """
+
+          sum5 = Y[i,0] 
+
+          M_lamda[i][0] = sum3 + sum5  #+ Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) )
         
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
@@ -207,14 +211,17 @@ class DataGenerator:
               sum3 += p * X[i,p-1] 
           sum3 = (1.0  / np.sqrt(5)) * sum3
 
+          """
           sum4 = 0
           for p in range(1,6):
             for p_2 in range(1,6):
               for p_3 in range(1,6):
                 sum4 += X[i,p-1] * X[i,p_2-1] * X[i,p_3-1]
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
+          """
+          sum5 = Y[i,0] 
 
-          if sum3 + sum4 > lambda1:#+ sum4  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0])) > lambda1:
+          if sum3 + sum5 > lambda1:#+ sum4  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0])) > lambda1:
             M[i][0] = 1
 
         return M

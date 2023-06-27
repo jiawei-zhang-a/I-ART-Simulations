@@ -94,13 +94,5 @@ def main(type):
 
         Power_data_2000.append(row_power) 
     plot_results_2000(Power_data_2000)
-    
-    for coef in np.arange(0.0,0.1,0.02):
-        row_power = [coef]
-        for directory in [ "Result/HPC_power_20000_single/%f" % (coef)]:
-            results = read_npz_files(directory)
-            row_power.extend([results['median_power'], results['lr_power'], results['xgboost_power']])
-        Power_data_20000.append(row_power)
-    plot_results_20000(Power_data_20000)
 
 main("single")

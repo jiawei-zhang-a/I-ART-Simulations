@@ -33,7 +33,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust):
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 10), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single)
+    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 50), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
@@ -103,10 +103,15 @@ if __name__ == '__main__':
     if os.path.exists("Result") == False:
         os.mkdir("Result")
 
-    for coef in np.arange(0.0,0.5,0.02):
+    #beta_coef = 0
+   # L = 1000
+   # run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50" + "_single", adjust = 0)
+   # run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000" + "_single", adjust = 0)
+
+    for coef in np.arange(0.0,2,0.05):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50" + "_single", adjust = 0)
-    for coef in np.arange(0.0,0.2,0.02):
+    for coef in np.arange(0.0,0.4,0.02):
         beta_coef = coef
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000" + "_single", adjust = 0)
 """

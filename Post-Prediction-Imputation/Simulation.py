@@ -70,8 +70,26 @@ class DataGenerator:
 
     Z = np.concatenate(Z).reshape(-1, 1)
     return Z
+
+  def GenerateIndividualEps(self):
+      mean = 0
+      std = 0.1
+      eps = np.random.normal(mean, std, self.N)
+      eps = eps.reshape(-1,)
+
+      return eps
   
-  def GenerateY(self, X, U, Z):
+  def GenerateStrataEps(self):
+      eps = []
+      groupSize = int(self.N / self.N_S)
+
+      for i in range(self.N_S):
+          eps.append(np.full(groupSize, np.random.normal(0, 1)))
+
+      eps = np.concatenate(eps).reshape(-1,)
+      return eps
+  
+  def GenerateY(self, X, U, Z,  StrataEps, IndividualEps):
         
     #def sum1():
     sum1 = np.zeros(self.N)
@@ -151,7 +169,7 @@ class DataGenerator:
       Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2 + np.sin(U) )
 
       # Compute Yn2
-      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U
+      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
       #Y_n3 = self.beta_32 * Z +  sum3 + sum4
       #Y_n3 = self.beta_32 * Z +  sum3 + sum4 + U
       # Compute Yn3
@@ -162,7 +180,7 @@ class DataGenerator:
       Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1  + sum2) 
 
       # Compute Yn2
-      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U
+      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
       #Y_n3 = self.beta_32 * Z +  sum3 + sum4
       #Y_n3 = self.beta_32 * Z +  sum3 + sum4 + U
       # Compute Yn3
@@ -205,7 +223,7 @@ class DataGenerator:
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
           """
 
-          M_lamda[i][0] = sum3 + sum2 + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) 
+          M_lamda[i][0] = sum3 + sum2 + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + U[i]
         
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
@@ -229,7 +247,7 @@ class DataGenerator:
           sum4 = (1.0  / np.sqrt(5 * 5 * 5)) * sum4
           """
 
-          if sum3 + sum2  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) > lambda1:
+          if sum3 + sum2  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + U[i] > lambda1:
             M[i][0] = 1
 
         return M
@@ -353,8 +371,12 @@ class DataGenerator:
     # Generate Z
     Z = self.GenerateZ()
 
+    # generate Interf
+    StrataEps = self.GenerateStrataEps()
+    IndividualEps = self.GenerateIndividualEps()
+
     # Generate Y
-    Y = self.GenerateY(X, U, Z)
+    Y = self.GenerateY(X, U, Z, StrataEps, IndividualEps)
 
     # Generate M
     M = self.GenerateM(X, U, Y, single = self.Single)

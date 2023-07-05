@@ -46,7 +46,7 @@ class DataGenerator:
   def GenerateU(self):
       # generate U
       mean = 0
-      std = 1
+      std = 0.2
       U = np.random.normal(mean, std, self.N)
       U = U.reshape(-1, 1)
 
@@ -73,7 +73,7 @@ class DataGenerator:
 
   def GenerateIndividualEps(self):
       mean = 0
-      std = 0.1
+      std = 0.2
       eps = np.random.normal(mean, std, self.N)
       eps = eps.reshape(-1,)
 
@@ -84,7 +84,7 @@ class DataGenerator:
       groupSize = int(self.N / self.N_S)
 
       for i in range(self.N_S):
-          eps.append(np.full(groupSize, np.random.normal(0, 1)))
+          eps.append(np.full(groupSize, np.random.normal(0, 0.1)))
 
       eps = np.concatenate(eps).reshape(-1,)
       return eps

@@ -108,10 +108,10 @@ if __name__ == '__main__':
    # run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50" + "_single", adjust = 0)
    # run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000" + "_single", adjust = 0)
 
-    for coef in np.arange(0.0,2,0.05):
+    for coef in np.arange(0.0,2,0.2):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50" + "_single", adjust = 0)
-    for coef in np.arange(0.0,0.4,0.02):
+    for coef in np.arange(0.0,0.4,0.05):
         beta_coef = coef
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000" + "_single", adjust = 0)
 """

@@ -169,9 +169,9 @@ class DataGenerator:
       Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1   + sum2 + np.sin(U) )
 
       # Compute Yn2
-      #Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
+      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
       #Y_n3 = self.beta_32 * Z + sum3 + U +  StrataEps+ IndividualEps
-      Y_n3 = self.beta_32 * Z +  sum3 + sum4 + U+  StrataEps+ IndividualEps
+      #Y_n3 = self.beta_32 * Z +  sum3 + sum4 + U+  StrataEps+ IndividualEps
       Y_n2 = (self.beta_31 * Z + self.beta_32 * Z * sum5  + sum6 + sum7 + U)
 
     else:
@@ -179,8 +179,8 @@ class DataGenerator:
       Y_n1 = (self.beta_11 * Z + self.beta_12 * Z * sum1  + sum2) 
 
       # Compute Yn2
-      #Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
-      Y_n3 = self.beta_32 * Z + sum3 + sum4 + U +  StrataEps+ IndividualEps
+      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
+      #Y_n3 = self.beta_32 * Z + sum3 + sum4 + U +  StrataEps+ IndividualEps
       #Y_n3 = self.beta_32 * Z +  sum3 + U +  StrataEps+ IndividualEps
       Y_n2 = (self.beta_31 * Z + self.beta_32 * Z * sum5 + sum6 + sum7) 
     

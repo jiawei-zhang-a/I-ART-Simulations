@@ -78,7 +78,7 @@ def main(type):
     Power_data_2000 = []
     Power_data_20000= []
 
-    for coef in np.arange(0.0,2,0.05):
+    for coef in np.arange(0.0,2,0.2):
         row_power = [coef]
         for directory in ["Result/HPC_power_50_single/%f" % (coef)]:
             results = read_npz_files(directory)
@@ -86,7 +86,7 @@ def main(type):
         Power_data_50.append(row_power)
     plot_results_50(Power_data_50)
 
-    for coef in np.arange(0.0,0.4,0.02):
+    for coef in np.arange(0.0,0.4,0.05):
         row_power = [coef]
         for directory in [ "Result/HPC_power_2000_single/%f" % (coef)]:
             results = read_npz_files(directory)

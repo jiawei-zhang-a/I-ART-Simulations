@@ -21,7 +21,7 @@ save_file = False
 max_iter = 3
 L = 100
 
-def run(Nsize, Unobserved, Single, filepath, adjust):
+def run(Nsize, Unobserved, Single, filepath, adjust, linear_method):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
@@ -33,7 +33,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust):
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 50), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single)
+    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 50), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, linear_method = linear_method)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
@@ -108,12 +108,34 @@ if __name__ == '__main__':
    # run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50" + "_single", adjust = 0)
    # run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000" + "_single", adjust = 0)
 
-    for coef in np.arange(0.0,2,0.2):
+    for coef in np.arange(0.0,31,0.5):
         beta_coef = coef
-        run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50" + "_single", adjust = 0)
-    for coef in np.arange(0.0,0.4,0.05):
+        run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
+        run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
+    for coef in np.arange(0.0,0.41,0.08):
         beta_coef = coef
-        run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000" + "_single", adjust = 0)
+        run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
+        run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
+    
+    for coef in np.arange(0.0,5.1,0.1):
+        beta_coef = coef
+        run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
+        run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
+    for coef in np.arange(0.0,0.61,0.1):
+        beta_coef = coef
+        run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
+        run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
+    
+    for coef in np.arange(0.0,5.1,0.1):
+        beta_coef = coef
+        run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
+        run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
+    for coef in np.arange(0.0,0.41,0.08):
+        beta_coef = coef
+        run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
+        run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
+
+
 """
     for coef in np.arange(0.0,0.1,0.02):
         beta_coef = coef

@@ -108,7 +108,7 @@ if __name__ == '__main__':
    # run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50" + "_single", adjust = 0)
    # run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000" + "_single", adjust = 0)
 
-    for coef in np.arange(0.0,31,0.5):
+    for coef in np.arange(0.0,3.1,0.5):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
@@ -117,7 +117,7 @@ if __name__ == '__main__':
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
     
-    for coef in np.arange(0.0,5.1,0.1):
+    for coef in np.arange(0.0,5.1,1):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
     
-    for coef in np.arange(0.0,5.1,0.1):
+    for coef in np.arange(0.0,5.1,1):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)

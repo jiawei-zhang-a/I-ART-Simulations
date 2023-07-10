@@ -117,20 +117,20 @@ if __name__ == '__main__':
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
     
-    for coef in np.arange(0.0,5.1,1):
+    for coef in np.arange(0.0,10.1,2):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
-    for coef in np.arange(0.0,0.61,0.1):
+    for coef in np.arange(0.0,0.81,0.15):
         beta_coef = coef
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
     
-    for coef in np.arange(0.0,5.1,1):
+    for coef in np.arange(0.0,10.1,2):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
-    for coef in np.arange(0.0,0.41,0.08):
+    for coef in np.arange(0.0,0.81,0.15):
         beta_coef = coef
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)

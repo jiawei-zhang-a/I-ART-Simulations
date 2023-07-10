@@ -212,17 +212,17 @@ class DataGenerator:
             if self.linear_method == 0:
               M_lamda[i][0] = sum3 + Y[i, 0] + U[i]
             if self.linear_method == 1:
-              M_lamda[i][0] = sum3 + sum2 + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + U[i]
+              M_lamda[i][0] = sum3 + sum2 + logistic.cdf(Y[i, 0]) + U[i]
             if self.linear_method == 2:
-              M_lamda[i][0] = sum3 + sum2 + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + U[i]
+              M_lamda[i][0] = sum3 + sum2  + logistic.cdf(Y[i, 0]) + U[i]
           else:
             assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
             if self.linear_method == 0:
               M_lamda[i][0] = sum3 + Y[i, 0] 
             if self.linear_method == 1:
-              M_lamda[i][0] = sum3 + sum2 + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0])
+              M_lamda[i][0] = sum3 + sum2  + logistic.cdf(Y[i, 0]) 
             if self.linear_method == 2:
-              M_lamda[i][0] = sum3 + sum2 + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0])
+              M_lamda[i][0] = sum3 + sum2 + logistic.cdf(Y[i, 0])
 
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
@@ -244,10 +244,10 @@ class DataGenerator:
               if sum3 + Y[i, 0] + U[i] > lambda1:
                 M[i][0] = 1
             if self.linear_method == 1:
-              if sum3 + sum2  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + U[i] > lambda1:
+              if sum3 + sum2   + logistic.cdf(Y[i, 0])+ U[i] > lambda1:
                 M[i][0] = 1            
             if self.linear_method == 2:
-              if sum3 + sum2  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) + U[i] > lambda1:
+              if sum3 + sum2  + logistic.cdf(Y[i, 0]) + U[i] > lambda1:
                 M[i][0] = 1 
 
           else:
@@ -256,10 +256,10 @@ class DataGenerator:
               if sum3 + Y[i, 0]  > lambda1:
                 M[i][0] = 1
             if self.linear_method == 1:
-              if sum3 + sum2  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0]) > lambda1:
+              if sum3 + sum2   + logistic.cdf(Y[i, 0])  > lambda1:
                 M[i][0] = 1            
             if self.linear_method == 2:
-              if sum3 + sum2  + Y[i, 0] + logistic.cdf(Y[i, 0]) + np.absolute(Y[i, 0])> lambda1:
+              if sum3 + sum2   + logistic.cdf(Y[i, 0]) > lambda1:
                 M[i][0] = 1 
          
         return M

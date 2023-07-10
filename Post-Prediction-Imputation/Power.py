@@ -102,16 +102,12 @@ if __name__ == '__main__':
 
     if os.path.exists("Result") == False:
         os.mkdir("Result")
-
-    #beta_coef = 0
-   # L = 1000
-   # run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50" + "_single", adjust = 0)
-   # run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000" + "_single", adjust = 0)
-
+   
     for coef in np.arange(0.0,3.1,0.5):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
+
     for coef in np.arange(0.0,0.41,0.08):
         beta_coef = coef
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
@@ -126,18 +122,11 @@ if __name__ == '__main__':
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
     
-    for coef in np.arange(0.0,10.1,2):
+    for coef in np.arange(0.0,6.1,1):
         beta_coef = coef
         run(50, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_50_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
-    for coef in np.arange(0.0,0.81,0.15):
+    for coef in np.arange(0.0,0.31,0.06):
         beta_coef = coef
         run(2000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_2000_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
-
-
-"""
-    for coef in np.arange(0.0,0.1,0.02):
-        beta_coef = coef
-        run(20000, Unobserved = 0, Single = 1, filepath = "Result/HPC_power_20000" + "_single", adjust = 0)
-"""

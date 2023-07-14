@@ -39,7 +39,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method):
 
     # Oracle 
     print("Oracle")
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = None,verbose=0)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = None,verbose=1)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject, corr_G]
     print(values_oracle)
@@ -48,21 +48,21 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method):
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = median_imputer,verbose=0)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = median_imputer,verbose=1)
     # Append p-values to corresponding lists
     values_median = [ *p_values, reject, corr_G]
 
     #LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L,G=BayesianRidge,verbose=0)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L,G=BayesianRidge,verbose=1)
     # Append p-values to corresponding lists
     values_LR = [ *p_values, reject, corr_G]
 
     #XGBoost
     print("XGBoost")
     XGBoost = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G=XGBoost,verbose=0)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G=XGBoost,verbose=1)
     # Append p-values to corresponding lists
     values_xgboost = [ *p_values, reject, corr_G]
     print("Finished")
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     if os.path.exists("Result") == False:
         os.mkdir("Result")
     
-    for coef in np.arange(0.0,3.1,0.5):
+    for coef in np.arange(0,3.1,0.5):
         beta_coef = coef
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)
 

@@ -272,25 +272,25 @@ class DataGenerator:
           if self.Unobserved:
             assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
             if self.linear_method == 0:
-              if sum3 + Y[i, 0] + U[i] > lambda1:
+              if sum3 + Y[i, 0] + U[i]  + XInter[i] + YInter[i] > lambda1:
                 M[i][0] = 1
             if self.linear_method == 1:
-              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])+ U[i] > lambda1:
+              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])+ U[i] + XInter[i] + YInter[i] > lambda1:
                 M[i][0] = 1            
             if self.linear_method == 2:
-              if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] > lambda1:
+              if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
                 M[i][0] = 1 
 
           else:
             assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
             if self.linear_method == 0:
-              if sum3 + Y[i, 0]  > lambda1:
+              if sum3 + Y[i, 0]  + XInter[i] + YInter[i] > lambda1:
                 M[i][0] = 1
             if self.linear_method == 1:
-              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])  > lambda1:
+              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])  + XInter[i] + YInter[i] > lambda1:
                 M[i][0] = 1            
             if self.linear_method == 2:
-              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0]) > lambda1:
+              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i] > lambda1:
                 M[i][0] = 1 
 
         if self.verbose:
@@ -301,6 +301,7 @@ class DataGenerator:
           data['Yinter'] = M_lamda_YInter[:,0]
           print(data.describe())
 
+        print(pd.DataFrame(M).describe())
         return M
 
       else:

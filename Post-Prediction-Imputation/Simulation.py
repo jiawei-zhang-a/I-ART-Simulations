@@ -4,7 +4,7 @@ import pandas as pd
 from scipy.stats import logistic
 
 class DataGenerator:
-  def __init__(self,*, N = 1000, N_T = 500, N_S = 50, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, linear_method = 0, verbose = False, bias = False):
+  def __init__(self,*, N = 1000, N_T = 500, N_S = 10, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, linear_method = 0, verbose = False, bias = False):
     self.N = N
     self.N_T = N_T
     self.N_S = N_S
@@ -50,7 +50,6 @@ class DataGenerator:
       std = 0.5
       U = np.random.normal(mean, std, self.N)
       U = U.reshape(-1, 1)
-
       return U
 
   def GenerateS(self):
@@ -90,7 +89,29 @@ class DataGenerator:
       eps = np.concatenate(eps).reshape(-1,)
       return eps
   
-  def GenerateY(self, X, U, Z,  StrataEps, IndividualEps):
+  def GenerateXInter(self, X):
+      biases = []
+      groupSize = int(self.N / self.N_S)
+
+      for i in range(self.N_S):
+          strata = X[i * groupSize : (i+1) * groupSize, 0]  # select the first column in the strata
+          biases.append(np.full(groupSize, 10 * np.mean(strata)))
+
+      biases = np.concatenate(biases).reshape(-1,)
+      return biases
+
+  def GenerateYInter(self, Y):
+      biases = []
+      groupSize = int(self.N / self.N_S)
+
+      for i in range(self.N_S):
+          strata = Y[i * groupSize : (i+1) * groupSize, 0]  # select the first column in the strata
+          biases.append(np.full(groupSize, np.mean(strata)))
+
+      biases = np.concatenate(biases).reshape(-1,)
+      return biases
+
+  def GenerateY(self, X, U, Z,  StrataEps, IndividualEps, XInter):
         
     #def sum1():
     sum1 = np.zeros(self.N)
@@ -159,33 +180,33 @@ class DataGenerator:
       Y_n3_X = sum3 + sum4
       Y_n3_U =  U +  StrataEps+ IndividualEps
 
-      data = pd.DataFrame({'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U})
+      data = pd.DataFrame({'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U, 'X_inter': XInter})
       print(data.describe())
     
     if self.Unobserved:
       assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
       if self.linear_method == 0:
-        Y_n3 = self.beta_32 * Z + sum3 + U +  StrataEps+ IndividualEps
+        Y_n3 = self.beta_32 * Z + sum3 + U +  StrataEps+ IndividualEps + XInter
       if self.linear_method == 1:
-        Y_n3 = self.beta_32 * Z +  sum3 + sum4 + U+  StrataEps+ IndividualEps
+        Y_n3 = self.beta_32 * Z +  sum3 + sum4 + U+  StrataEps+ IndividualEps + XInter
       if self.linear_method == 2:
-        Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
+        Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps + XInter
       
     else:
       assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
       if self.linear_method == 0:
-        Y_n3 = self.beta_32 * Z + sum3  +  StrataEps+ IndividualEps
+        Y_n3 = self.beta_32 * Z + sum3  +  StrataEps+ IndividualEps + XInter
       if self.linear_method == 1:
-        Y_n3 = self.beta_32 * Z +  sum3 + sum4 +  StrataEps+ IndividualEps
+        Y_n3 = self.beta_32 * Z +  sum3 + sum4 +  StrataEps+ IndividualEps + XInter
       if self.linear_method == 2:
-        Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 +  StrataEps+ IndividualEps
+        Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 +  StrataEps+ IndividualEps + XInter
       
     Y = Y_n3.reshape(-1, 1)
 
     return Y
 
 
-  def GenerateM(self, X, U, Y, single = True):
+  def GenerateM(self, X, U, Y, XInter, YInter, single = True):
       
       U = U.reshape(-1,)
       n = X.shape[0]
@@ -193,6 +214,9 @@ class DataGenerator:
         M_lamda_Y = np.zeros((n, 1))
         M_lamda_X = np.zeros((n, 1))
         M_lamda_U = np.zeros((n, 1))
+        M_lamda_XInter= np.zeros((n, 1))
+        M_lamda_YInter= np.zeros((n, 1))
+
       if single:
         M = np.zeros((n, 1))
         M_lamda = np.zeros((n, 1))
@@ -210,19 +234,19 @@ class DataGenerator:
           if self.Unobserved:
             assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
             if self.linear_method == 0:
-              M_lamda[i][0] = sum3 + Y[i, 0] + U[i]
+              M_lamda[i][0] = sum3 + Y[i, 0] + U[i] + XInter[i] + YInter[i]
             if self.linear_method == 1:
-              M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + U[i]
+              M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i]
             if self.linear_method == 2:
-              M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i]
+              M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i]
           else:
             assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
             if self.linear_method == 0:
-              M_lamda[i][0] = sum3 + Y[i, 0] 
+              M_lamda[i][0] = sum3 + Y[i, 0] + XInter[i] + YInter[i]
             if self.linear_method == 1:
-              M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) 
+              M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i]
             if self.linear_method == 2:
-              M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0])
+              M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i]
 
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
@@ -241,6 +265,8 @@ class DataGenerator:
             M_lamda_Y[i][0] = 10 * logistic.cdf(Y[i, 0])
             M_lamda_X[i][0] = sum2 + sum3
             M_lamda_U[i][0] = U[i]
+            M_lamda_XInter[i][0] = XInter[i]
+            M_lamda_YInter[i][0] = YInter[i]
 
           if self.Unobserved:
             assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
@@ -270,6 +296,8 @@ class DataGenerator:
           data = pd.DataFrame(M_lamda_Y, columns=['Y1'])
           data['X'] = M_lamda_X[:,0]
           data['U'] = M_lamda_U[:,0]
+          data['Xinter'] = M_lamda_XInter[:,0]
+          data['Yinter'] = M_lamda_YInter[:,0]
           print(data.describe())
 
         return M
@@ -396,12 +424,15 @@ class DataGenerator:
     # generate Interf
     StrataEps = self.GenerateStrataEps()
     IndividualEps = self.GenerateIndividualEps()
+    XInter = self.GenerateXInter(X)
+    
 
     # Generate Y
-    Y = self.GenerateY(X, U, Z, StrataEps, IndividualEps)
+    Y = self.GenerateY(X, U, Z, StrataEps, IndividualEps, XInter)
+    YInter = self.GenerateYInter(Y)
 
     # Generate M
-    M = self.GenerateM(X, U, Y, single = self.Single)
+    M = self.GenerateM(X, U, Y, XInter, YInter, single = self.Single)
 
     return X, Z, U, Y , M, S
 

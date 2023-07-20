@@ -95,7 +95,7 @@ class DataGenerator:
 
       for i in range(self.N_S):
           strata = X[i * groupSize : (i+1) * groupSize, 0]  # select the first column in the strata
-          biases.append(np.full(groupSize, 10 * np.mean(strata)))
+          biases.append(np.full(groupSize, np.mean(strata)))
 
       biases = np.concatenate(biases).reshape(-1,)
       return biases

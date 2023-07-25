@@ -261,7 +261,7 @@ class RetrainTest:
 
 
         df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
-        G_clones = [clone(G) for _ in range(L)]
+        G_model = clone(G)
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
@@ -293,11 +293,13 @@ class RetrainTest:
             # simulate treatment indicators
             Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
             
+            G_clone = clone(G_model)
             df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
-            bias = self.getY(G_clones[l], df_Z, df_noZ, indexY, lenY)
+            bias = self.getY(G_clone, df_Z, df_noZ, indexY, lenY)
 
             # get the test statistics 
             t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=False)
+
 
         if verbose:
             print("t_sims_mean:"+str(np.mean(t_sim)))

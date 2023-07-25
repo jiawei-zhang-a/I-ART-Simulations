@@ -73,7 +73,7 @@ class DataGenerator:
 
   def GenerateIndividualEps(self):
       mean = 0
-      std = 0.4
+      std = 0.2
       eps = np.random.normal(mean, std, self.N)
       eps = eps.reshape(-1,)
 
@@ -106,7 +106,7 @@ class DataGenerator:
 
       for i in range(self.N_S):
           strata = Y[i * groupSize : (i+1) * groupSize, 0]  # select the first column in the strata
-          biases.append(np.full(groupSize, np.mean(strata)))
+          biases.append(np.full(groupSize,1/2 * np.mean(strata)))
 
       biases = np.concatenate(biases).reshape(-1,)
       
@@ -249,7 +249,9 @@ class DataGenerator:
             if self.linear_method == 2:
               M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i]
 
-        lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
+        lambda1 = 15.5 #np.percentile(M_lamda, 100 * (1-self.MaskRate))
+
+
 
         for i in range(n):
           sum3 = 0
@@ -302,6 +304,9 @@ class DataGenerator:
           print(data.describe())
 
         print(pd.DataFrame(M).describe())
+        with open('lambda.txt', 'a') as f:
+          f.write(str(lambda1) + '\n')
+
         return M
 
       else:

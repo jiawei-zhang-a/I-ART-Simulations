@@ -11,6 +11,10 @@ import Retrain
 import warnings
 import xgboost as xgb
 import os
+import lightgbm as lgb
+import time
+
+
 
 #from cuml import XGBRegressor
  #   XGBRegressor(tree_method='gpu_hist')
@@ -19,7 +23,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 2000
+L = 10
 
 def run(Nsize, Unobserved, Single, filepath, adjust, linear_method):
 
@@ -37,14 +41,6 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method):
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    # Oracle 
-    print("Oracle")
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = None,verbose=1)
-    # Append p-values to corresponding lists
-    values_oracle = [ *p_values, reject, corr_G]
-    print(values_oracle)
-
-
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
@@ -61,11 +57,21 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method):
 
     #XGBoost
     print("XGBoost")
-    XGBoost = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G=XGBoost,verbose=1)
-    # Append p-values to corresponding lists
-    values_xgboost = [ *p_values, reject, corr_G]
-    print("Finished")
+    start_time = time.time()
+    XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(), max_iter=max_iter)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G=XGBoost, verbose=1)
+    end_time = time.time()
+    values_xgboost = [*p_values, reject, corr_G]
+    print(f"Execution time for XGBoost: {end_time - start_time} seconds\n")
+
+    #LightGBM
+    print("LightGBM")
+    start_time = time.time()
+    LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), max_iter=max_iter)
+    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G=LightGBM, verbose=1)
+    end_time = time.time()
+    values_lightgbm = [*p_values, reject, corr_G]
+    print(f"Execution time for LightGBM: {end_time - start_time} seconds\n")
 
     #Save the file in numpy format
     if(save_file):
@@ -75,21 +81,21 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method):
             os.makedirs("%s/%f"%(filepath,beta_coef))
 
         # Convert lists to numpy arrays
-        values_oracle = np.array(values_oracle)
         values_median = np.array(values_median)
         values_LR = np.array(values_LR)
         values_xgboost = np.array(values_xgboost)
+        values_lightgbm = np.array(values_lightgbm)
 
         # Save numpy arrays to files
-        np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef,task_id), values_LR)
         np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef,task_id), values_xgboost)      
+        np.save('%s/%f/p_values_lightGBM_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
 
 if __name__ == '__main__':
     multiprocessing.freeze_support() # This is necessary and important, not sure why 
-    # Mask Rate
 
+    # Mask Rate
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     warnings.filterwarnings("ignore", category=UserWarning, module="numpy.core.getlimits")
 
@@ -103,15 +109,14 @@ if __name__ == '__main__':
     if os.path.exists("Result") == False:
         os.mkdir("Result")
     
-    for coef in np.arange(0.0,5,1):
-        beta_coef = coef
-        run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
-
     for coef in np.arange(0.0,0.25,0.05):
         beta_coef = coef
         run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
 
 """
+    for coef in np.arange(0.0,5,1):
+        beta_coef = coef
+        run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX" + "_single", adjust = 0, linear_method = 2)
 
     for coef in np.arange(0,3,0.6):
         beta_coef = coef
@@ -127,6 +132,4 @@ if __name__ == '__main__':
     for coef in np.arange(0.0,0.80,0.16):
         beta_coef = coef
         run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_linearZ_nonlinearX" + "_single", adjust = 0, linear_method = 1)
-    
-
 """

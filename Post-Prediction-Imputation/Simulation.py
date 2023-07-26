@@ -251,8 +251,6 @@ class DataGenerator:
 
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
-
-
         for i in range(n):
           sum3 = 0
           for p in range(1,6):

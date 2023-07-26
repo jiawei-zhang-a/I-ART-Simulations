@@ -43,7 +43,7 @@ def plot(range,dir,title):
 
 def main():
 
-    plot(np.arange(0.0,0.05,0.05),"HPC_power_1000_unobserved_nonlinearZ_nonlinearX" + "_single","Size-1000, nonlinearZ_nonlinearX, U")
+    plot(np.arange(0.0,0.25,0.05),"HPC_power_1000_unobserved_nonlinearZ_nonlinearX" + "_single","Size-1000, nonlinearZ_nonlinearX, U")
 
     exit()
     #plot(np.arange(0.0,3.1,0.5),"HPC_power_50_linearZ_linearX" + "_single","Size-50, linearZ_linearX, No U")

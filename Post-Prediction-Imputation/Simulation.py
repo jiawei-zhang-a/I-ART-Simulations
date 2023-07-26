@@ -249,7 +249,7 @@ class DataGenerator:
             if self.linear_method == 2:
               M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i]
 
-        lambda1 = 15.5 #np.percentile(M_lamda, 100 * (1-self.MaskRate))
+        lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
 
 
 

@@ -13,6 +13,9 @@ import xgboost as xgb
 import os
 import lightgbm as lgb
 import time
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+
 
 
 
@@ -23,7 +26,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 10
+L = 50
 
 def run(Nsize, Unobserved, Single, filepath, adjust, linear_method):
 

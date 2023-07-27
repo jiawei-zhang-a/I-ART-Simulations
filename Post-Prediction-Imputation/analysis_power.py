@@ -4,10 +4,10 @@ import os
 def read_npz_files(directory):
     summed_p_values_median = None
     summed_p_values_LR = None
-    summed_p_values_xgboost = None
+    #summed_p_values_xgboost = None
     summed_p_values_lightGBM = None
 
-    N = int(len(os.listdir(directory)) / 4)
+    N = int(len(os.listdir(directory)) / 3)
 
     for filename in os.listdir(directory):
         if filename.endswith(".npy"):
@@ -24,11 +24,6 @@ def read_npz_files(directory):
                     summed_p_values_LR = p_values
                 else:
                     summed_p_values_LR += p_values
-            elif "p_values_xgboost" in filename:
-                if summed_p_values_xgboost is None:
-                    summed_p_values_xgboost = p_values
-                else:
-                    summed_p_values_xgboost += p_values
             elif "p_values_lightGBM" in filename:
                 if summed_p_values_lightGBM is None:
                     summed_p_values_lightGBM = p_values
@@ -40,8 +35,6 @@ def read_npz_files(directory):
         'median_corr': summed_p_values_median[2] / N,
         'lr_power': summed_p_values_LR[1] / N,
         'lr_corr': summed_p_values_LR[2] / N,
-        'xgboost_power': summed_p_values_xgboost[1] / N,
-        'xgboost_corr': summed_p_values_xgboost[2] / N,
         'lightGBM_power': summed_p_values_lightGBM[1] / N,
         'lightGBM_corr': summed_p_values_lightGBM[2] / N
     }

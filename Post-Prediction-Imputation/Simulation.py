@@ -2,15 +2,17 @@ import numpy as np
 from mv_laplace import MvLaplaceSampler
 import pandas as pd
 from scipy.stats import logistic
+from random import sample
+
 
 class DataGenerator:
-  def __init__(self,*, N = 1000, N_T = 500, N_S = 10, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, linear_method = 0, verbose = False, bias = False):
+  def __init__(self,*, N = 1000, strata_size = 10, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, linear_method = 0, verbose = False, bias = False, Missing_lambda):
     self.N = N
-    self.N_T = N_T
-    self.N_S = N_S
     self.beta_11 = beta_11
     self.beta_12 = beta_12
     self.beta_21 = beta_21
+    self.strata_size = strata_size
+    self.totalStrataNumber = int(N/strata_size)
     self.beta_22 = beta_22
     self.beta_23 = beta_23
     self.beta_31 = beta_31
@@ -21,6 +23,7 @@ class DataGenerator:
     self.verbose = verbose
     self.bias = bias
     self.linear_method = linear_method
+    self.Missing_lambda = Missing_lambda
 
   def GenerateX(self):
       # generate Xn1 and Xn2
@@ -54,22 +57,21 @@ class DataGenerator:
 
   def GenerateS(self):
     # Add strata index
-    groupSize = int(self.N / self.N_S)
     S = np.zeros(self.N)
-    for i in range(self.N_S):
-        S[groupSize*i:groupSize*(i+1)] = i + 1
+    for i in range(self.totalStrataNumber):
+        S[self.strata_size*i:self.strata_size*(i+1)] = i + 1
     S = S.reshape(-1, 1)
     return S
 
   def GenerateZ(self):
-    Z = []
-    groupSize = int(self.N / self.N_S)
+      Z = []
 
-    for i in range(self.N_S):
-        Z.append(np.random.binomial(1, 0.5, groupSize))
+      strata = [0,0,0,0,0,1,1,1,1,1]
+      for i in range(self.totalStrataNumber):
+          Z.extend(sample(strata, len(strata)))  # sample returns a shuffled list
 
-    Z = np.concatenate(Z).reshape(-1, 1)
-    return Z
+      Z = np.array(Z).reshape(-1, 1)
+      return Z
 
   def GenerateIndividualEps(self):
       mean = 0
@@ -81,32 +83,29 @@ class DataGenerator:
   
   def GenerateStrataEps(self):
       eps = []
-      groupSize = int(self.N / self.N_S)
 
-      for i in range(self.N_S):
-          eps.append(np.full(groupSize, np.random.normal(0, 0.1)))
+      for i in range(self.totalStrataNumber):
+          eps.append(np.full(self.strata_size, np.random.normal(0, 0.1)))
 
       eps = np.concatenate(eps).reshape(-1,)
       return eps
   
   def GenerateXInter(self, X):
       biases = []
-      groupSize = int(self.N / self.N_S)
 
-      for i in range(self.N_S):
-          strata = X[i * groupSize : (i+1) * groupSize, 0]  # select the first column in the strata
-          biases.append(np.full(groupSize, np.mean(strata)))
+      for i in range(self.totalStrataNumber):
+          strata = X[i * self.strata_size : (i+1) * self.strata_size, 0]  # select the first column in the strata
+          biases.append(np.full(self.strata_size, np.mean(strata)))
 
       biases = np.concatenate(biases).reshape(-1,)
       return biases
 
   def GenerateYInter(self, Y):
       biases = []
-      groupSize = int(self.N / self.N_S)
 
-      for i in range(self.N_S):
-          strata = Y[i * groupSize : (i+1) * groupSize, 0]  # select the first column in the strata
-          biases.append(np.full(groupSize,1/2 * np.mean(strata)))
+      for i in range(self.totalStrataNumber):
+          strata = Y[i * self.strata_size : (i+1) * self.strata_size, 0]  # select the first column in the strata
+          biases.append(np.full(self.strata_size,1/2 * np.mean(strata)))
 
       biases = np.concatenate(biases).reshape(-1,)
       
@@ -170,7 +169,6 @@ class DataGenerator:
 
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
-    print(Z)
 
     if self.verbose:
       Y_n3_Z = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5
@@ -249,7 +247,7 @@ class DataGenerator:
             if self.linear_method == 2:
               M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i]
 
-        lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
+        lambda1 = self.Missing_lambda #np.percentile(M_lamda, 100 * (1-self.MaskRate)) #
 
         for i in range(n):
           sum3 = 0
@@ -300,10 +298,10 @@ class DataGenerator:
           data['Xinter'] = M_lamda_XInter[:,0]
           data['Yinter'] = M_lamda_YInter[:,0]
           print(data.describe())
+          print(pd.DataFrame(M).describe())
 
-        print(pd.DataFrame(M).describe())
-        with open('lambda.txt', 'a') as f:
-          f.write(str(lambda1) + '\n')
+        #with open('lambda.txt', 'a') as f:
+        #  f.write(str(lambda1) + '\n')
 
         return M
 

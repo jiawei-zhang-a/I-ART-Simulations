@@ -14,7 +14,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 200
+L = 1000
 
 def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda, verbose=0):
 

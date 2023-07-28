@@ -4,7 +4,6 @@ import os
 def read_npz_files(directory):
     summed_p_values_median = None
     summed_p_values_LR = None
-    #summed_p_values_xgboost = None
     summed_p_values_lightGBM = None
 
     N = int(len(os.listdir(directory)) / 3)

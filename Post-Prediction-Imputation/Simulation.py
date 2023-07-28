@@ -24,8 +24,10 @@ class DataGenerator:
     self.bias = bias
     self.linear_method = linear_method
     self.Missing_lambda = Missing_lambda
-
+    
+  
   def GenerateX(self):
+
       # generate Xn1 and Xn2
       mean = [1/2, -1/3]
       cov = [[1, 1/2], [1/2, 1]]
@@ -108,10 +110,11 @@ class DataGenerator:
           biases.append(np.full(self.strata_size,1/2 * np.mean(strata)))
 
       biases = np.concatenate(biases).reshape(-1,)
-      
+      print(biases)
+
       return biases
 
-  def GenerateY(self, X, U, Z,  StrataEps, IndividualEps, XInter):
+  def GenerateY(self, X, U, Z,  StrataEps, IndividualEps):
         
     #def sum1():
     sum1 = np.zeros(self.N)
@@ -179,7 +182,7 @@ class DataGenerator:
       Y_n3_X = sum3 + sum4
       Y_n3_U =  U +  StrataEps+ IndividualEps
 
-      data = pd.DataFrame({'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U, 'X_inter': XInter})
+      data = pd.DataFrame({'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U})
       print(data.describe())
     
     if self.Unobserved:
@@ -431,7 +434,7 @@ class DataGenerator:
     
 
     # Generate Y
-    Y = self.GenerateY(X, U, Z, StrataEps, IndividualEps, XInter)
+    Y = self.GenerateY(X, U, Z, StrataEps, IndividualEps)
     YInter = self.GenerateYInter(Y)
 
     # Generate M

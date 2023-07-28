@@ -14,7 +14,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 5000
+L = 200
 
 def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda, verbose=0):
 
@@ -44,7 +44,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
                     'Z': Z_flat, 'U': U_flat, 'Y': Y_flat, 'M': M_flat, 'S': S_flat})
 
     # Print the DataFrame
-    #print(df)
+    print(df.describe())
 
     #Median imputer
     print("Median")
@@ -117,7 +117,7 @@ if __name__ == '__main__':
         0.25: 16.09668639441807,
     }
 
-    for coef in np.arange(0.0,0.30,0.05):
+    for coef in np.arange(0.0,0.05,0.05):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)
@@ -127,6 +127,7 @@ if __name__ == '__main__':
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
+    exit()
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
         0.0: 15.738864656557428,

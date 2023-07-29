@@ -1,24 +1,24 @@
 Analysis of : Result/HPC_power_1000_unobserved_interference_single/0.000000
 Mean p-values for Median Imputer:
-Power: [0.49653106 0.04208417 4.23763524]
+Power: [0.498566   0.036      4.22361396]
 Mean p-values for LR Imputer:
-Power: [ 0.49497796  0.05410822 24.59181136]
+Power: [ 0.498097    0.044      24.67491524]
 Mean p-values for lightGBM Imputer:
-Power: [4.97717435e-01 7.21442886e-02 6.17454946e+02]
+Power: [4.98359000e-01 7.50000000e-02 6.10256458e+02]
 Plotting the distribution of the first 6 p-values for each imputer
 Median Imputer
-KstestResult(statistic=0.18384168336673345, pvalue=5.396776552193968e-30, statistic_location=0.737, statistic_sign=1)
+KstestResult(statistic=0.19900000000000007, pvalue=3.5014911728244796e-35, statistic_location=0.714, statistic_sign=1)
 Proportion of p-values below 0.05: 0.0000
-Proportion of p-values below 0.1: 0.0020
-Proportion of p-values below 0.2: 0.0421
+Proportion of p-values below 0.1: 0.0030
+Proportion of p-values below 0.2: 0.0350
 LR Imputer
-KstestResult(statistic=0.16687575150300604, pvalue=9.256365750960149e-25, statistic_location=0.771, statistic_sign=1)
-Proportion of p-values below 0.05: 0.0030
-Proportion of p-values below 0.1: 0.0090
-Proportion of p-values below 0.2: 0.0531
+KstestResult(statistic=0.17399999999999993, pvalue=6.0100155911468466e-27, statistic_location=0.768, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0000
+Proportion of p-values below 0.1: 0.0070
+Proportion of p-values below 0.2: 0.0440
 LightGBM Imputer
-KstestResult(statistic=0.14882965931863723, pvalue=9.232659719567786e-20, statistic_location=0.766, statistic_sign=1)
-Proportion of p-values below 0.05: 0.0050
-Proportion of p-values below 0.1: 0.0140
-Proportion of p-values below 0.2: 0.0711
+KstestResult(statistic=0.14700000000000002, pvalue=2.52279585031611e-19, statistic_location=0.735, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0020
+Proportion of p-values below 0.1: 0.0110
+Proportion of p-values below 0.2: 0.0750
 

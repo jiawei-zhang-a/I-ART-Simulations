@@ -66,16 +66,12 @@ class DataGenerator:
     return S
 
   def GenerateZ(self):
-
-      Z = []  # Assuming Z is defined before this code block
-      half_strata_size = self.strata_size // 2  # Ensure strata_size is even
-
-      for i in range(self.totalStrataNumber):
-          strata = np.array([0]*half_strata_size + [1]*half_strata_size)
-          np.random.shuffle(strata)
-          Z.append(strata)
-      Z = np.concatenate(Z).reshape(-1, 1)
-      return Z
+    Z = []
+    strata = [0,0,0,0,0,1,1,1,1,1]
+    for i in range(self.totalStrataNumber):
+        Z.append(strata)  # sample returns a shuffled list
+    Z = np.concatenate(Z).reshape(-1, 1)
+    return Z
 
 
   def GenerateIndividualEps(self):

@@ -67,10 +67,9 @@ class DataGenerator:
 
   def GenerateZ(self):
     Z = []
-    strata = [0,0,0,0,0,1,1,1,1,1]
     for i in range(self.totalStrataNumber):
-        Z.append(strata)  # sample returns a shuffled list
-    Z = np.concatenate(Z).reshape(-1, 1)
+      Z.append(np.random.binomial(1, 0.5, self.strata_size))
+    Z = np.concatenate(Z).reshape(-1,1)
     return Z
 
 

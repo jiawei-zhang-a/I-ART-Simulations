@@ -32,6 +32,15 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
+    print(X)
+    print(Z)
+    print(U)
+    print(Y)
+    print(M)
+
+    
+
+
     # Flatten Z, U, Y, M, S from (50,1) to (50,)
     Z_flat = np.squeeze(Z)
     U_flat = np.squeeze(U)
@@ -41,10 +50,11 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
 
     # Make a dataframe from X (each column separately), Z, U, Y, M, S
     df = pd.DataFrame({'X1': X[:, 0], 'X2': X[:, 1], 'X3': X[:, 2], 'X4': X[:, 3], 'X5': X[:, 4], 
-                    'Z': Z_flat, 'U': U_flat, 'Y': Y_flat, 'M': M_flat, 'S': S_flat})
+                    'U': U_flat, 'Y': Y_flat,  'M': M_flat,'Z': Z_flat })
 
     # Print the DataFrame
-    #print(df.describe())
+    print(df.describe())
+    df.to_csv('data.csv', index=True)
 
     #Median imputer
     print("Median")

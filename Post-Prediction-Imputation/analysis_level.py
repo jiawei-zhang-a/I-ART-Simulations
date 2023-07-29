@@ -24,7 +24,7 @@ def read_and_print_npz_files(directory, file):
     p_values_LR = []
     p_values_lightGBM = []
 
-    N = int(len(os.listdir(directory)) / 4)
+    N = int(len(os.listdir(directory)) / 3)
     for filename in os.listdir(directory):
 
         if filename.endswith(".npy"):
@@ -51,11 +51,11 @@ def read_and_print_npz_files(directory, file):
                 p_values_lightGBM.append(list(p_values))
 
     file.write("Mean p-values for Median Imputer:\n")
-    file.write("Power: " + str(summed_p_values_median[1]/N) + "\n")
+    file.write("Power: " + str(summed_p_values_median/N) + "\n")
     file.write("Mean p-values for LR Imputer:\n")
-    file.write("Power: " + str(summed_p_values_LR[1]/N) + "\n")
+    file.write("Power: " + str(summed_p_values_LR/N) + "\n")
     file.write("Mean p-values for lightGBM Imputer:\n")
-    file.write("Power: " + str(summed_p_values_lightGBM[1]/N) + "\n")
+    file.write("Power: " + str(summed_p_values_lightGBM/N) + "\n")
 
     file.write("Plotting the distribution of the first 6 p-values for each imputer\n")
 

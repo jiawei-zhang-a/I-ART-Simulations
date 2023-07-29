@@ -76,12 +76,7 @@ class DataGenerator:
     Z = np.concatenate(Z).reshape(-1, 1) 
     print(Z)
 
-    print("****************")
-    Z = []
-    for i in range(self.totalStrataNumber):
-      Z.append(np.random.binomial(1, 0.5, self.strata_size))
-    Z = np.concatenate(Z).reshape(-1, 1)
-    print(Z)
+
     return Z
 
 

@@ -8,7 +8,8 @@
 
     for i in range(self.totalStrataNumber):
       Z.append(np.random.binomial(1, 0.5, self.strata_size))
-
+    Z = np.concatenate(Z).reshape(-1, 1)
+    return Z
 
       Z = []  # Assuming Z is defined before this code block
       half_strata_size = self.strata_size // 2  # Ensure strata_size is even

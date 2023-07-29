@@ -32,15 +32,6 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    print(X)
-    print(Z)
-    print(U)
-    print(Y)
-    print(M)
-
-    
-
-
     # Flatten Z, U, Y, M, S from (50,1) to (50,)
     Z_flat = np.squeeze(Z)
     U_flat = np.squeeze(U)
@@ -133,7 +124,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, linear_method = 2, Missing_lambda = lambda_value)
+            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, linear_method = 2, Missing_lambda = lambda_value)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 

@@ -1,24 +1,24 @@
 Analysis of : Result/HPC_power_1000_unobserved_interference_single/0.000000
 Mean p-values for Median Imputer:
-Power: [0.51727528 0.17617618 4.25980578]
+Power: [0.50088989 0.04904905 4.2403341 ]
 Mean p-values for LR Imputer:
-Power: [ 0.51787287  0.18018018 24.73697749]
+Power: [ 0.50084985  0.04204204 24.61659125]
 Mean p-values for lightGBM Imputer:
-Power: [5.17377377e-01 1.88188188e-01 6.11094995e+02]
+Power: [5.03973974e-01 6.80680681e-02 6.11506368e+02]
 Plotting the distribution of the first 6 p-values for each imputer
 Median Imputer
-KstestResult(statistic=0.033481481481481556, pvalue=0.20801631071066728, statistic_location=0.552, statistic_sign=-1)
-Proportion of p-values below 0.05: 0.0390
-Proportion of p-values below 0.1: 0.0801
-Proportion of p-values below 0.2: 0.1742
+KstestResult(statistic=0.16890990990990995, pvalue=2.1945521200870887e-25, statistic_location=0.741, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0000
+Proportion of p-values below 0.1: 0.0060
+Proportion of p-values below 0.2: 0.0480
 LR Imputer
-KstestResult(statistic=0.03238138138138136, pvalue=0.24045626018480837, statistic_location=0.651, statistic_sign=-1)
-Proportion of p-values below 0.05: 0.0330
-Proportion of p-values below 0.1: 0.0831
-Proportion of p-values below 0.2: 0.1782
+KstestResult(statistic=0.17092992992992992, pvalue=5.462368354633174e-26, statistic_location=0.241, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0010
+Proportion of p-values below 0.1: 0.0040
+Proportion of p-values below 0.2: 0.0410
 LightGBM Imputer
-KstestResult(statistic=0.0315735735735736, pvalue=0.2665834084928175, statistic_location=0.458, statistic_sign=-1)
-Proportion of p-values below 0.05: 0.0420
-Proportion of p-values below 0.1: 0.0941
-Proportion of p-values below 0.2: 0.1862
+KstestResult(statistic=0.1458938938938939, pvalue=5.068140377279925e-19, statistic_location=0.252, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0030
+Proportion of p-values below 0.1: 0.0100
+Proportion of p-values below 0.2: 0.0681
 

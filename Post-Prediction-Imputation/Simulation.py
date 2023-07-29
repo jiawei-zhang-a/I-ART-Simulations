@@ -70,7 +70,7 @@ class DataGenerator:
     half_strata_size = self.strata_size // 2  # Ensure strata_size is even
 
     for i in range(self.totalStrataNumber):
-        strata = np.array([0]*half_strata_size + [1]*half_strata_size)
+        strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
         np.random.shuffle(strata)
         Z.append(strata)
     Z = np.concatenate(Z).reshape(-1, 1)

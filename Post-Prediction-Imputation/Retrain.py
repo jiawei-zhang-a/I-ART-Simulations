@@ -180,7 +180,8 @@ class RetrainTest:
         Y_shuffled = df['Y'].values.reshape(-1, 1)
 
         # Then you can pass these shuffled values to your function
-        return self.retrain_test_imputed(Z_shuffled, X_shuffled, M_shuffled, Y_shuffled, G,  L, verbose)
+        #return self.retrain_test_imputed(Z_shuffled, X_shuffled, M_shuffled, Y_shuffled, G,  L, verbose)
+        return self.retrain_test_imputed(Z, X, M, Y, G,  L, verbose)
 
     def retrain_test_imputed(self, Z, X, M, Y, G,  L=10000, verbose = False):
         """
@@ -240,7 +241,16 @@ class RetrainTest:
         for l in range(L):
             
             # simulate treatment indicators
-            Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
+            #Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
+
+            Z_sim = []
+            half_strata_size = 10 // 2  # Ensure strata_size is even
+
+            for i in range(100):
+                strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
+                np.random.shuffle(strata)
+                Z_sim.append(strata)
+            Z_sim = np.concatenate(Z_sim).reshape(-1, 1) 
             
             G_clone = clone(G_model)
             df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))

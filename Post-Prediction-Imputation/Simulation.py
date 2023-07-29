@@ -74,6 +74,7 @@ class DataGenerator:
           strata = np.array([0]*half_strata_size + [1]*half_strata_size)
           np.random.shuffle(strata)
           Z.append(strata)
+      print(Z)
       Z = np.concatenate(Z).reshape(-1, 1)
       return Z
 
@@ -281,7 +282,7 @@ class DataGenerator:
               if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])+ U[i] + XInter[i] + YInter[i] > lambda1:
                 M[i][0] = 1            
             if self.linear_method == 2:
-              if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
+              if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] > lambda1:#+ XInter[i] + YInter[i] > lambda1:
                 M[i][0] = 1 
 
           else:

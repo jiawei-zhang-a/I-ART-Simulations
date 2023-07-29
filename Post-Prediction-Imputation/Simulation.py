@@ -110,7 +110,6 @@ class DataGenerator:
           biases.append(np.full(self.strata_size,1/2 * np.mean(strata)))
 
       biases = np.concatenate(biases).reshape(-1,)
-      print(biases)
 
       return biases
 

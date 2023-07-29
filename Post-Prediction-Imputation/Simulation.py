@@ -73,7 +73,7 @@ class DataGenerator:
         strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
         np.random.shuffle(strata)
         Z.append(strata)
-    Z = np.concatenate(Z).reshape(-1, 1)
+    Z = np.concatenate(Z).reshape(-1, 1) 
     return Z
 
 

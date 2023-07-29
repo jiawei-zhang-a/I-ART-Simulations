@@ -66,14 +66,13 @@ class DataGenerator:
     return S
 
   def GenerateZ(self):
-      Z = []
+    Z = []
 
-      strata = [0,0,0,0,0,1,1,1,1,1]
-      for i in range(self.totalStrataNumber):
-          Z.extend(sample(strata, len(strata)))  # sample returns a shuffled list
+    for i in range(self.totalStrataNumber):
+        Z.append(np.random.binomial(1, 0.5, self.strata_size))
 
-      Z = np.array(Z).reshape(-1, 1)
-      return Z
+    Z = np.concatenate(Z).reshape(-1, 1)
+    return Z
 
   def GenerateIndividualEps(self):
       mean = 0

@@ -241,16 +241,16 @@ class RetrainTest:
         for l in range(L):
             
             # simulate treatment indicators
-            Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
+            #Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
 
-            """Z_sim = []
+            Z_sim = []
             half_strata_size = 100 // 2  # Ensure strata_size is even
 
             for i in range(10):
                 strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
                 np.random.shuffle(strata)
                 Z_sim.append(strata)
-            Z_sim = np.concatenate(Z_sim).reshape(-1, 1) """
+            Z_sim = np.concatenate(Z_sim).reshape(-1, 1) 
             
             G_clone = clone(G_model)
             df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))

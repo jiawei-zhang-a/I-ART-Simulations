@@ -50,6 +50,7 @@ def read_and_print_npz_files(directory, file):
                     summed_p_values_lightGBM += p_values
                 p_values_lightGBM.append(list(p_values))
 
+
     file.write("Mean p-values for Median Imputer:\n")
     file.write("Power: " + str(summed_p_values_median/N) + "\n")
     file.write("Mean p-values for LR Imputer:\n")
@@ -83,6 +84,28 @@ def plot_p_values_distribution(p_values, imputer_name, file):
         file.write(f"Proportion of p-values below {threshold_010}: {proportion_below_010:.4f}\n")
         file.write(f"Proportion of p-values below {threshold_020}: {proportion_below_020:.4f}\n")
 
+        plt.figure(figsize=(8, 6))
+        plt.scatter(range(len(p_values[:,i])), p_values[:,i], s=10, color='b', alpha=0.5)
+        plt.xlabel('Index')
+        plt.ylabel('P-values')
+        plt.title('Scatter Plot of P-values')
+        plt.show()
+
+        # Histogram
+        plt.figure(figsize=(8, 6))
+        plt.hist(p_values[:,i], bins=20, color='g', alpha=0.7)
+        plt.xlabel('P-values')
+        plt.ylabel('Frequency')
+        plt.title('Histogram of P-values')
+        plt.show()
+
+        # You can create other visualizations as well, like box plots, violin plots, etc.
+        # For example, a box plot of the p-values:
+        plt.figure(figsize=(8, 6))
+        plt.boxplot(p_values[:,i], vert=False)
+        plt.xlabel('P-values')
+        plt.title('Box Plot of P-values')
+        plt.show()
 
 with open("level.result", "w") as file:
     read_and_print_npz_files('Result/HPC_power_1000_unobserved_interference_single/0.000000', file)

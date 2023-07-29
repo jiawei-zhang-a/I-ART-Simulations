@@ -28,7 +28,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, linear_method = linear_method,verbose=verbose,Missing_lambda = Missing_lambda)
+    DataGen = Generator.DataGenerator(N = Nsize, strata_size=100,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, linear_method = linear_method,verbose=verbose,Missing_lambda = Missing_lambda)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 

@@ -45,7 +45,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
 
     # Print the DataFrame
     print(df.describe())
-    df.to_csv('data.csv', index=True)
+    #df.to_csv('data.csv', index=True)
 
     #Median imputer
     print("Median")

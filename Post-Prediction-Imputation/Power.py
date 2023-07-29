@@ -16,7 +16,7 @@ save_file = False
 max_iter = 3
 L = 1000
 
-def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda, verbose=0):
+def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda, verbose=1):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
@@ -44,7 +44,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
                     'Z': Z_flat, 'U': U_flat, 'Y': Y_flat, 'M': M_flat, 'S': S_flat})
 
     # Print the DataFrame
-    print(df.describe())
+    #print(df.describe())
 
     #Median imputer
     print("Median")

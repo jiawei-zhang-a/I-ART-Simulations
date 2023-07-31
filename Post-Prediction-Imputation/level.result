@@ -1,24 +1,24 @@
 Analysis of : Result/HPC_power_1000_unobserved_interference_single/0.000000
 Mean p-values for Median Imputer:
-Power: [ 0.4886411   0.2155     21.22833398]
+Power: [0.49206848 0.19536757 4.5385068 ]
 Mean p-values for LR Imputer:
-Power: [  0.4906209    0.2105     123.23321533]
+Power: [ 0.50134743  0.19133938 24.96680489]
 Mean p-values for lightGBM Imputer:
-Power: [4.92915800e-01 2.04000000e-01 3.06369325e+03]
+Power: [4.94066465e-01 1.96374622e-01 6.09978290e+02]
 Plotting the distribution of the first 6 p-values for each imputer
 Median Imputer
-KstestResult(statistic=0.02529999999999999, pvalue=0.15189001809033065, statistic_location=0.5542, statistic_sign=1)
-Proportion of p-values below 0.05: 0.0550
-Proportion of p-values below 0.1: 0.1115
-Proportion of p-values below 0.2: 0.2155
+KstestResult(statistic=0.02793353474320237, pvalue=0.41308323798155866, statistic_location=0.534, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0443
+Proportion of p-values below 0.1: 0.1017
+Proportion of p-values below 0.2: 0.1934
 LR Imputer
-KstestResult(statistic=0.020999999999999963, pvalue=0.33633147684559184, statistic_location=0.269, statistic_sign=1)
-Proportion of p-values below 0.05: 0.0580
-Proportion of p-values below 0.1: 0.1145
-Proportion of p-values below 0.2: 0.2100
+KstestResult(statistic=0.027231621349446136, pvalue=0.4452530710941872, statistic_location=0.137, statistic_sign=-1)
+Proportion of p-values below 0.05: 0.0403
+Proportion of p-values below 0.1: 0.0846
+Proportion of p-values below 0.2: 0.1913
 LightGBM Imputer
-KstestResult(statistic=0.01859999999999995, pvalue=0.4875809230867183, statistic_location=0.5974, statistic_sign=1)
-Proportion of p-values below 0.05: 0.0535
-Proportion of p-values below 0.1: 0.1035
-Proportion of p-values below 0.2: 0.2040
+KstestResult(statistic=0.02222960725075529, pvalue=0.7017203451747425, statistic_location=0.582, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0524
+Proportion of p-values below 0.1: 0.1027
+Proportion of p-values below 0.2: 0.1934
 

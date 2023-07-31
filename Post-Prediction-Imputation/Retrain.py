@@ -156,7 +156,7 @@ class RetrainTest:
 
         return t
 
-    def retrain_test(self, Z, X, M, Y, G,  L=10000, verbose = False):
+    def retrain_test(self, Z, X, M, Y, G, strata_size, L=10000, verbose = False):
 
         # Assuming your DataFrame is as follows:
         df = pd.DataFrame({
@@ -181,9 +181,9 @@ class RetrainTest:
 
         # Then you can pass these shuffled values to your function
         #return self.retrain_test_imputed(Z_shuffled, X_shuffled, M_shuffled, Y_shuffled, G,  L, verbose)
-        return self.retrain_test_imputed(Z, X, M, Y, G,  L, verbose)
+        return self.retrain_test_imputed(Z, X, M, Y, G, strata_size, L, verbose)
 
-    def retrain_test_imputed(self, Z, X, M, Y, G,  L=10000, verbose = False):
+    def retrain_test_imputed(self, Z, X, M, Y, G,  strata_size, L=10000, verbose = False):
         """
         A retrain framework for testing H_0.
 
@@ -244,9 +244,9 @@ class RetrainTest:
             #Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
 
             Z_sim = []
-            half_strata_size = 10 // 2  # Ensure strata_size is even
+            half_strata_size = strata_size // 2  # Ensure strata_size is even
 
-            for i in range(100):
+            for i in range(int(N/strata_size)):
                 strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
                 np.random.shuffle(strata)
                 Z_sim.append(strata)

@@ -15,8 +15,9 @@ task_id = 1
 save_file = False
 max_iter = 3
 L = 1000
+S_size = 10
 
-def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda, verbose=1):
+def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda,strata_size, verbose=1):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
@@ -28,7 +29,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, linear_method = linear_method,verbose=verbose,Missing_lambda = Missing_lambda)
+    DataGen = Generator.DataGenerator(N = Nsize, strata_size=S_size,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, linear_method = linear_method,verbose=verbose,Missing_lambda = Missing_lambda)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
@@ -50,14 +51,14 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, L=L, G = median_imputer,verbose=verbose)
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G = median_imputer,verbose=verbose)
     # Append p-values to corresponding lists
     values_median = [ *p_values, reject, test_time]
 
     #LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, L=L,G=BayesianRidge,verbose=verbose)
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size=strata_size, L=L,G=BayesianRidge,verbose=verbose)
     # Append p-values to corresponding lists
     values_LR = [ *p_values, reject, test_time]
 
@@ -74,7 +75,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     print("LightGBM")
     #start_time = time.time()
     LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1), max_iter=max_iter)
-    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, L=L, G=LightGBM, verbose=verbose)
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=L, G=LightGBM, verbose=verbose)
     #end_time = time.time()
     values_lightgbm = [*p_values, reject, test_time]
     #print(f"Execution time for LightGBM: {end_time - start_time} seconds\n")
@@ -110,32 +111,31 @@ if __name__ == '__main__':
 
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
-        0.0: 15.428774990760457,
-        0.05: 15.549942467270617,
-        0.1: 15.713440621701677,
-        0.15: 15.819098752839482,
-        0.2: 15.900725942827737,
-        0.25: 16.09668639441807,
+        0.0: 15.338280233232549,
+        0.05: 15.513632949165219,
+        0.1: 15.700965399935757,
+        0.15: 15.778598987947303,
+        0.2: 15.919273976686219,
+        0.25: 16.090606547366434,
     }
 
-    for coef in np.arange(0.0,0.05,0.05):
+    for coef in np.arange(0.0,0.3,0.05):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, linear_method = 2, Missing_lambda = lambda_value)
+            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size, Missing_lambda = lambda_value)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
-    exit()
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
-        0.0: 15.738864656557428,
-        1.0: 16.300491077131014,
-        2.0: 16.816433526078708,
-        3.0: 17.303484501795655,
-        4.0: 17.778217090273053,
+        0.0: 15.721475376174672,
+        1.0: 16.32921271710295,
+        2.0: 16.85640503208439,
+        3.0: 17.35727376690019,
+        4.0: 17.803032298883505,
     }
 
     for coef in np.arange(0.0,5,1):

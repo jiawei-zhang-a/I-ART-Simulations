@@ -6,7 +6,7 @@ from random import sample
 
 
 class DataGenerator:
-  def __init__(self,*, N = 1000, strata_size = 10, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, linear_method = 0, verbose = False, bias = False, Missing_lambda):
+  def __init__(self,*, N = 1000, strata_size = 10, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, linear_method = 0, verbose = False, bias = False, Missing_lambda= None):
     self.N = N
     self.beta_11 = beta_11
     self.beta_12 = beta_12
@@ -74,8 +74,6 @@ class DataGenerator:
         np.random.shuffle(strata)
         Z.append(strata)
     Z = np.concatenate(Z).reshape(-1, 1) 
-    print(Z)
-
 
     return Z
 
@@ -254,7 +252,10 @@ class DataGenerator:
             if self.linear_method == 2:
               M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i]
 
-        lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate)) # #self.Missing_lambda#
+        if self.Missing_lambda == None:
+          lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
+        else:
+          lambda1 = self.Missing_lambda
 
         for i in range(n):
           sum3 = 0
@@ -307,8 +308,8 @@ class DataGenerator:
           print(data.describe())
           print(pd.DataFrame(M).describe())
 
-        #with open('lambda.txt', 'a') as f:
-        #  f.write(str(lambda1) + '\n')
+        with open('lambda.txt', 'a') as f:
+          f.write(str(lambda1) + '\n')
 
         return M
 

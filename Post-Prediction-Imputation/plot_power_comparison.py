@@ -4,14 +4,14 @@ from analysis_power import read_npz_files
 import matplotlib.pyplot as plt
 
 def plot_results(data, title):
-    columns = ['beta', 'Size_Median', 'Size_Linear',  'Size_LightGBM']
+    columns = ['beta', 'MICE_Median', 'MICE_Linear',  'MICE_LightGBM']
 
     df = pd.DataFrame(data, columns=columns)
 
     plt.figure(figsize=(10, 6))
 
     colors = {'Median': 'blue', 'Linear': 'red', 'LightGBM': 'orange' }
-    linestyles = {'Size': '-'}
+    linestyles = {'MICE': '-'}
 
     for col in columns[1:]:
         method = col.split('_')[1]
@@ -43,8 +43,8 @@ def plot(range,dir,title):
 
 def main():
 
-    #plot(np.arange(0.0,0.3,0.05),"HPC_power_1000_unobserved_interference" + "_single","Size-1000, nonlinearZ_nonlinearX, U")
-    plot(np.arange(0.0,5,1),"HPC_power_50_unobserved_interference" + "_single","Size-50, nonlinearZ_nonlinearX, U")
+    plot(np.arange(0.0,0.3,0.05),"HPC_power_1000_unobserved_interference" + "_single","L-1000, single_interference_setting, U")
+    #plot(np.arange(0.0,5,1),"HPC_power_50_unobserved_interference" + "_single","Size-50, nonlinearZ_nonlinearX, U")
 
     exit()
     #plot(np.arange(0.0,3.1,0.5),"HPC_power_50_linearZ_linearX" + "_single","Size-50, linearZ_linearX, No U")

@@ -8,6 +8,7 @@ import Simulation as Generator
 import Retrain
 import os
 import lightgbm as lgb
+import xgboost as xgb
 import pandas as pd
 
 beta_coef = None
@@ -48,6 +49,12 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     print(df.describe())
     #df.to_csv('data.csv', index=True)
 
+    #Oracale imputer
+    print("Oracle")
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
+    # Append p-values to corresponding lists
+    values_oracle = [ *p_values, reject, test_time]
+
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
@@ -63,13 +70,10 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     values_LR = [ *p_values, reject, test_time]
 
     #XGBoost
-   #print("XGBoost")
-    #start_time = time.time()
-    #XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
-    #p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, L=L, G=XGBoost, verbose=1)
-    #end_time = time.time()
-    #values_xgboost = [*p_values, reject, test_time]
-    #print(f"Execution time for XGBoost: {end_time - start_time} seconds\n")
+    print("XGBoost")
+    XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G=XGBoost, verbose=1)
+    values_xgboost = [*p_values, reject, test_time]
 
     #LightGBM
     print("LightGBM")
@@ -93,9 +97,11 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
         values_lightgbm = np.array(values_lightgbm)
 
         # Save numpy arrays to files
+        np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef,task_id), values_LR)
         np.save('%s/%f/p_values_lightGBM_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
+        np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
 
 if __name__ == '__main__':
 
@@ -119,7 +125,7 @@ if __name__ == '__main__':
         0.25: 16.090606547366434,
     }
 
-    for coef in np.arange(0.0,0.3,0.05):
+    for coef in np.arange(0.0,0.0 ,0.05):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)
@@ -144,7 +150,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, linear_method = 2, Missing_lambda = lambda_value)
+            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size,  Missing_lambda = lambda_value)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 

@@ -181,7 +181,74 @@ class RetrainTest:
 
         # Then you can pass these shuffled values to your function
         #return self.retrain_test_imputed(Z_shuffled, X_shuffled, M_shuffled, Y_shuffled, G,  L, verbose)
-        return self.retrain_test_imputed(Z, X, M, Y, G, strata_size, L, verbose)
+        if G == None:
+            return self.retrain_test_oracle(Z, X, M, Y, G,strata_size, L, verbose)   
+        else:
+            return self.retrain_test_imputed(Z_shuffled, X_shuffled, M_shuffled, Y_shuffled, G,strata_size, L, verbose)
+        
+    def retrain_test_oracle(self, Z, X, M, Y, G, strata_size, L=10000, verbose = False):
+        start_time = time.time()
+
+        df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
+
+        Y_copy = np.ma.masked_array(Y, mask=M)
+        Y_copy = Y_copy.filled(np.nan)
+
+        df_noZ = pd.DataFrame(np.concatenate((X, Y_copy), axis=1))
+
+        # lenY is the number of how many columns are Y
+        lenY = Y.shape[1]
+
+        # indexY is the index of the first column of Y
+        indexY = Z.shape[1] + X.shape[1]
+
+        # N is the number of rows of the data frame
+        N = df_Z.shape[0]
+
+        # re-impute the missing values and calculate the observed test statistics in part 2
+        bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
+        t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
+
+        #print train end
+        if verbose:
+            print("t_obs:"+str(t_obs))
+            print("Permutation Start")
+
+        # simulate data and calculate test statistics
+        t_sim = np.zeros((L,Y.shape[1]))
+
+        for l in range(L):
+            
+            # simulate treatment indicators
+            Z_sim = []
+            half_strata_size = strata_size // 2  # Ensure strata_size is even
+
+            for i in range(int(N/strata_size)):
+                strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
+                np.random.shuffle(strata)
+                Z_sim.append(strata)
+            Z_sim = np.concatenate(Z_sim).reshape(-1, 1) 
+
+            df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
+            bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
+
+            # get the test statistics 
+            t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=False)
+
+        if verbose:
+            print("t_sims_mean:"+str(np.mean(t_sim)))
+            print("\n")
+
+        # perform Holm-Bonferroni correction
+        p_values = []
+        for i in range(lenY):
+            p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
+        reject = self.holm_bonferroni(p_values,alpha = 0.2)
+
+        end_time = time.time()
+        test_time = end_time - start_time
+
+        return p_values, reject, test_time
 
     def retrain_test_imputed(self, Z, X, M, Y, G,  strata_size, L=10000, verbose = False):
         """

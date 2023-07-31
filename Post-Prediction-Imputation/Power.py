@@ -125,7 +125,7 @@ if __name__ == '__main__':
         0.25: 16.090606547366434,
     }
 
-    for coef in np.arange(0.0,0.0 ,0.05):
+    for coef in np.arange(0.0,0.3 ,0.05):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)

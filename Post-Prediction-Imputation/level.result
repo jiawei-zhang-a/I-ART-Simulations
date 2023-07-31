@@ -1,24 +1,24 @@
 Analysis of : Result/HPC_power_1000_unobserved_interference_single/0.000000
 Mean p-values for Median Imputer:
-Power: [0.48459    0.206      0.51169503]
+Power: [ 0.4886411   0.2155     21.22833398]
 Mean p-values for LR Imputer:
-Power: [0.50185    0.188      2.58934843]
+Power: [  0.4906209    0.2105     123.23321533]
 Mean p-values for lightGBM Imputer:
-Power: [ 0.50109     0.189      61.76180548]
+Power: [4.92915800e-01 2.04000000e-01 3.06369325e+03]
 Plotting the distribution of the first 6 p-values for each imputer
 Median Imputer
-KstestResult(statistic=0.03500000000000003, pvalue=0.16848479713738662, statistic_location=0.5, statistic_sign=1)
-Proportion of p-values below 0.05: 0.0450
-Proportion of p-values below 0.1: 0.1010
-Proportion of p-values below 0.2: 0.1990
+KstestResult(statistic=0.02529999999999999, pvalue=0.15189001809033065, statistic_location=0.5542, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0550
+Proportion of p-values below 0.1: 0.1115
+Proportion of p-values below 0.2: 0.2155
 LR Imputer
-KstestResult(statistic=0.022999999999999993, pvalue=0.6566398438826642, statistic_location=0.12, statistic_sign=-1)
-Proportion of p-values below 0.05: 0.0370
-Proportion of p-values below 0.1: 0.0850
-Proportion of p-values below 0.2: 0.1830
+KstestResult(statistic=0.020999999999999963, pvalue=0.33633147684559184, statistic_location=0.269, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0580
+Proportion of p-values below 0.1: 0.1145
+Proportion of p-values below 0.2: 0.2100
 LightGBM Imputer
-KstestResult(statistic=0.02100000000000002, pvalue=0.7616082847491794, statistic_location=0.23, statistic_sign=-1)
-Proportion of p-values below 0.05: 0.0480
-Proportion of p-values below 0.1: 0.0920
-Proportion of p-values below 0.2: 0.1820
+KstestResult(statistic=0.01859999999999995, pvalue=0.4875809230867183, statistic_location=0.5974, statistic_sign=1)
+Proportion of p-values below 0.05: 0.0535
+Proportion of p-values below 0.1: 0.1035
+Proportion of p-values below 0.2: 0.2040
 

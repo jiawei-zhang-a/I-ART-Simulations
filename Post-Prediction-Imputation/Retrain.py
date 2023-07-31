@@ -244,9 +244,9 @@ class RetrainTest:
             #Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
 
             Z_sim = []
-            half_strata_size = 100 // 2  # Ensure strata_size is even
+            half_strata_size = 10 // 2  # Ensure strata_size is even
 
-            for i in range(10):
+            for i in range(100):
                 strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
                 np.random.shuffle(strata)
                 Z_sim.append(strata)

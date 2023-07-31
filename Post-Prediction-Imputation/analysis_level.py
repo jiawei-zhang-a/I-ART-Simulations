@@ -84,7 +84,6 @@ def plot_p_values_distribution(p_values, imputer_name, file):
         file.write(f"Proportion of p-values below {threshold_010}: {proportion_below_010:.4f}\n")
         file.write(f"Proportion of p-values below {threshold_020}: {proportion_below_020:.4f}\n")
 
-        continue 
         plt.figure(figsize=(8, 6))
         plt.scatter(range(len(p_values[:,i])), p_values[:,i], s=10, color='b', alpha=0.5)
         plt.xlabel('Index')

@@ -308,8 +308,9 @@ class DataGenerator:
           print(data.describe())
           print(pd.DataFrame(M).describe())
 
-        with open('lambda.txt', 'a') as f:
-          f.write(str(lambda1) + '\n')
+        if self.Missing_lambda == None:
+          with open('lambda.txt', 'a') as f:
+            f.write(str(lambda1) + '\n')
 
         return M
 

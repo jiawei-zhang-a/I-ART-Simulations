@@ -156,35 +156,33 @@ class RetrainTest:
 
         return t
 
-    def retrain_test(self, Z, X, M, Y, G, strata_size, L=10000, verbose = False):
+    def retrain_test(self, Z, X, M, Y, G, strata_size, L=10000, verbose = False, shuffle = False):
 
-        # Assuming your DataFrame is as follows:
-        df = pd.DataFrame({
-            'X1': X[:, 0],
-            'X2': X[:, 1],
-            'X3': X[:, 2],
-            'X4': X[:, 3],
-            'X5': X[:, 4],
-            'Y': Y.flatten(),
-            'M': M.flatten(),
-            'Z': Z.flatten(),
-        })
+        if shuffle:
+            df = pd.DataFrame({
+                'X1': X[:, 0],
+                'X2': X[:, 1],
+                'X3': X[:, 2],
+                'X4': X[:, 3],
+                'X5': X[:, 4],
+                'Y': Y.flatten(),
+                'M': M.flatten(),
+                'Z': Z.flatten(),
+            })
 
-        # Shuffle the DataFrame
-        df = df.sample(frac=1).reset_index(drop=True)
+            # Shuffle the DataFrame
+            df = df.sample(frac=1).reset_index(drop=True)
 
-        # Split the shuffled DataFrame back into the individual variables
-        Z_shuffled = df['Z'].values.reshape(-1, 1)
-        X_shuffled = df[['X1', 'X2', 'X3', 'X4', 'X5']].values  # this will create a 2D array for X
-        M_shuffled = df['M'].values.reshape(-1, 1)
-        Y_shuffled = df['Y'].values.reshape(-1, 1)
+            # Split the shuffled DataFrame back into the individual variables
+            Z = df['Z'].values.reshape(-1, 1)
+            X = df[['X1', 'X2', 'X3', 'X4', 'X5']].values  # this will create a 2D array for X
+            M = df['M'].values.reshape(-1, 1)
+            Y = df['Y'].values.reshape(-1, 1)
 
-        # Then you can pass these shuffled values to your function
-        #return self.retrain_test_imputed(Z_shuffled, X_shuffled, M_shuffled, Y_shuffled, G,  L, verbose)
         if G == None:
             return self.retrain_test_oracle(Z, X, M, Y, G,strata_size, L, verbose)   
         else:
-            return self.retrain_test_imputed(Z_shuffled, X_shuffled, M_shuffled, Y_shuffled, G,strata_size, L, verbose)
+            return self.retrain_test_imputed(Z, X, M, Y, G,strata_size, L, verbose)
         
     def retrain_test_oracle(self, Z, X, M, Y, G, strata_size, L=10000, verbose = False):
         start_time = time.time()

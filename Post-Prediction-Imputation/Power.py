@@ -137,14 +137,15 @@ if __name__ == '__main__':
 
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
-        0.0: 15.721475376174672,
-        1.0: 16.32921271710295,
-        2.0: 16.85640503208439,
-        3.0: 17.35727376690019,
-        4.0: 17.803032298883505,
+        0.0: 15.843098766790078,
+        0.25: 15.869215535712938,
+        0.5: 16.033777034949917,
+        0.75: 16.225243226951633,
+        1.0: 16.411118432384587,
+        1.25: 16.56085697653494,
     }
 
-    for coef in np.arange(0.0,5,1):
+    for coef in np.arange(0.0,1.5,0.25):
         beta_coef = coef
         # Round to nearest integer to match dictionary keys
         beta_coef_rounded = round(beta_coef)

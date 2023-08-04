@@ -151,7 +151,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size,  Missing_lambda = lambda_value)
+            run(100, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_100_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size,  Missing_lambda = None)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 

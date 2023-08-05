@@ -15,10 +15,10 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 100
+L = 5000
 S_size = 10
 
-def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda,strata_size, verbose=1):
+def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda,strata_size, small_size,verbose=1):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
@@ -70,19 +70,17 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     values_LR = [ *p_values, reject, test_time]
 
     #XGBoost
-    print("XGBoost")
-    XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
-    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G=XGBoost, verbose=1)
-    values_xgboost = [*p_values, reject, test_time]
+    if small_size == True:
+        XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
+        p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G=XGBoost, verbose=1)
+        values_xgboost = [*p_values, reject, test_time]
 
     #LightGBM
-    print("LightGBM")
-    #start_time = time.time()
-    LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1), max_iter=max_iter)
-    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=L, G=LightGBM, verbose=verbose)
-    #end_time = time.time()
-    values_lightgbm = [*p_values, reject, test_time]
-    #print(f"Execution time for LightGBM: {end_time - start_time} seconds\n")
+    if small_size == False:
+        print("LightGBM")
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1), max_iter=max_iter)
+        p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=L, G=LightGBM, verbose=verbose)
+        values_lightgbm = [*p_values, reject, test_time]
 
     #Save the file in numpy format
     if(save_file):
@@ -91,17 +89,14 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
             # If the folder does not exist, create it
             os.makedirs("%s/%f"%(filepath,beta_coef))
 
-        # Convert lists to numpy arrays
-        values_median = np.array(values_median)
-        values_LR = np.array(values_LR)
-        values_lightgbm = np.array(values_lightgbm)
-
         # Save numpy arrays to files
         np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef,task_id), values_LR)
-        np.save('%s/%f/p_values_lightGBM_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
-        np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
+        if small_size == False:
+            np.save('%s/%f/p_values_lightGBM_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
+        if small_size == True:
+            np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
 
 if __name__ == '__main__':
 
@@ -131,27 +126,27 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size, Missing_lambda = lambda_value)
+            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
-        0.0: 15.843098766790078,
-        0.25: 15.869215535712938,
-        0.5: 16.033777034949917,
-        0.75: 16.225243226951633,
-        1.0: 16.411118432384587,
-        1.25: 16.56085697653494,
+        0.0: 15.64623838541569,
+        0.2: 15.914767907195158,
+        0.4: 16.139500824890415,
+        0.6: 16.744323425885444,
+        0.8: 16.996508871283982,
+        1.0: 17.340156028716592,
     }
 
-    for coef in np.arange(0.0,1.5,0.25):
+    for coef in np.arange(0.0,1.2,0.2):
         beta_coef = coef
         # Round to nearest integer to match dictionary keys
         beta_coef_rounded = round(beta_coef)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(100, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_100_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size,  Missing_lambda = None)
+            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 

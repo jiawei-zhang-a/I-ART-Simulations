@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     print("=====================================================")
 
-    for coef in np.arange(0.0,1.5,0.25):
+    for coef in np.arange(0.0,1.2,0.2):
         if os.path.isfile("lambda.txt"):
             os.remove("lambda.txt")
         for i in range(100):

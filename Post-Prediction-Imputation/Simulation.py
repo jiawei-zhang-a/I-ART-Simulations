@@ -118,19 +118,6 @@ class DataGenerator:
 
   def GenerateY(self, X, U, Z,  StrataEps, IndividualEps):
         
-    #def sum1():
-    sum1 = np.zeros(self.N)
-    for p in range(1,6):
-      sum1 += logistic.cdf(X[:,p-1])
-    sum1 = (1.0 / np.sqrt(5)) * sum1
-
-    #def sum2():
-    sum2 = np.zeros(self.N)
-    for p in range(1,6):
-      for p_2 in range(1,6):
-        sum2 += X[:,p-1] * X[:,p_2-1]
-    sum2 = (1.0 / np.sqrt(5 * 5)) * sum2
-
     #def sum3():
     sum3 = np.zeros(self.N)
     for p in range(1,6):
@@ -150,28 +137,6 @@ class DataGenerator:
       sum5 += np.absolute(X[:,p-1])
     sum5 = (1.0  / np.sqrt(5)) * sum5
 
-    #def sum6(): 
-    sum6 = np.zeros(self.N)
-    for p in range(1,6):
-      sum6 += X[:,p-1]
-    sum6 = (1.0  / np.sqrt(5)) * sum6
-
-    #def sum7(): 
-    sum7 = np.zeros(self.N)
-    for p in range(1,6):
-      for p_2 in range(1,6):
-        for p_3 in range(1,6):
-          sum7 += X[:,p-1] * X[:,p_2-1] * logistic.cdf(X[:,p_3-1])
-    sum7 = (1.0  / np.sqrt(5 * 5 * 5)) * sum7
-
-    #def sum8(): 
-    sum8 = np.zeros(self.N)
-    for p in range(1,6):
-      for p_2 in range(1,6):
-        for p_3 in range(1,6):
-          sum8 += X[:,p-1] * X[:,p_2-1] * np.cos(1 - 4*X[:,p_3-1])
-    sum8 = (1.0  / np.sqrt(5 * 5 )) * sum8  
-
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
@@ -180,31 +145,11 @@ class DataGenerator:
       Y_n3_X = sum3 + sum4
       Y_n3_U =  U +  StrataEps+ IndividualEps
 
-      Y_n3_Z = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5
-      Y_n3_X = sum3 + sum4
-      Y_n3_U =  U +  StrataEps+ IndividualEps
-
       data = pd.DataFrame({'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U})
       print(data.describe())
+
+    Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4  + U +  StrataEps+ IndividualEps
     
-    if self.Unobserved:
-      assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
-      if self.linear_method == 0:
-        Y_n3 = self.beta_32 * Z + sum3 + U +  StrataEps+ IndividualEps 
-      if self.linear_method == 1:
-        Y_n3 = self.beta_32 * Z +  sum3 + sum4 + U+  StrataEps+ IndividualEps 
-      if self.linear_method == 2:
-        Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4  + U +  StrataEps+ IndividualEps
-      
-    else:
-      assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
-      if self.linear_method == 0:
-        Y_n3 = self.beta_32 * Z + sum3  +  StrataEps+ IndividualEps 
-      if self.linear_method == 1:
-        Y_n3 = self.beta_32 * Z +  sum3 + sum4 +  StrataEps+ IndividualEps 
-      if self.linear_method == 2:
-        Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 +  StrataEps+ IndividualEps 
-      
     Y = Y_n3.reshape(-1, 1)
 
     return Y
@@ -235,22 +180,8 @@ class DataGenerator:
             sum2 += p * np.cos(X[i,p-1])
           sum2 =  (1.0  / np.sqrt(5)) * sum2
 
-          if self.Unobserved:
-            assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
-            if self.linear_method == 0:
-              M_lamda[i][0] = sum3 + Y[i, 0] + U[i] + XInter[i] + YInter[i]
-            if self.linear_method == 1:
-              M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i]
-            if self.linear_method == 2:
-              M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i]
-          else:
-            assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
-            if self.linear_method == 0:
-              M_lamda[i][0] = sum3 + Y[i, 0] + XInter[i] + YInter[i]
-            if self.linear_method == 1:
-              M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i]
-            if self.linear_method == 2:
-              M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i]
+          M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i]
+      
 
         if self.Missing_lambda == None:
           lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
@@ -274,30 +205,9 @@ class DataGenerator:
             M_lamda_U[i][0] = U[i]
             M_lamda_XInter[i][0] = XInter[i]
             M_lamda_YInter[i][0] = YInter[i]
-
-          if self.Unobserved:
-            assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
-            if self.linear_method == 0:
-              if sum3 + Y[i, 0] + U[i]  + XInter[i] + YInter[i] > lambda1:
-                M[i][0] = 1
-            if self.linear_method == 1:
-              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])+ U[i] + XInter[i] + YInter[i] > lambda1:
-                M[i][0] = 1            
-            if self.linear_method == 2:
-              if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
-                M[i][0] = 1 
-
-          else:
-            assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
-            if self.linear_method == 0:
-              if sum3 + Y[i, 0]  + XInter[i] + YInter[i] > lambda1:
-                M[i][0] = 1
-            if self.linear_method == 1:
-              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])  + XInter[i] + YInter[i] > lambda1:
-                M[i][0] = 1            
-            if self.linear_method == 2:
-              if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i] > lambda1:
-                M[i][0] = 1 
+     
+          if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
+            M[i][0] = 1 
 
         if self.verbose:
           data = pd.DataFrame(M_lamda_Y, columns=['Y1'])
@@ -307,10 +217,6 @@ class DataGenerator:
           data['Yinter'] = M_lamda_YInter[:,0]
           print(data.describe())
           print(pd.DataFrame(M).describe())
-
-       #if self.Missing_lambda == None:
-        #  with open('lambda.txt', 'a') as f:
-         #   f.write(str(lambda1) + '\n')
 
         return M
 

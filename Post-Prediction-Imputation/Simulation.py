@@ -6,7 +6,7 @@ from random import sample
 
 
 class DataGenerator:
-  def __init__(self,*, N = 1000, strata_size = 10, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True, linear_method = 0, verbose = False, bias = False, Missing_lambda= None):
+  def __init__(self,*, N = 1000, strata_size = 10, beta_11 = 1, beta_12 = 1, beta_21 = 1, beta_22 = 1, beta_23 = 1, beta_31 = 1,beta_32 = 1, MaskRate = 0.3, Unobserved = True, Single = True,  verbose = False, bias = False, Missing_lambda= None):
     self.N = N
     self.beta_11 = beta_11
     self.beta_12 = beta_12
@@ -22,7 +22,6 @@ class DataGenerator:
     self.Single = Single
     self.verbose = verbose
     self.bias = bias
-    self.linear_method = linear_method
     self.Missing_lambda = Missing_lambda
     
   

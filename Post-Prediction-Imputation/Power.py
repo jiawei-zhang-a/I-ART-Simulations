@@ -155,8 +155,6 @@ if __name__ == '__main__':
         beta_coef = coef
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, linear_method = 2)
 
-
-
     for coef in np.arange(0,3,0.6):
         beta_coef = coef
         run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX" + "_single", adjust = 0, linear_method = 0)

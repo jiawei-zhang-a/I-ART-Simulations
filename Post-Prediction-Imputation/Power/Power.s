@@ -12,7 +12,6 @@ module purge
 
 source /scratch/zc2157/jiawei/Post-prediction-Causal-Inference/venv/bin/activate
 export PATH=/scratch/zc2157/jiawei/Post-prediction-Causal-Inference/venv/lib64/python3.8/bin:$PATH
-source ~/.bashrc
 
 
 cd ../

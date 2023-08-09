@@ -1,14 +1,17 @@
 import numpy as np
 import os
 
-def read_npz_files(directory,small_size=False):
+def read_npz_files(directory,small_size=False,adjustment=False):
     summed_p_values_median = None
     summed_p_values_LR = None
     summed_p_values_lightGBM = None
     summed_p_values_xgboost = None
     summed_p_values_oracle = None
-
-    N = int(len(os.listdir(directory)) / 4)
+    
+    if adjustment:
+        N = int(len(os.listdir(directory)) / 2)
+    else:
+        N = int(len(os.listdir(directory)) / 4)
 
     for filename in os.listdir(directory):
         if filename.endswith(".npy"):
@@ -42,19 +45,31 @@ def read_npz_files(directory,small_size=False):
                     summed_p_values_oracle += (p_values<= 0.05).astype(int)
 
     if small_size:
-        results = {
-            'median_power': summed_p_values_median[0] / N,
-            'lr_power': summed_p_values_LR[0] / N,
-            'xgboost_power': summed_p_values_xgboost[0] / N,
-            'oracle_power': summed_p_values_oracle[0] / N,
-        }
+        if adjustment:
+            results = {
+                'xgboost_power': summed_p_values_xgboost[0] / N,
+                'oracle_power': summed_p_values_oracle[0] / N,
+            }     
+        else:
+            results = {
+                'median_power': summed_p_values_median[0] / N,
+                'lr_power': summed_p_values_LR[0] / N,
+                'xgboost_power': summed_p_values_xgboost[0] / N,
+                'oracle_power': summed_p_values_oracle[0] / N,
+            }
     else:
-        results = {
-            'median_power': summed_p_values_median[0] / N,
-            'lr_power': summed_p_values_LR[0] / N,
-            'lightGBM_power': summed_p_values_lightGBM[0] / N,
-            'oracle_power': summed_p_values_oracle[0] / N,
-        }
+        if adjustment:
+            results = {
+                'lightGBM_power': summed_p_values_lightGBM[0] / N,
+                'oracle_power': summed_p_values_oracle[0] / N,
+            }
+        else:
+            results = {
+                'median_power': summed_p_values_median[0] / N,
+                'lr_power': summed_p_values_LR[0] / N,
+                'lightGBM_power': summed_p_values_lightGBM[0] / N,
+                'oracle_power': summed_p_values_oracle[0] / N,
+            }
 
     return results
 

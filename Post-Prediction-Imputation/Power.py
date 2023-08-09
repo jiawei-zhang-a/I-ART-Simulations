@@ -15,7 +15,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 100
+L = 10000
 S_size = 10
 
 def run(Nsize, Unobserved, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
@@ -90,9 +90,6 @@ if __name__ == '__main__':
     else:
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
-
-    if os.path.exists("Result") == False:
-        os.mkdir("Result")
 
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {

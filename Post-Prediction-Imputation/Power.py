@@ -76,7 +76,7 @@ if __name__ == '__main__':
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
 
-    beta_to_lambda = {
+    """beta_to_lambda = {
         0.0: 2.190585018478782,
         0.25: 2.4005415180617367,
         0.5: 2.4247574115023114,
@@ -184,8 +184,8 @@ if __name__ == '__main__':
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value,linear_method = 2, small_size=False)
         else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    exit()
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")"""
+
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
         0.0: 15.338280233232549,

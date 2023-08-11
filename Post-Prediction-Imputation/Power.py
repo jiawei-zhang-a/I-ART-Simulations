@@ -15,10 +15,10 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 20
+L = 100
 S_size = 10
 
-def run(Nsize, Unobserved, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
+def run(Nsize, Single, filepath, adjust, Missing_lambda,linear_method,strata_size, small_size,verbose=0):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
@@ -30,24 +30,9 @@ def run(Nsize, Unobserved, Single, filepath, adjust, Missing_lambda,strata_size,
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, strata_size=S_size,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, verbose=verbose,Missing_lambda = Missing_lambda)
+    DataGen = Generator.DataGenerator(N = Nsize, strata_size=S_size,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,linear_method=linear_method,Single=Single, verbose=verbose,Missing_lambda = Missing_lambda)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
-
-    # Flatten Z, U, Y, M, S from (50,1) to (50,)
-    Z_flat = np.squeeze(Z)
-    U_flat = np.squeeze(U)
-    Y_flat = np.squeeze(Y)
-    M_flat = np.squeeze(M)
-    S_flat = np.squeeze(S)
-
-    # Make a dataframe from X (each column separately), Z, U, Y, M, S
-    df = pd.DataFrame({'X1': X[:, 0], 'X2': X[:, 1], 'X3': X[:, 2], 'X4': X[:, 3], 'X5': X[:, 4], 
-                    'U': U_flat, 'Y': Y_flat,  'M': M_flat,'Z': Z_flat })
-
-    # Print the DataFrame
-    print(df.describe())
-    #df.to_csv('data.csv', index=True)
 
     #Oracale imputer
     print("Oracle")
@@ -64,7 +49,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, Missing_lambda,strata_size,
     #LightGBM
     if small_size == False:
         print("LightGBM")
-        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1), max_iter=max_iter)
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
         p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=L, G=LightGBM, verbose=verbose)
         values_lightgbm = [*p_values, reject, test_time]
 
@@ -91,8 +76,6 @@ if __name__ == '__main__':
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
 
-
-
     beta_to_lambda = {
         0.0: 2.190585018478782,
         0.25: 2.4005415180617367,
@@ -107,7 +90,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX_adjustment" + "_single", adjust = 1, strata_size = S_size, Missing_lambda = lambda_value, small_size=True)
+            run(50,  Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX_adjustment" + "_single", adjust = 1, strata_size = S_size, Missing_lambda = lambda_value, linear_method = 0,small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -125,7 +108,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_linearZ_linearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_linearZ_linearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, linear_method = 0,small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -143,7 +126,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_nonlinearX_adjustment" + "_single", adjust = 1,strata_size = S_size, Missing_lambda = lambda_value, small_size=True)
+            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_nonlinearX_adjustment" + "_single", adjust = 1,strata_size = S_size, Missing_lambda = lambda_value,linear_method = 1, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -163,7 +146,7 @@ if __name__ == '__main__':
         print(beta_coef_rounded)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_linearZ_nonlinearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_linearZ_nonlinearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value,linear_method = 1, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -181,7 +164,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 1,strata_size = S_size, Missing_lambda = lambda_value, small_size=True)
+            run(50,  Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 1,strata_size = S_size, Missing_lambda = lambda_value,linear_method = 2, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -199,7 +182,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value,linear_method = 2, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     exit()
@@ -219,7 +202,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -239,6 +222,6 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference_adjusted" + "_single", adjust = 1, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
+            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference_adjusted" + "_single", adjust = 1, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")

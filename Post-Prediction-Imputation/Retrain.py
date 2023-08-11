@@ -44,6 +44,10 @@ class RetrainTest:
             G2 = IterativeImputer(estimator = lgb.LGBMRegressor(n_jobs=1),max_iter=3)
             df_noZ_imputed = G2.fit_transform(df_noZ)
             return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
+        if self.covariance_adjustment == 3:
+            G2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
+            df_noZ_imputed = G2.fit_transform(df_noZ)
+            return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
 
 
     def get_corr(self, G, df, Y, indexY, lenY):

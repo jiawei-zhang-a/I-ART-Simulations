@@ -76,7 +76,7 @@ if __name__ == '__main__':
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
 
-    """beta_to_lambda = {
+    beta_to_lambda = {
         0.0: 2.190585018478782,
         0.25: 2.4005415180617367,
         0.5: 2.4247574115023114,
@@ -90,27 +90,10 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50,  Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX_adjustment" + "_single", adjust = 1, strata_size = S_size, Missing_lambda = lambda_value, linear_method = 0,small_size=True)
+            run(50,  Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX_adjustment" + "_single", adjust = 3, strata_size = S_size, Missing_lambda = lambda_value, linear_method = 0,small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
-    beta_to_lambda = {
-        0.0: 2.035857074708517,
-        0.07: 2.174988178649473,
-        0.14: 2.3387202937400846,
-        0.21: 2.3725864425755945,
-        0.28: 2.313569659342935,
-        0.35: 2.315751089091089
-    }
-    for coef in np.arange(0.0,0.42,0.07):
-        beta_coef = coef
-        # Round to two decimal places to match dictionary keys
-        beta_coef_rounded = round(beta_coef, 2)
-        if beta_coef_rounded in beta_to_lambda:
-            lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_linearZ_linearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, linear_method = 0,small_size=False)
-        else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
     beta_to_lambda = {
         0.0: 14.491811119136337,
@@ -126,30 +109,11 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_nonlinearX_adjustment" + "_single", adjust = 1,strata_size = S_size, Missing_lambda = lambda_value,linear_method = 1, small_size=True)
+            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_nonlinearX_adjustment" + "_single", adjust = 3,strata_size = S_size, Missing_lambda = lambda_value,linear_method = 1, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
-    beta_to_lambda = {
-        0.0: 14.363602621057938,
-        0.18: 14.603768808707162,
-        0.36: 14.59942127025626,
-        0.54: 14.721181497335788,
-        0.72: 14.907266369483425,
-        0.9: 15.043985299562044,
-        1.08: 15.072236396242202
-    }
-    for coef in np.arange(0.0,1.26,0.18):
-        beta_coef = coef
-        # Round to two decimal places to match dictionary keys
-        beta_coef_rounded = round(beta_coef, 2)
-        print(beta_coef_rounded)
-        if beta_coef_rounded in beta_to_lambda:
-            lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_linearZ_nonlinearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value,linear_method = 1, small_size=False)
-        else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    
+
     beta_to_lambda = {
         0.0: 14.363917292284167,
         0.25: 14.868591582739715,
@@ -164,28 +128,10 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50,  Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 1,strata_size = S_size, Missing_lambda = lambda_value,linear_method = 2, small_size=True)
+            run(50,  Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 3,strata_size = S_size, Missing_lambda = lambda_value,linear_method = 2, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    
-    beta_to_lambda = {
-        0.0: 14.396331546692416,
-        0.06: 14.485505560340885,
-        0.12: 14.539825257311756,
-        0.18: 14.605380751276583,
-        0.24: 14.823815159316204,
-        0.3: 14.868493955429921
-    }
-    for coef in np.arange(0.0,0.36,0.06):
-        beta_coef = coef
-        # Round to two decimal places to match dictionary keys
-        beta_coef_rounded = round(beta_coef, 2)
-        if beta_coef_rounded in beta_to_lambda:
-            lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value,linear_method = 2, small_size=False)
-        else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")"""
-
+    exit()
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
         0.0: 15.338280233232549,

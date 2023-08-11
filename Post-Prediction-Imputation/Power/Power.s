@@ -10,9 +10,8 @@
 
 module purge
 
-source /scratch/zc2157/jiawei/Post-prediction-Causal-Inference/venv/bin/activate
-export PATH=/scratch/zc2157/jiawei/Post-prediction-Causal-Inference/venv/lib64/python3.8/bin:$PATH
-
+source /scratch/jz4721/Post-prediction-Causal-Inference/venv/bin/activate
+export PATH=/scratch/jz4721/Post-prediction-Causal-Inference/venv/lib64/python3.8/bin:$PATH
 
 cd ../
 python Power.py $SLURM_ARRAY_TASK_ID

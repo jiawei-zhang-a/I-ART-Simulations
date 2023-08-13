@@ -18,7 +18,7 @@ max_iter = 3
 L = 100
 S_size = 10
 
-def run(Nsize, Single, filepath, adjust, Missing_lambda,linear_method,strata_size, small_size,verbose=0):
+def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=0):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
@@ -30,7 +30,7 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,linear_method,strata_siz
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, strata_size=S_size,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,linear_method=linear_method,Single=Single, verbose=verbose,Missing_lambda = Missing_lambda)
+    DataGen = Generator.DataGenerator(N = Nsize, strata_size=S_size,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Single=Single, verbose=verbose,Missing_lambda = Missing_lambda)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
@@ -39,6 +39,21 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,linear_method,strata_siz
     p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject, test_time]
+    #Oracale imputer
+
+    #Median imputer
+    print("Median")
+    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G = median_imputer,verbose=verbose)
+    # Append p-values to corresponding lists
+    values_median = [ *p_values, reject, test_time]
+
+    #LR imputer
+    print("LR")
+    BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size=strata_size, L=L,G=BayesianRidge,verbose=verbose)
+    # Append p-values to corresponding lists
+    values_LR = [ *p_values, reject, test_time]
 
     #XGBoost
     if small_size == True:
@@ -62,6 +77,9 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,linear_method,strata_siz
 
         # Save numpy arrays to files
         np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
+        np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
+        np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef,task_id), values_LR)
+
         if small_size == False:
             np.save('%s/%f/p_values_lightGBM_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
         if small_size == True:
@@ -76,62 +94,7 @@ if __name__ == '__main__':
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
 
-    beta_to_lambda = {
-        0.0: 2.190585018478782,
-        0.25: 2.4005415180617367,
-        0.5: 2.4247574115023114,
-        0.75: 2.619155952256185,
-        1.0: 2.595153270291314,
-        1.25: 2.744281729970429
-    }
-    for coef in np.arange(0,1.5,0.25):
-        beta_coef = coef
-        # Round to two decimal places to match dictionary keys
-        beta_coef_rounded = round(beta_coef, 2)
-        if beta_coef_rounded in beta_to_lambda:
-            lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50,  Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_linearX_adjustment" + "_single", adjust = 3, strata_size = S_size, Missing_lambda = lambda_value, linear_method = 0,small_size=True)
-        else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    
 
-    beta_to_lambda = {
-        0.0: 14.491811119136337,
-        0.8: 14.958941428362772,
-        1.6: 15.403478511847414,
-        2.4: 15.720791380016868,
-        3.2: 15.944599814361716,
-        4.0: 16.098830681267856
-    }
-    for coef in np.arange(0.0,4.8,0.8):
-        beta_coef = coef
-        # Round to two decimal places to match dictionary keys
-        beta_coef_rounded = round(beta_coef, 2)
-        if beta_coef_rounded in beta_to_lambda:
-            lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_linearZ_nonlinearX_adjustment" + "_single", adjust = 3,strata_size = S_size, Missing_lambda = lambda_value,linear_method = 1, small_size=True)
-        else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    
-
-    beta_to_lambda = {
-        0.0: 14.363917292284167,
-        0.25: 14.868591582739715,
-        0.5: 15.335728550072929,
-        0.75: 15.485908766946375,
-        1.0: 15.500897841516423,
-        1.25: 15.801413524242948
-    }
-    for coef in np.arange(0.0,1.5,0.25):
-        beta_coef = coef
-        # Round to two decimal places to match dictionary keys
-        beta_coef_rounded = round(beta_coef, 2)
-        if beta_coef_rounded in beta_to_lambda:
-            lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50,  Single = 1, filepath = "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX_adjustment" + "_single", adjust = 3,strata_size = S_size, Missing_lambda = lambda_value,linear_method = 2, small_size=True)
-        else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    exit()
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
         0.0: 15.338280233232549,

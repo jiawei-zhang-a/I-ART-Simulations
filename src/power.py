@@ -1,70 +1,68 @@
 import sys
 import numpy as np
-import multiprocessing
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 from sklearn.impute import SimpleImputer
-import multiprocessing
-import Simulation as Generator
-import Retrain
-import warnings
-import xgboost as xgb
+import simulation as Generator
+import rimo as retrain
 import os
-
-#from cuml import XGBRegressor
- #   XGBRegressor(tree_method='gpu_hist')
+import lightgbm as lgb
+import xgboost as xgb
 
 beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 100
+L = 1
+S_size = 10
 
-def run(Nsize, Unobserved, Single, filepath):
+def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda,strata_size, small_size,verbose=1):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
     # Create an instance of the OneShot class
-    Framework = Retrain.RetrainTest(N = Nsize)
+    Framework = retrain.RetrainTest()
 
     print("Begin")
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, N_T = int(Nsize / 2), N_S = int(Nsize / 20), beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single)
+    DataGen = Generator.DataGenerator(N = Nsize, strata_size=S_size,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, linear_method = linear_method,verbose=verbose,Missing_lambda = Missing_lambda)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    # Oracle 
-    print("Oracle")
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L, G = None,verbose=1)
-    # Append p-values to corresponding lists
-    values_oracle = [ *p_values, reject, corr_G]
-    print(values_oracle)
+    Y = np.ma.masked_array(Y, mask=M)
+    Y = Y.filled(np.nan)    
+    Y = np.concatenate((X, Y), axis=1)
 
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y,L=L, G = median_imputer,verbose=1)
+    reject, p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L,  G = median_imputer,verbose=verbose)
     # Append p-values to corresponding lists
-    values_median = [ *p_values, reject, corr_G]
+    values_median = [ *p_values, reject]
 
     #LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y, L=L,G=BayesianRidge,verbose=1)
+    reject,p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L,G=BayesianRidge,verbose=verbose)
     # Append p-values to corresponding lists
-    values_LR = [ *p_values, reject, corr_G]
+    values_LR = [ *p_values, reject]
 
     #XGBoost
-    print("XGBoost")
-    XGBoost = IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=max_iter)
-    p_values, reject, corr_G = Framework.retrain_test(Z, X, M, Y,L=L, G=XGBoost,verbose=1)
-    # Append p-values to corresponding lists
-    values_xgboost = [ *p_values, reject, corr_G]
-    print("Finished")
+    if small_size == True:
+        XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
+        reject,p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L,  G=XGBoost, verbose=1)
+        values_xgboost = [*p_values, reject]
+
+    #LightGBM
+    if small_size == False:
+        print("LightGBM")
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1), max_iter=max_iter)
+        reject, p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L, G=LightGBM, verbose=verbose)
+        values_lightgbm = [*p_values, reject]
 
     #Save the file in numpy format
     if(save_file):
@@ -73,24 +71,15 @@ def run(Nsize, Unobserved, Single, filepath):
             # If the folder does not exist, create it
             os.makedirs("%s/%f"%(filepath,beta_coef))
 
-        # Convert lists to numpy arrays
-        values_oracle = np.array(values_oracle)
-        values_median = np.array(values_median)
-        values_LR = np.array(values_LR)
-        values_xgboost = np.array(values_xgboost)
-
         # Save numpy arrays to files
-        np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef,task_id), values_LR)
-        np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef,task_id), values_xgboost)      
+        if small_size == False:
+            np.save('%s/%f/p_values_lightGBM_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
+        if small_size == True:
+            np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
 
 if __name__ == '__main__':
-    multiprocessing.freeze_support() # This is necessary and important, not sure why 
-    # Mask Rate
-
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
-    warnings.filterwarnings("ignore", category=UserWarning, module="numpy.core.getlimits")
 
     if len(sys.argv) == 2:
         task_id = int(sys.argv[1])
@@ -102,13 +91,42 @@ if __name__ == '__main__':
     if os.path.exists("Result") == False:
         os.mkdir("Result")
 
-    for coef in np.arange(0.01,0.5,0.05):
+    # Define your dictionary here based on the table you've given
+    beta_to_lambda = {
+        0.0: 15.338280233232549,
+        0.05: 15.513632949165219,
+        0.1: 15.700965399935757,
+        0.15: 15.778598987947303,
+        0.2: 15.919273976686219,
+        0.25: 16.090606547366434,
+    }
+
+    for coef in np.arange(0.0,0.3 ,0.05):
         beta_coef = coef
-        run(1000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_1000" + "_single")
-        run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_1000" + "_single")
-        run(2000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_unobserved_2000" + "_single")
-        run(2000, Unobserved = 0, Single = 1 , filepath = "Result/HPC_power_2000" + "_single")
-        #run(1000, Unobserved = 0, Single = 0 , filepath = "Result/HPC_power_1000" + "_multi")
-        #run(1000, Unobserved = 1, Single = 0, filepath = "Result/HPC_power_unobserved_1000" + "_multi")
-        #run(2000, Unobserved = 1, Single = 0, filepath = "Result/HPC_power_unobserved_2000" + "_multi")
-        #run(2000, Unobserved = 0, Single = 0 , filepath = "Result/HPC_power_2000" + "_multi")
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+
+    # Define your dictionary here based on the table you've given
+    beta_to_lambda = {
+        0.0: 15.64623838541569,
+        0.2: 15.914767907195158,
+        0.4: 16.139500824890415,
+        0.6: 16.744323425885444,
+        0.8: 16.996508871283982,
+        1.0: 17.340156028716592,
+    }
+
+    for coef in np.arange(0.0,1.2,0.2):
+        beta_coef = coef
+        # Round to nearest integer to match dictionary keys
+        beta_coef_rounded = round(beta_coef)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            run(50, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")

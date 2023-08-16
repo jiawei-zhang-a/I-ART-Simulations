@@ -41,7 +41,7 @@ class RetrainTest:
             df_noZ_imputed = G2.fit_transform(df_noZ)
             return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
         if self.covariance_adjustment == 2:
-            G2 = IterativeImputer(estimator = lgb.LGBMRegressor(n_jobs=1),max_iter=3)
+            G2 = IterativeImputer(estimator = lgb.LGBMRegressor(n_jobs=1,verbosity=-1),max_iter=3)
             df_noZ_imputed = G2.fit_transform(df_noZ)
             return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
         if self.covariance_adjustment == 3:

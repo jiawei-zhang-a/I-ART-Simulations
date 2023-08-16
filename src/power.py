@@ -14,7 +14,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 1
+L = 10
 S_size = 10
 
 def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda,strata_size, small_size,verbose=1):
@@ -60,7 +60,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     #LightGBM
     if small_size == False:
         print("LightGBM")
-        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1), max_iter=max_iter)
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1, verbosity=-1), max_iter=max_iter)
         reject, p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L, G=LightGBM, verbose=verbose)
         values_lightgbm = [*p_values, reject]
 

@@ -133,6 +133,10 @@ class RetrainTest:
         # Check Z: must be one of 1, 0, 1.0, 0.0
         if not np.all(np.isin(Z, [0, 1])):
             raise ValueError("Z must contain only 0, 1")
+        
+        # Check Y: must be numeric
+        if not np.issubdtype(Y.dtype, np.number):
+            raise ValueError("Y must contain numeric values")
 
         # Check M: can be None
         if M is not None and not np.all(np.isin(M, [0, 1])):
@@ -188,6 +192,11 @@ class RetrainTest:
 
         if S is None:
             S = np.ones(Z.shape)
+
+        #if y is dataframe, convert it to numpy array
+        if isinstance(Y, pd.DataFrame):
+            Y = Y.values
+
         # Check the validity of the input parameters
         self.check_param(Z, Y, S, M, G, L, verbose, alpha)
 
@@ -218,9 +227,9 @@ class RetrainTest:
         #print train end
         if verbose:
             print("Observed Wilconxin rank-sum test statistics:"+str(t_obs))
+            print("\nRe-impute Start\n")
             print("=========================================================")
-            print("Re-impute Start\n")
-
+            
         # simulate data and calculate test statistics
         t_sim = [ [] for i in range(L)]
         Z_sim_templates = self.getZsimTemplates(Z, S)

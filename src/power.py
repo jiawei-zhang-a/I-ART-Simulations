@@ -53,14 +53,14 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
 
     #XGBoost
     if small_size == True:
-        XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
+        XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(), max_iter=max_iter)
         reject,p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L,  G=XGBoost, verbose=1)
         values_xgboost = [*p_values, reject]
 
     #LightGBM
     if small_size == False:
         print("LightGBM")
-        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1, verbosity=-1), max_iter=max_iter)
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor( verbosity=-1), max_iter=max_iter)
         reject, p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L, G=LightGBM, verbose=verbose)
         values_lightgbm = [*p_values, reject]
 

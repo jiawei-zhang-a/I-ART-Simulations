@@ -4,7 +4,7 @@ from analysis_power import read_npz_files
 import matplotlib.pyplot as plt
 import os
 
-def plot_results(data, title):
+def plot_results(data, title, xsticks):
     plt.clf()
 
     columns = ['beta', 'Imputer_GradientBoosting', 'Imputer_Oracle',"Imputer_Median","Imputer_LR", "Imputer_GradientBoosting-adjustment", "Imputer_Oracle-adjustment", "Imputer_Median-adjustment", "Imputer_LR-adjustment"]
@@ -28,6 +28,11 @@ def plot_results(data, title):
     # plt.show()
     if not os.path.exists("pic"):
         os.makedirs("pic")
+    plt.xticks(xsticks)
+    # Setting y-axis ticks with custom intervals
+    y_ticks = [i/100.0 for i in range(0, 105, 20)]  # Starts from 0, ends at 1.05, with an interval of 0.05
+    y_ticks.append(0.05)
+    plt.yticks(y_ticks)
 
     plt.savefig("pic/" + title + ".png", format='png', dpi=600)
 
@@ -46,7 +51,7 @@ def main():
             row_power.extend([ results['lightGBM_power'],results['oracle_power'], results['median_power'], results['lr_power'] ])
         Power_data.append(row_power)
 
-    plot_results(Power_data,  "Covariance adjustment, Size 1000") 
+    plot_results(Power_data,  "Size-1000, Single: Covariance Adjustment, ", np.arange(0.0,0.3 ,0.05)) 
 
     for coef in np.arange(0.0,1.2,0.2):
         row_power_small = [coef]
@@ -58,7 +63,7 @@ def main():
             row_power_small.extend([results['xgboost_power'], results['oracle_power'], results['median_power'], results['lr_power']])
         Power_data_small.append(row_power_small)
 
-    plot_results(Power_data_small, "Covariance adjustment, Size 50") 
+    plot_results(Power_data_small, "Size-50, Single: Covariance Adjustment, ", np.arange(0.0,1.2,0.2))   
      
 
 main()

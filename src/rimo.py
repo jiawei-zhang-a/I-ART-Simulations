@@ -170,7 +170,7 @@ class RetrainTest:
         if len(Y.shape) != 2:
             raise ValueError("Y must be a 2D array")
         
-    def retrain_test(self,*,Z, Y, G=IterativeImputer(estimator = linear_model.BayesianRidge()), S=None, M = None, L = 10000,verbose = False, alpha = 0.05):
+    def prep_test(self,*,Z, X, Y, G=IterativeImputer(estimator = linear_model.BayesianRidge()), S=None, M = None, L = 10000,verbose = False, alpha = 0.05):
         """
         RIMO:A retrain framework for testing H_0.
 
@@ -226,7 +226,7 @@ class RetrainTest:
 
         #print train end
         if verbose:
-            print("Observed Wilconxin rank-sum test statistics:"+str(t_obs))
+            print("Observed Wilconxon rank-sum test statistics:"+str(t_obs))
             print("\nRe-impute Start\n")
             print("=========================================================")
             

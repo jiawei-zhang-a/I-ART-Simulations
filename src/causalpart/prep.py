@@ -102,8 +102,8 @@ def getZsim(Z_sim_templates):
     Z_sim = np.concatenate(Z_sim).reshape(-1, 1)
     return Z_sim
 
-def sort(Z, Y, S, M):
-    # Reshape Z, Y, S, M to (-1, 1) if they're not already in that shape
+def sort(Z, X, Y, S, M):
+    # Reshape Z, X, Y, S, M to (-1, 1) if they're not already in that shape
     if len(Z.shape) == 1 or Z.shape[1] != 1:
         Z = Z.reshape(-1, 1)
     if len(S.shape) == 1 or S.shape[1] != 1:
@@ -111,22 +111,23 @@ def sort(Z, Y, S, M):
     if len(M.shape) == 1 or M.shape[1] != M.shape[1]:
         M = M.reshape(-1, M.shape[1])
 
-    # Concatenate Z, Y, S, and M into a single DataFrame
-    df = pd.DataFrame(np.concatenate((Z, Y, S, M), axis=1))
+    # Concatenate Z,X, Y, S, and M into a single DataFrame
+    df = pd.DataFrame(np.concatenate((Z, X, Y, S, M), axis=1))
 
     # Sort the DataFrame based on S (assuming S is the column before M)
     df = df.sort_values(by=df.columns[-M.shape[1] - 1])
 
-    # Extract Z, Y, S, and M back into separate arrays
+    # Extract Z, X, Y, S, and M back into separate arrays
     Z = df.iloc[:, :Z.shape[1]].values.reshape(-1, 1)
-    Y = df.iloc[:, Z.shape[1]:Z.shape[1] + Y.shape[1]].values
-    S = df.iloc[:, Z.shape[1] + Y.shape[1]:Z.shape[1] + Y.shape[1] + S.shape[1]].values.reshape(-1, 1)
+    X = df.iloc[:, Z.shape[1]:Z.shape[1] + X.shape[1]].values
+    Y = df.iloc[:, Z.shape[1] + X.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1]].values
+    S = df.iloc[:, Z.shape[1] + X.shape[1] + Y.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1] + S.shape[1]].values.reshape(-1, 1)
     M = df.iloc[:, -M.shape[1]:].values
 
-    return Z, Y, S, M
+    return Z, X, Y, S, M
 
 
-def check_param(Z, X, Y, S, M, G, L, verbose, alpha):
+def check_param(Z, X, Y, S, M, G, L, verbose, covariate_adjustment,alpha):
     # Check Z: must be one of 1, 0, 1.0, 0.0
     if not np.all(np.isin(Z, [0, 1])):
         raise ValueError("Z must contain only 0, 1")
@@ -170,6 +171,10 @@ def check_param(Z, X, Y, S, M, G, L, verbose, alpha):
     # Check Y: must be a 2D array
     if len(Y.shape) != 2:
         raise ValueError("Y must be a 2D array")
+    
+    # Check covariate_adjustment: must be True or False
+    if covariate_adjustment not in [True, False, 1, 0]:
+        raise ValueError("covariate_adjustment must be True or False")
 
 def choosemodel(G, N):
     #if G is string
@@ -213,7 +218,7 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
     if S is None:
         S = np.ones(Z.shape)
     # Check the validity of the input parameters
-    check_param(Z, X, Y, S, M, G, L, verbose, alpha)
+    check_param(Z, X, Y, S, M, G, L, verbose,covariate_adjustment,alpha)
 
     # mask Y
     if M is None:
@@ -222,7 +227,7 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
     
-    Z, Y, S, M = sort(Z, Y, S, M)
+    Z, X, Y, S, M = sort(Z, X, Y, S, M)
 
     df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
 
@@ -236,9 +241,10 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
 
     if covariate_adjustment:
         df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
-        if len(df_noZ.columns) > 100:
+        if df_noZ.shape[0] > 100:
             G_covariate_adjustment = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1),max_iter=3)
         else:
+            exit()
             G_covariate_adjustment = IterativeImputer(estimator=xgb.XGBRegressor(),max_iter=3)
         df_noZ_imputed = G_covariate_adjustment.fit_transform(df_noZ)
 

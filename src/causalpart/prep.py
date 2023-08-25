@@ -228,19 +228,19 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
 
     G_model = choosemodel(G, N=df_Z.shape[1])
 
-    if covariate_adjustment:
-        df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
-        if len(df_noZ.columns) > 100:
-            G_covariate_adjustment = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1))
-        else:
-            G_covariate_adjustment = IterativeImputer(estimator=linear_model.BayesianRidge())
-        df_noZ_imputed = G_covariate_adjustment.fit_transform(df_noZ)
-
     # lenY is the number of how many columns are Y
     lenY = Y.shape[1]
 
     # indexY is the index of the first column of Y
     indexY = Z.shape[1] + X.shape[1]
+
+    if covariate_adjustment:
+        df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
+        if len(df_noZ.columns) > 100:
+            G_covariate_adjustment = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1),max_iter=3)
+        else:
+            G_covariate_adjustment = IterativeImputer(estimator=xgb.XGBRegressor(),max_iter=3)
+        df_noZ_imputed = G_covariate_adjustment.fit_transform(df_noZ)
 
     # re-impute the missing values and calculate the observed test statistics in part 2
     if covariate_adjustment:
@@ -261,7 +261,7 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
             print("Covariate adjustment is used")
         else:
             print("Covariate adjustment is not used")
-        print("\nPrediction Wilcoxon rank-sum test statistics:"+str(t_obs))
+        print("prediction Wilcoxon rank-sum test statistics:"+str(t_obs))
         #print wheather covariate adjustment is used
         print("=========================================================")
         

@@ -14,7 +14,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 10
+L = 1
 S_size = 10
 
 def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lambda,strata_size, small_size,verbose=1):
@@ -29,13 +29,6 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    #Median imputer
-    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'median',verbose=verbose, covariate_adjustment = True)
-    reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'median',verbose=verbose, covariate_adjustment = False)
-
-    # Append p-values to corresponding lists
-    values_median = [ *p_values, reject]
 
     #LR imputer
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
@@ -69,7 +62,6 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
             os.makedirs("%s/%f"%(filepath,beta_coef))
 
         # Save numpy arrays to files
-        np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef,task_id), values_LR)
         if small_size == False:
             np.save('%s/%f/p_values_lightGBM_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
@@ -98,7 +90,7 @@ if __name__ == '__main__':
         0.25: 16.090606547366434,
     }
 
-    for coef in np.arange(0.1,0.3 ,0.05):
+    for coef in np.arange(0.1,0.11 ,0.05):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)
@@ -107,7 +99,7 @@ if __name__ == '__main__':
             run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, linear_method = 2,strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-
+    exit()
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
         0.0: 15.64623838541569,
@@ -118,7 +110,7 @@ if __name__ == '__main__':
         1.0: 17.340156028716592,
     }
 
-    for coef in np.arange(0.0,1.2,0.2):
+    for coef in np.arange(0.6,0.61,0.2):
         beta_coef = coef
         # Round to nearest integer to match dictionary keys
         beta_coef_rounded = round(beta_coef)

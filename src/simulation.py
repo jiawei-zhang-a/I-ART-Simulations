@@ -354,28 +354,3 @@ class DataGenerator:
 
     return X, Z, U, Y , M, S
 
-  def StoreData(self,file):
-    # Generate data
-    X, Z, U, Y, M, S = self.GenerateData()
-
-    # Combine all generated variables into a single matrix
-    data = np.concatenate((X, Z, U, Y, M, S), axis=1) 
-
-    # Store data
-    np.savetxt(file, data, delimiter=",")
-
-    # Print message
-    print("Data stored in SimulatedData.csv")
-
-  def ReadData(self,file):
-    # Read data
-    data = np.genfromtxt(file, delimiter=',')
-    # Splite into X, Z, U, Y, M, S
-    X = data[:, :5]
-    Z = data[:, 5]
-    U = data[:, 6:8]
-    Y = data[:, 8:11]
-    M = data[:, 11:14]
-    S = data[:, 14]
-
-    return X, Z, U, Y, M, S

@@ -5,7 +5,7 @@ from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 from sklearn.impute import SimpleImputer
 import simulation as Generator
-import rimo as retrain
+from causalpart import preptest
 import os
 import lightgbm as lgb
 import xgboost as xgb
@@ -23,45 +23,42 @@ def run(Nsize, Unobserved, Single, filepath, adjust, linear_method, Missing_lamb
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-    # Create an instance of the OneShot class
-    Framework = retrain.RetrainTest()
-
-    print("Begin")
 
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=S_size,beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, linear_method = linear_method,verbose=verbose,Missing_lambda = Missing_lambda)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    Y = np.ma.masked_array(Y, mask=M)
-    Y = Y.filled(np.nan)    
-    Y = np.concatenate((X, Y), axis=1)
-
     #Median imputer
-    print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L,  G = median_imputer,verbose=verbose)
+    reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'median',verbose=verbose, covariate_adjustment = True)
+    reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'median',verbose=verbose, covariate_adjustment = False)
+
     # Append p-values to corresponding lists
     values_median = [ *p_values, reject]
 
     #LR imputer
-    print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    reject,p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L,G=BayesianRidge,verbose=verbose)
+    reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'bayesianridge',verbose=verbose, covariate_adjustment = True)
+    reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'bayesianridge',verbose=verbose, covariate_adjustment = False)
+
     # Append p-values to corresponding lists
     values_LR = [ *p_values, reject]
 
     #XGBoost
     if small_size == True:
         XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(), max_iter=max_iter)
-        reject,p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L,  G=XGBoost, verbose=1)
+        reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'xgboost',verbose=verbose, covariate_adjustment = True)
+        reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'xgboost',verbose=verbose, covariate_adjustment = False)
+
         values_xgboost = [*p_values, reject]
 
     #LightGBM
     if small_size == False:
-        print("LightGBM")
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor( verbosity=-1), max_iter=max_iter)
-        reject, p_values  = Framework.retrain_test(Z = Z,Y=Y,S=S,L=L, G=LightGBM, verbose=verbose)
+        reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'lightgbm',verbose=verbose, covariate_adjustment = True)
+        reject, p_values  = preptest(Z = Z,X = X, Y=Y, M = M, S=S,L=L,  G = 'lightgbm',verbose=verbose, covariate_adjustment = False)
+
         values_lightgbm = [*p_values, reject]
 
     #Save the file in numpy format
@@ -101,7 +98,7 @@ if __name__ == '__main__':
         0.25: 16.090606547366434,
     }
 
-    for coef in np.arange(0.0,0.3 ,0.05):
+    for coef in np.arange(0.1,0.3 ,0.05):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)

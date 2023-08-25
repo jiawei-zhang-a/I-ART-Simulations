@@ -112,6 +112,63 @@ def main():
     plot_results(Power_data_small, "Size-50, Single: Covariance Adjusted, ", np.arange(0.0,1.2,0.2))   
      
 
-main()
+#main()
+
+# Create a new figure for the legend
+fig_leg, ax_leg = plt.subplots(figsize=(6, 1))  # Adjust the size as needed
+ax_leg.axis('off')
+
+# Create the legend
+custom_lines_types = [
+    Line2D([0], [0], color='blue', lw=2),
+    Line2D([0], [0], color='red', lw=2),
+    Line2D([0], [0], color='orange', lw=2),
+    Line2D([0], [0], color='purple', lw=2)
+]
+custom_lines_adjustment = [
+    Line2D([0], [0], color='black', lw=2, linestyle='--'),
+    Line2D([0], [0], color='black', lw=2, linestyle='-')
+]
+legend = ax_leg.legend(custom_lines_types + custom_lines_adjustment, 
+                       ['Median', 'PREP-RidgeReg', 'PREP-GBM', 'Oracle', 'Adjusted', 'Original'], 
+                       loc='center', 
+                       ncol=3,  # Adjust as needed
+                       fontsize='large')  # Adjust as needed
+
+# Save the legend
+fig_leg.savefig('pic/legend.png', dpi=600, bbox_inches='tight')
+
+
+
+
+# Create a new figure for the custom_lines_types legend
+fig_leg1, ax_leg1 = plt.subplots(figsize=(12, 1))  # Adjust the size as needed
+ax_leg1.axis('off')
+
+# Create the legend for custom_lines_types
+legend1 = ax_leg1.legend(custom_lines_types, 
+                          ['Median', 'PREP-RidgeReg', 'PREP-GBM', 'Oracle'], 
+                          loc='center', 
+                          ncol=4,  # Set to 4 to make all items appear in a single line
+                          fontsize='large')  # Adjust as needed
+
+# Save the legend
+fig_leg1.savefig('pic/legend_custom_lines_types.png', dpi=600, bbox_inches='tight')
+
+
+# Create a new figure for the custom_lines_adjustment legend
+fig_leg2, ax_leg2 = plt.subplots(figsize=(2, 1))  # Adjust the size as needed
+ax_leg2.axis('off')
+
+# Create the legend for custom_lines_adjustment
+legend2 = ax_leg2.legend(custom_lines_adjustment, 
+                          ['Adjusted', 'Original'], 
+                          loc='center', 
+                          ncol=2,  # Adjust as needed
+                          fontsize='large')  # Adjust as needed
+
+# Save the legend
+fig_leg2.savefig('pic/legend_custom_lines_adjustment.png', dpi=600, bbox_inches='tight')
+
 
 

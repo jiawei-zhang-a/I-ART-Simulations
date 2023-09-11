@@ -11,8 +11,6 @@ import xgboost as xgb
 from sklearn.impute import SimpleImputer
 import time
 
-
-
 def holm_bonferroni(p_values, alpha = 0.05):
     # Perform the Holm-Bonferroni correction
     reject, corrected_p_values, _, _ = multipletests(p_values, alpha=alpha, method='holm')
@@ -129,6 +127,7 @@ def sort(Z, X, Y, S, M):
 
 
 def check_param(Z, X, Y, S, M, G, L, verbose, covariate_adjustment,alpha):
+
     # List of variables to check
     variables = [Z, X, Y, S, M]
 
@@ -182,6 +181,7 @@ def check_param(Z, X, Y, S, M, G, L, verbose, covariate_adjustment,alpha):
         raise ValueError("covariate_adjustment must be True or False")
 
 
+
 def choosemodel(G, N):
     #if G is string
     if isinstance(G, str):
@@ -198,7 +198,7 @@ def choosemodel(G, N):
             G = IterativeImputer(estimator = lgb.LGBMRegressor(verbosity = -1))
     return G
 
-def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose = False, covariate_adjustment = False, alpha = 0.05, oracle = False):
+def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose = False, covariate_adjustment = False, alpha = 0.05):
     """
     PREP:A prediction and re-prediction framework for testing H_0.
 
@@ -230,18 +230,12 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
     if M is None:
         M = np.isnan(Y).reshape(-1, Y.shape[1])
 
-    Z = Z.reshape(-1, 1)
-    
-    Z, X, Y, S, M = sort(Z, X, Y, S, M)
-    
-    df_truth = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
+    
+    Z, X, Y, S, M = sort(Z, X, Y, S, M)
 
     df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-
-    print(df_Z)
 
     G_model = choosemodel(G, N=df_Z.shape[1])
 
@@ -256,6 +250,7 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
         if df_noZ.shape[0] > 100:
             G_covariate_adjustment = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1),max_iter=3)
         else:
+            exit()
             G_covariate_adjustment = IterativeImputer(estimator=xgb.XGBRegressor(),max_iter=3)
         df_noZ_imputed = G_covariate_adjustment.fit_transform(df_noZ)
 
@@ -263,15 +258,8 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
     if covariate_adjustment:
         Y_pred = getY_adjusted(clone(G_model), df_Z, df_noZ_imputed, indexY, lenY)
     else:
-        if oracle:
-            df_imputed = df_truth.to_numpy()
-            Y_pred = df_imputed[:,indexY:indexY+lenY]
-            # Y_pred contain any missing values
-            if np.isnan(Y_pred).any():
-                raise ValueError("Y_pred contains missing values")
-        else:
-            Y_pred = getY(clone(G_model), df_Z, indexY, lenY)
-        
+        Y_pred = getY(clone(G_model), df_Z, indexY, lenY)
+    
     t_obs = getT(Y_pred, Z, lenY, M)
 
     #print train end
@@ -299,24 +287,19 @@ def preptest(*,Z, X, Y, G='bayesianridge', S=None, M = None, L = 10000,verbose =
         # simulate treatment indicators
         Z_sim = getZsim(Z_sim_templates)
         
-        if oracle == False:
-            G_sim = clone(G_model)
-            
+        G_sim = clone(G_model)
         df_Z = pd.DataFrame(np.concatenate((Z_sim,X, Y), axis=1))
         if covariate_adjustment:
             Y_pred = getY_adjusted(G_sim, df_Z, df_noZ_imputed, indexY, lenY)
         else:
-            if oracle:
-                df_imputed = df_truth.to_numpy()
-                Y_pred = df_imputed[:,indexY:indexY+lenY]
-            else:
-                Y_pred = getY(clone(G_model), df_Z, indexY, lenY)
+            Y_pred = getY(G_sim, df_Z, indexY, lenY)
 
         # get the test statistics 
         t_sim[l] = getT(Y_pred, Z_sim, lenY, M)
 
         if verbose:
             print(f"re-prediction iteration {l+1}/{L} completed. Test statistics[{l}]: {t_sim[l]}")
+
 
     if verbose:
         print("=========================================================")

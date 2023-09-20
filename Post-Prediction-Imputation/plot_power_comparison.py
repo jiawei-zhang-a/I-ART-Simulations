@@ -45,22 +45,6 @@ def plot_results(data, title, xsticks):
     for col in columns[1:]:
         plt.plot(df['beta'], df[col], marker='o', color=colors[col], linestyle=linestyles[col])
 
-    custom_lines_types = [
-        Line2D([0], [0], color='blue', lw=2),
-        Line2D([0], [0], color='red', lw=2),
-        Line2D([0], [0], color='orange', lw=2),
-        Line2D([0], [0], color='purple', lw=2)
-    ]
-    legend1 = plt.legend(custom_lines_types, ['Median', 'PREP-RidgeReg', 'PREP-GBM', 'Oracle'], loc='upper left')
-    plt.gca().add_artist(legend1)
-
-    custom_lines_adjustment = [
-        Line2D([0], [0], color='black', lw=2, linestyle='--'),
-        Line2D([0], [0], color='black', lw=2, linestyle='-')
-    ]
-    plt.legend(custom_lines_adjustment, ['Adjusted', 'Original'], title='Covariate Adjustment', loc='upper left', bbox_to_anchor=(0, 0.7))
-
-
     plt.xlabel(r'$\beta$')
     plt.ylabel('Power')
     plt.grid()
@@ -73,7 +57,8 @@ def plot_results(data, title, xsticks):
     y_ticks.append(0.05)
     plt.yticks(y_ticks)
 
-    plt.savefig(f"pic/{title}.png", format='png', dpi=600)
+    plt.savefig("pic/" + title + ".svg", format='svg')
+
 
 # Example usage:
 # data = your_data_here
@@ -112,7 +97,7 @@ def main():
     plot_results(Power_data_small, "Size-50, Single: Covariance Adjusted, ", np.arange(0.0,1.2,0.2))   
      
 
-#main()
+main()
 
 # Create a new figure for the legend
 fig_leg, ax_leg = plt.subplots(figsize=(6, 1))  # Adjust the size as needed
@@ -136,7 +121,7 @@ legend = ax_leg.legend(custom_lines_types + custom_lines_adjustment,
                        fontsize='large')  # Adjust as needed
 
 # Save the legend
-fig_leg.savefig('pic/legend.png', dpi=600, bbox_inches='tight')
+fig_leg.savefig('pic/legend.svg', format='svg', bbox_inches='tight')
 
 
 
@@ -153,7 +138,7 @@ legend1 = ax_leg1.legend(custom_lines_types,
                           fontsize='large')  # Adjust as needed
 
 # Save the legend
-fig_leg1.savefig('pic/legend_custom_lines_types.png', dpi=600, bbox_inches='tight')
+fig_leg1.savefig('pic/legend_custom_lines_types.svg', format='svg', bbox_inches='tight')
 
 
 # Create a new figure for the custom_lines_adjustment legend
@@ -168,7 +153,7 @@ legend2 = ax_leg2.legend(custom_lines_adjustment,
                           fontsize='large')  # Adjust as needed
 
 # Save the legend
-fig_leg2.savefig('pic/legend_custom_lines_adjustment.png', dpi=600, bbox_inches='tight')
+fig_leg2.savefig('pic/legend_custom_lines_adjustment.svg', format='svg', bbox_inches='tight')
 
 
 

@@ -21,11 +21,11 @@ def plot_results(data, title, xsticks):
     plt.figure(figsize=(10, 6))
 
     colors = {
-        'Imputer_PREP-GBM': 'orange', 
+        'Imputer_PREP-GBM': 'green', 
         'Imputer_Oracle': 'purple',
         "Imputer_Median": "blue",
         "Imputer_PREP-RidgeReg": "red",
-        "Imputer_GBM-adjusted": 'orange', 
+        "Imputer_GBM-adjusted": 'green', 
         "Imputer_Oracle-adjusted": 'purple', 
         "Imputer_Median-adjusted": 'blue', 
         "Imputer_LR-adjusted": 'red'
@@ -109,7 +109,7 @@ ax_leg.axis('off')
 custom_lines_types = [
     Line2D([0], [0], color='blue', lw=2),
     Line2D([0], [0], color='red', lw=2),
-    Line2D([0], [0], color='orange', lw=2),
+    Line2D([0], [0], color='green', lw=2),
     Line2D([0], [0], color='purple', lw=2)
 ]
 custom_lines_adjustment = [

@@ -43,10 +43,10 @@ def plot_results(data, title, xsticks):
     }
 
     for col in columns[1:]:
-        plt.plot(df['beta'], df[col], marker='o', color=colors[col], linestyle=linestyles[col])
+        plt.plot(df['beta'], df[col], marker='o', color=colors[col], linestyle=linestyles[col], linewidth=2)
 
-    plt.xlabel(r'$\beta$',fontsize=25)
-    plt.ylabel('Power',fontsize=25)
+    plt.xlabel(r'$\beta$',fontsize=30)
+    plt.ylabel('Power',fontsize=30)
     plt.grid()
 
     if not os.path.exists("pic"):
@@ -60,13 +60,6 @@ def plot_results(data, title, xsticks):
 
 
     plt.savefig("pic/" + title + ".svg", format='svg')
-
-
-# Example usage:
-# data = your_data_here
-# title = 'Your Title'
-# xsticks = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
-# plot_results(data, title, xsticks)
 
 def main():
     Power_data = []
@@ -134,7 +127,7 @@ ax_leg1.axis('off')
 
 # Create the legend for custom_lines_types
 legend1 = ax_leg1.legend(custom_lines_types, 
-                          ['Median', 'PREP-RidgeReg', 'PREP-GBM', 'Oracle'], 
+                          ['Method 1', 'Method 2', 'Method 3', 'Method 4'], 
                           loc='center', 
                           ncol=4,  # Set to 4 to make all items appear in a single line
                           fontsize='large')  # Adjust as needed

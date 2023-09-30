@@ -15,10 +15,10 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 10000
+L = 1
 S_size = 10
 
-def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=0):
+def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
 
     # If the folder does not exist, create it
     if not os.path.exists(filepath):
@@ -105,7 +105,7 @@ if __name__ == '__main__':
         0.25: 16.090606547366434,
     }
 
-    for coef in np.arange(0.15,0.3 ,0.05):
+    for coef in np.arange(0.0,0.3 ,0.05):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)

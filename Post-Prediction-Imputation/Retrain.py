@@ -26,60 +26,61 @@ class RetrainTest:
 
         return any_rejected
 
-    def getY(self, G, df_Z, df_noZ, indexY ,lenY):
+    def getY(self, G, df_Z, df_noZ, indeX, lenX, indexY, lenY):
+        """
+        Method to get the adjusted Y using either a model G or utilizing a linear regression model
+        depending on the covariance adjustment strategy specified.
+        
+        Parameters:
+        - G: Model used for initial prediction of Y
+        - df_Z, df_noZ: Input DataFrames
+        - indeX, lenX: Index and length to slice X data from df_noZ
+        - indexY, lenY: Index and length to slice Y data
+        
+        Returns: Adjusted Y as per specified strategy
+        """
+
+        # Step 1: Get Y_head using model G
         if G:
             df_imputed = G.fit_transform(df_Z)
-            
         else:
             df_imputed = df_Z.to_numpy()
 
-        #df_noZ_imputed = df_noZ.to_numpy()
+        # If no covariance adjustment is needed, simply return Y_head
         if self.covariance_adjustment == 0:
-            return df_imputed[:,indexY:indexY+lenY]
-        if self.covariance_adjustment == 1:
-            G2 = IterativeImputer(estimator = xgb.XGBRegressor(n_jobs=1),max_iter=3) #IterativeImputer(estimator = xgb.XGBRegressor(),max_iter=3)#
-            df_noZ_imputed = G2.fit_transform(df_noZ)
-            return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
-        if self.covariance_adjustment == 2:
-            G2 = IterativeImputer(estimator = lgb.LGBMRegressor(n_jobs=1,verbosity=-1),max_iter=3)
-            df_noZ_imputed = G2.fit_transform(df_noZ)
-            return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
-        if self.covariance_adjustment == 3:
-            G2 = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=3)
-            df_noZ_imputed = G2.fit_transform(df_noZ)
-            return df_imputed[:,indexY:indexY+lenY] - df_noZ_imputed[:,indexY-1:indexY+lenY-1]
+            return df_imputed[:, indexY:indexY+lenY]
 
-
-    def get_corr(self, G, df, Y, indexY, lenY):
-        # Get the imputed data Y and indicator Z
-        if G is None:
-            df_imputed = df.to_numpy()
+        # If covariance adjustment is needed:
         else:
-            df_imputed = G.transform(df)
-        y = df_imputed[:, indexY:indexY+lenY]
+            # Original Y_head
+            Y_head = df_imputed[:, indexY:indexY+lenY]
 
-        # Initialize the lists to store imputed and truth values for missing positions
-        y_imputed = []
-        y_truth = []
+            # Ensure Y_head is 2D for sklearn compatibility
+            if len(Y_head.shape) == 1:
+                Y_head = Y_head.reshape(-1, 1)
 
-        # Iterate over the rows and columns to find missing values
-        for i in range(df.shape[0]):
-            for j in range(lenY):
-                # Check if the value in the last three columns of df is missing (you can replace 'your_missing_value' with the appropriate value or condition)
-                if np.isnan(df.iloc[i, -lenY + j]):
-                    y_imputed.append(y[i, j])
-                    y_truth.append(Y[i, j])
-        if y_imputed == y_truth:
-            return 1.0
+            # Extract X using the provided indeX and lenX
+            X = df_noZ.to_numpy()[:, indeX:indeX+lenX]
 
-        # Calculate the correlation between the imputed data and the observed data
-        corr = 0.0
-        if len(y_imputed) > 0 and len(y_truth) > 0:
-            val = np.corrcoef(y_imputed, y_truth)[0, 1]
-            if np.isnan(val) == False:
-                corr = val
+            # Ensure X is 2D for sklearn compatibility
+            if len(X.shape) == 1:
+                X = X.reshape(-1, 1)
 
-        return corr
+            if self.covariance_adjustment == 1:
+            # Step 2: Adjust Y_head using linear regression on (X, Y_head)
+                lin_reg = linear_model.LinearRegression().fit(X, Y_head)
+                Y_head2 = lin_reg.predict(X)
+            if self.covariance_adjustment == 2:
+                # Step 2: Adjust Y_head using XGBoost on (X, Y_head)
+                xgb_reg = xgb.XGBRegressor(n_jobs=1).fit(X, Y_head)
+                Y_head2 = xgb_reg.predict(X)
+            if self.covariance_adjustment == 3:
+                # Step 2: Adjust Y_head using LightGBM on (X, Y_head)
+                lgb_reg = lgb.LGBMRegressor(n_jobs=1,verbosity=-1).fit(X, Y_head)
+                Y_head2 = lgb_reg.predict(X)
+            
+            # Return Y - Y_head2
+            return Y_head - Y_head2
 
     def CombinedT(self,z,y):
 
@@ -147,7 +148,7 @@ class RetrainTest:
         t = []
         for i in range(lenY):
             # Split the data into missing and non-missing parts using the split function
-            """y_missing, y_non_missing, z_missing, z_non_missing = self.split(y[:,i], z, M[:,i])
+            y_missing, y_non_missing, z_missing, z_non_missing = self.split(y[:,i], z, M[:,i])
             
             # Calculate T for missing and non-missing parts
             t_missing = self.T(z_missing, y_missing.reshape(-1,))
@@ -155,11 +156,13 @@ class RetrainTest:
 
             # Sum the T values for both parts
             t_combined = t_missing + t_non_missing
+
+
+            
             if verbose:
                 print("t_non_missing:",t_non_missing)
-                print("t_missing:",t_missing)"""
-            t_combined = self.T(z.reshape(-1,),y[:,i].reshape(-1,))
-            t.append(t_combined)
+                print("t_missing:",t_missing)
+
 
         return t
 
@@ -287,15 +290,17 @@ class RetrainTest:
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
+        lenX = X.shape[1]
 
         # indexY is the index of the first column of Y
         indexY = Z.shape[1] + X.shape[1]
+        indeX = Z.shape[1]
 
         # N is the number of rows of the data frame
         N = df_Z.shape[0]
 
         # re-impute the missing values and calculate the observed test statistics in part 2
-        bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
+        bias = self.getY(G, df_Z, df_noZ, indeX,lenX,indexY, lenY)
         t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
 
         # get the correlation of G1 and G2

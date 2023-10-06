@@ -9,6 +9,8 @@ from sklearn import linear_model
 import xgboost as xgb
 import time
 import lightgbm as lgb
+import warnings
+from sklearn.exceptions import DataConversionWarning
 
 
 class RetrainTest:
@@ -55,16 +57,11 @@ class RetrainTest:
             # Original Y_head
             Y_head = df_imputed[:, indexY:indexY+lenY]
 
-            # Ensure Y_head is 2D for sklearn compatibility
-            if len(Y_head.shape) == 1:
-                Y_head = Y_head.reshape(-1, 1)
 
             # Extract X using the provided indeX and lenX
             X = df_noZ.to_numpy()[:, indeX:indeX+lenX]
 
-            # Ensure X is 2D for sklearn compatibility
-            if len(X.shape) == 1:
-                X = X.reshape(-1, 1)
+            warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
             if self.covariance_adjustment == 1:
             # Step 2: Adjust Y_head using linear regression on (X, Y_head)
@@ -78,9 +75,9 @@ class RetrainTest:
                 # Step 2: Adjust Y_head using LightGBM on (X, Y_head)
                 lgb_reg = lgb.LGBMRegressor(n_jobs=1,verbosity=-1).fit(X, Y_head)
                 Y_head2 = lgb_reg.predict(X)
-            
-            # Return Y - Y_head2
+            Y_head2 = Y_head2.reshape(-1, lenY)
             return Y_head - Y_head2
+
 
     def CombinedT(self,z,y):
 
@@ -157,12 +154,10 @@ class RetrainTest:
             # Sum the T values for both parts
             t_combined = t_missing + t_non_missing
 
-
-            
             if verbose:
                 print("t_non_missing:",t_non_missing)
                 print("t_missing:",t_missing)
-
+            t.append(t_combined)
 
         return t
 
@@ -193,7 +188,7 @@ class RetrainTest:
             return self.retrain_test_oracle(Z, X, M, Y, G,strata_size, L, verbose)   
         else:
             return self.retrain_test_imputed(Z, X, M, Y, G,strata_size, L, verbose)
-        
+
     def retrain_test_oracle(self, Z, X, M, Y, G, strata_size, L=10000, verbose = False):
         start_time = time.time()
 
@@ -206,15 +201,17 @@ class RetrainTest:
 
         # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
+        lenX = X.shape[1]
 
         # indexY is the index of the first column of Y
         indexY = Z.shape[1] + X.shape[1]
+        indeX = Z.shape[1]
 
         # N is the number of rows of the data frame
         N = df_Z.shape[0]
 
         # re-impute the missing values and calculate the observed test statistics in part 2
-        bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
+        bias = self.getY(G, df_Z, df_noZ, indeX,lenX,indexY, lenY)
         t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
 
         #print train end
@@ -238,7 +235,7 @@ class RetrainTest:
             Z_sim = np.concatenate(Z_sim).reshape(-1, 1) 
 
             df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
-            bias = self.getY(G, df_Z, df_noZ, indexY, lenY)
+            bias = self.getY(G, df_Z, df_noZ,indeX,lenX,indexY, lenY)
 
             # get the test statistics 
             t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=False)
@@ -303,14 +300,6 @@ class RetrainTest:
         bias = self.getY(G, df_Z, df_noZ, indeX,lenX,indexY, lenY)
         t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
 
-        # get the correlation of G1 and G2
-        corr_G = self.get_corr(G, df_Z, Y, indexY, lenY)
-
-        #print train end
-        if verbose:
-            print("t_obs:"+str(t_obs))
-            print("corr_G:"+str(corr_G))
-            print("Permutation Start")
 
         # simulate data and calculate test statistics
         t_sim = np.zeros((L,Y.shape[1]))
@@ -331,7 +320,7 @@ class RetrainTest:
             
             G_clone = clone(G_model)
             df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
-            bias = self.getY(G_clone, df_Z, df_noZ, indexY, lenY)
+            bias = self.getY(G_clone, df_Z, df_noZ, indeX,lenX, indexY, lenY)
 
             # get the test statistics 
             t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=False)

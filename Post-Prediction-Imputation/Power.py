@@ -15,7 +15,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 10000
+L = 50
 S_size = 10
 
 def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
@@ -68,6 +68,41 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,
         p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=L, G=LightGBM, verbose=verbose)
         values_lightgbm = [*p_values, reject, test_time]
 
+    """Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=0)
+    #Oracale imputer
+    print("Oracle")
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
+    # Append p-values to corresponding lists
+    values_oracle = [ *p_values, reject, test_time]
+    #Oracale imputer
+
+    #Median imputer
+    print("Median")
+    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G = median_imputer,verbose=verbose)
+    # Append p-values to corresponding lists
+    values_median = [ *p_values, reject, test_time]
+
+    #LR imputer
+    print("LR")
+    BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size=strata_size, L=L,G=BayesianRidge,verbose=verbose)
+    # Append p-values to corresponding lists
+    values_LR = [ *p_values, reject, test_time]
+
+    #XGBoost
+    if small_size == True:
+        XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
+        p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G=XGBoost, verbose=1)
+        values_xgboost = [*p_values, reject, test_time]
+
+    #LightGBM
+    if small_size == False:
+        print("LightGBM")
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
+        p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=L, G=LightGBM, verbose=verbose)
+        values_lightgbm = [*p_values, reject, test_time]"""
+
     #Save the file in numpy format
     if(save_file):
 
@@ -111,7 +146,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted" + "_single", adjust = 3, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 

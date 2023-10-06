@@ -65,16 +65,19 @@ class RetrainTest:
 
             if self.covariance_adjustment == 1:
             # Step 2: Adjust Y_head using linear regression on (X, Y_head)
-                lin_reg = linear_model.LinearRegression().fit(X, Y_head)
+                lin_reg = linear_model.BayesianRidge().fit(X, Y_head)
                 Y_head2 = lin_reg.predict(X)
+            
             if self.covariance_adjustment == 2:
                 # Step 2: Adjust Y_head using XGBoost on (X, Y_head)
                 xgb_reg = xgb.XGBRegressor(n_jobs=1).fit(X, Y_head)
                 Y_head2 = xgb_reg.predict(X)
+            
             if self.covariance_adjustment == 3:
                 # Step 2: Adjust Y_head using LightGBM on (X, Y_head)
                 lgb_reg = lgb.LGBMRegressor(n_jobs=1,verbosity=-1).fit(X, Y_head)
                 Y_head2 = lgb_reg.predict(X)
+            
             Y_head2 = Y_head2.reshape(-1, lenY)
             return Y_head - Y_head2
 
@@ -205,7 +208,7 @@ class RetrainTest:
 
         # indexY is the index of the first column of Y
         indexY = Z.shape[1] + X.shape[1]
-        indeX = Z.shape[1]
+        indeX = 0
 
         # N is the number of rows of the data frame
         N = df_Z.shape[0]
@@ -291,7 +294,7 @@ class RetrainTest:
 
         # indexY is the index of the first column of Y
         indexY = Z.shape[1] + X.shape[1]
-        indeX = Z.shape[1]
+        indeX = 0
 
         # N is the number of rows of the data frame
         N = df_Z.shape[0]

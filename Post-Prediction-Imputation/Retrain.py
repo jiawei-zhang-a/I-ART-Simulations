@@ -75,7 +75,6 @@ class RetrainTest:
             
             if self.covariance_adjustment == 3:
                 # Step 2: Adjust Y_head using LightGBM on (X, Y_head)
-                print(X.shape,Y_head.shape)
                 lgb_reg = lgb.LGBMRegressor(n_jobs=1,verbosity=-1).fit(X, Y_head)
                 Y_head2 = lgb_reg.predict(X)
             

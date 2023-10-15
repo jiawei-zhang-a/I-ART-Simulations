@@ -20,10 +20,6 @@ S_size = 10
 
 def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
 
-    # If the folder does not exist, create it
-    if not os.path.exists(filepath):
-        os.makedirs(filepath)
-
     # Create an instance of the OneShot class
     Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
 
@@ -54,6 +50,10 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,
     p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size=strata_size, L=L,G=BayesianRidge,verbose=verbose)
     # Append p-values to corresponding lists
     values_LR = [ *p_values, reject, test_time]
+
+    # If the folder does not exist, create it
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
 
     #XGBoost
     if small_size == True:
@@ -113,7 +113,7 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted_1" + "_single", adjust = 1, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
-            #run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted_2" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
 
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
@@ -135,7 +135,7 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference_adjusted_1" + "_single", adjust = 1, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
-            #run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference_adjusted_2" + "_single", adjust = 2, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
+            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
 
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")

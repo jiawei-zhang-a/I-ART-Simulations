@@ -146,15 +146,7 @@ class DataGenerator:
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
-    if self.verbose:
-      Y_n3_Z = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 
-      Y_n3_X = sum3 + sum4
-      Y_n3_U =  U +  StrataEps+ IndividualEps
-
-      data = pd.DataFrame({'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U})
-      print(data.describe())
-
-    Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 +sum8 + U +  StrataEps+ IndividualEps
+    Y_n3 = self.beta_32 * Z + self.beta_12 * Z * sum5  + sum4 +sum8 + U +  StrataEps+ IndividualEps
     
     Y = Y_n3.reshape(-1, 1)
 

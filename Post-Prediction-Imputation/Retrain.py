@@ -56,6 +56,9 @@ class RetrainTest:
         else:
             # Original Y_head
             Y_head = df_imputed[:, indexY:indexY+lenY]
+            print("Original Y variance")
+            print(np.var(Y_head))
+
 
 
             # Extract X using the provided indeX and lenX
@@ -79,6 +82,9 @@ class RetrainTest:
                 Y_head2 = lgb_reg.predict(X)
             
             Y_head2 = Y_head2.reshape(-1, lenY)
+
+            print("eps variance")
+            print(np.var(Y_head - Y_head2))
             return Y_head - Y_head2
 
 

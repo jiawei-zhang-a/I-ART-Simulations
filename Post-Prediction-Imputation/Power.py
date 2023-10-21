@@ -15,7 +15,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 50
+L = 0
 S_size = 10
 
 def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
@@ -85,6 +85,7 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,
             np.save('%s/%f/p_values_lightGBM_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
         if small_size == True:
             np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
+    exit()
 
 if __name__ == '__main__':
 
@@ -106,7 +107,7 @@ if __name__ == '__main__':
         0.25: 16.090606547366434,
     }
 
-    for coef in np.arange(0.0,0.3 ,0.05):
+    for coef in np.arange(0.1,0.3 ,0.05):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)

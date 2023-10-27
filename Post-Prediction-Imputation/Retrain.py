@@ -82,9 +82,6 @@ class RetrainTest:
                 Y_head2 = lgb_reg.predict(X)
             
             Y_head2 = Y_head2.reshape(-1, lenY)
-
-            print("eps variance")
-            print(np.var(Y_head - Y_head2))
             return Y_head - Y_head2
 
 

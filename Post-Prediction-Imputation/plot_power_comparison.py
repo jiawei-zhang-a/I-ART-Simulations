@@ -64,7 +64,7 @@ def main():
             row_power.extend([ results['lr_power'] ])
         Power_data.append(row_power)
     print(Power_data)
-    plot_results(Power_data,  "Size-1000, Single: Covariance Adjusted, ", np.arange(0.0,0.36 ,0.06)) 
+    plot_results(Power_data,  "Size-1000, Single: Covariance Adjusted, ", np.arange(0.0,0.3 ,0.05)) 
 
     for coef in np.arange(0.0,1.2,0.2):
         row_power_small = [coef]
@@ -79,6 +79,6 @@ def main():
             row_power_small.extend([results['lr_power']])
         Power_data_small.append(row_power_small)
     print(Power_data)
-    plot_results(Power_data_small, "Size-50, Single: Covariance Adjusted, ", np.arange(0.0,1.5,0.25))   
+    plot_results(Power_data_small, "Size-50, Single: Covariance Adjusted, ", np.arange(0.0,1.2,0.2))   
 
 main()

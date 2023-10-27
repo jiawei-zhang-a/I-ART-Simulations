@@ -138,7 +138,7 @@ class DataGenerator:
 
     sum6 = np.zeros(self.N)
     for p in range(1, 6):
-        sum6 += X[:, p-1]**2 + np.sin(X[:, p-1])
+        sum6 += X[:, p-1]**2 + np.sin(10 * X[:, p-1])
     sum6 = (1.0 / np.sqrt(5)) * sum6
 
     sum8 = np.zeros(self.N)

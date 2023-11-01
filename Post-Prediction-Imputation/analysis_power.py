@@ -1,14 +1,17 @@
 import numpy as np
 import os
 
-def read_npz_files(directory,small_size=False):
+def read_npz_files(directory,small_size=False,type="original"):
     summed_p_values_median = None
     summed_p_values_LR = None
     summed_p_values_lightGBM = None
     summed_p_values_xgboost = None
     summed_p_values_oracle = None
     
-    N = int(len(os.listdir(directory)) / 4)
+    if type == "original":
+        N = int(len(os.listdir(directory)) / 2)
+    else:
+        N = int(len(os.listdir(directory)))
 
     for filename in os.listdir(directory):
         if filename.endswith(".npy"):

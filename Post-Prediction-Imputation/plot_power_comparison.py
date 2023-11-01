@@ -40,7 +40,6 @@ def plot_results(data, title, xsticks):
 
     if not os.path.exists("pic"):
         os.makedirs("pic")
-
     plt.xticks(xsticks)
     y_ticks = [i / 100.0 for i in range(25, 105, 25)]
     y_ticks.append(0.05)
@@ -71,10 +70,10 @@ def main():
         for directory in ["Result/HPC_power_50_unobserved_interference_single/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True)
             row_power_small.extend([results['xgboost_power'], results['lr_power']])
-        for directory in ["Result/HPC_power_50_unobserved_interference_adjust_2_single/%f" % (coef)]:
+        for directory in ["Result/HPC_power_50_unobserved_interference_adjusted_2_single/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['xgboost_power']])
-        for directory in [ "Result/HPC_power_50_unobserved_interference_adjust_1_single/%f" % (coef)]:
+        for directory in [ "Result/HPC_power_50_unobserved_interference_adjusted_1_single/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['lr_power']])
         Power_data_small.append(row_power_small)

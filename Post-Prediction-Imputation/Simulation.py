@@ -138,7 +138,7 @@ class DataGenerator:
 
     sum6 = np.zeros(self.N)
     for p in range(1, 6):
-        sum6 += X[:, p-1]**2 + np.sin(10 * X[:, p-1])
+        sum6 += X[:, p-1]**2 + np.sin(5* X[:, p-1])
     sum6 = (1.0 / np.sqrt(5)) * sum6
 
     sum8 = np.zeros(self.N)
@@ -151,7 +151,7 @@ class DataGenerator:
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
-    Y_n3 = self.beta_32 * Z + self.beta_12 * Z * sum5 + sum6 + U +  StrataEps+ IndividualEps
+    Y_n3 = self.beta_32 * Z + self.beta_12 * Z * sum5 + sum6 #+ U +  StrataEps+ IndividualEps
     #Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4  + U +  StrataEps+ IndividualEps
     
     Y = Y_n3.reshape(-1, 1)

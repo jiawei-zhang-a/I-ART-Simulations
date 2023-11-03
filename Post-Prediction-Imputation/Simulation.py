@@ -26,27 +26,30 @@ class DataGenerator:
     
   
   def GenerateX(self):
-
-      # generate Xn1 and Xn2
+      # Generate Xn1 and Xn2
       mean = [1/2, -1/3]
       cov = [[1, 1/2], [1/2, 1]]
       X1_2 = np.random.multivariate_normal(mean, cov, self.N)
 
-      # generate Xn3 and Xn4
+      # Generate Xn3 and Xn4
       loc = [0, 1/np.sqrt(3)]
-      cov = [[1,1/np.sqrt(2)], [1/np.sqrt(2),1]]
+      cov = [[1, 1/np.sqrt(2)], [1/np.sqrt(2), 1]]
 
+      # Assuming you have an MvLaplaceSampler defined somewhere with a sample method
       sampler = MvLaplaceSampler(loc, cov)
       X3_4 = sampler.sample(self.N)
 
-      # generate Xn5
+      # Generate Xn5
       p = 1/3
       X5 = np.random.binomial(1, p, self.N)
 
-      # combine all generated variables into a single matrix
-      X = np.hstack((X1_2, X3_4, X5.reshape(-1,1)))
+      # Combine all generated variables into a single matrix
+      X = np.hstack((X1_2, X3_4, X5.reshape(-1, 1)))
       
-      return X
+      # Subtract the mean of each feature
+      X_mean_centered = X - X.mean(axis=0)
+
+      return X_mean_centered
 
   def GenerateU(self):
       # generate U
@@ -151,7 +154,7 @@ class DataGenerator:
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
-    Y_n3 = self.beta_22 * Z * X[:,0] ** 2 + self.beta_12 * Z * sum5 + sum6# + U +  StrataEps+ IndividualEps
+    Y_n3 =self.beta_22 * Z+ self.beta_22 * Z * X[:,0] ** 2 + self.beta_12 * Z * sum5 + sum6 #+ U +  StrataEps+ IndividualEps
     #Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4  + U +  StrataEps+ IndividualEps
     
     Y = Y_n3.reshape(-1, 1)
@@ -212,15 +215,6 @@ class DataGenerator:
      
           if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
             M[i][0] = 1 
-
-        if self.verbose:
-          data = pd.DataFrame(M_lamda_Y, columns=['Y1'])
-          data['X'] = M_lamda_X[:,0]
-          data['U'] = M_lamda_U[:,0]
-          data['Xinter'] = M_lamda_XInter[:,0]
-          data['Yinter'] = M_lamda_YInter[:,0]
-          print(data.describe())
-          print(pd.DataFrame(M).describe())
 
         return M
 

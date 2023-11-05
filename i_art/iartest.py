@@ -4,6 +4,7 @@ from statsmodels.stats.multitest import multipletests
 from sklearn.base import clone
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from sklearn.exceptions import ConvergenceWarning
 from sklearn import linear_model
 import lightgbm as lgb
 import xgboost as xgb
@@ -64,7 +65,7 @@ def T(z,y):
     sorted_list = sorted(my_list, key=lambda x: x[1])
     for i in range(n):
         t += sorted_list[i][0] * (i + 1)
-    
+
     return t
 
 def split(y, z, M):
@@ -100,9 +101,9 @@ def getT(y, z, lenY, M):
 
         # Sum the T values for both parts
         t_combined = t_missing + t_non_missing
-        print("T-values",t_missing,t_non_missing)
         t.append(t_combined)
-    return np.array(t).sum()
+
+    return np.array(t)
 
 def getZsimTemplates(Z_sorted, S):
     """
@@ -136,7 +137,7 @@ def getZsim(Z_sim_templates):
 
 def preprocess(Z, X, Y, S):
     """ 
-    Preprocess the input variables 
+    Preprocess the input variables, including reshaping, concatenating, sorting, and extracting
     """
 
     # Reshape Z, X, Y, S, M to (-1, 1) if they're not already in that shape
@@ -184,10 +185,10 @@ def check_param(Z, X, Y, S, G, L, verbose, covariate_adjustment,alpha,alternativ
     # Check X: must be a 2D array
     if len(X.shape) != 2:
         raise ValueError("X must be a 2D array")
-
-    # Check Y: if M is None, Y must have missing values
-    if not np.isnan(Y).any():
-        raise ValueError("Y must contain missing values")
+    
+    # Check Y: must be a 2D array
+    if len(Y.shape) != 2:
+        raise ValueError("Y must be a 2D array")
 
     # Check S: must all be integer
     if S != None and not np.all(np.equal(S, S.astype(int))):
@@ -208,10 +209,6 @@ def check_param(Z, X, Y, S, G, L, verbose, covariate_adjustment,alpha,alternativ
     # Check G: Cannot be None
     if G is None:
         raise ValueError("G cannot be None")
-    
-    # Check Y: must be a 2D array
-    if len(Y.shape) != 2:
-        raise ValueError("Y must be a 2D array")
     
     # Check covariate_adjustment: must be True or False
     if covariate_adjustment not in [True, False, 1, 0]:
@@ -235,16 +232,23 @@ def choosemodel(G):
     #if G is string
     if isinstance(G, str):
         G = G.lower()
+        warnings.filterwarnings('ignore', category=ConvergenceWarning)
         if G == 'xgboost':
-            G = IterativeImputer(estimator = xgb.XGBRegressor())
+            G = IterativeImputer(estimator = xgb.XGBRegressor(), max_iter = 1)
         if G == 'bayesianridge':
-            G = IterativeImputer(estimator = linear_model.BayesianRidge())
+            G = IterativeImputer(estimator = linear_model.BayesianRidge(), max_iter = 1,verbose=0)
         if G == 'median':
             G = SimpleImputer(missing_values=np.nan, strategy='median')
         if G == 'mean':
             G = SimpleImputer(missing_values=np.nan, strategy='mean')
         if G == 'lightgbm':
+            G = IterativeImputer(estimator = lgb.LGBMRegressor(verbosity = -1), max_iter = 1)
+        if G == 'mice':
+            G = IterativeImputer(estimator = linear_model.BayesianRidge())
+        if G == 'mice+lightgbm':
             G = IterativeImputer(estimator = lgb.LGBMRegressor(verbosity = -1))
+        if G == 'mice+xgboost':
+            G = IterativeImputer(estimator = xgb.XGBRegressor())
     return G
 
 def transformX(X, threshold=0.1, verbose=True):
@@ -290,15 +294,22 @@ def transformX(X, threshold=0.1, verbose=True):
 
 def iartest(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1,verbose = False, covariate_adjustment = False, alpha = 0.05, alternative = "one-sided",random_state=None):
     """
-    I-ART: Imputation-Assisted Randomization Test
+    I-ART: Imputation-Assisted Randomization Tests
  
+    Usage Example:
+    --------------
+    >> Z = np.array([1, 1, 1, 1, 0, 0, 0, 0])
+    >> X = np.array([[5.1, 3.5], [4.9, np.nan], [4.7, 3.2], [4.5, np.nan], [7.2, 2.3], [8.6, 3.1], [6.0, 3.6], [8.4, 3.9]])
+    >> Y = np.array([[4.4, 0.5], [4.3, 0.7], [4.1, np.nan], [5.0, 0.4], [1.7, 0.1], [np.nan, 0.2], [1.4, np.nan], [1.7, 0.4]])
+    >> result = iartest(Z=Z,X=X,Y=Y,L=1000,verbose=1)
+
     Args:
     Z: 2D array of observed treatment indicators
     X: 2D array of observed covariates
     Y: 2D array of K outcomes with missing values
     S: 2D array of the strata indicators
     threshholdForX: threshhold for missing outcome to be imputed in advance
-    G: a string for the five available choice or a function that takes (Z, M, Y_k) as input and returns the imputed complete values 
+    G: a string for the eight available choice or a function that takes (Z, M, Y_k) as input and returns the imputed complete values 
     L: number of Monte Carlo simulations (default is 10000)
     verbose: a boolean indicating whether to print training start and end (default is False)
     covarite_adjustment: a boolean indicating whether to do covariate adjustment (default is False)
@@ -351,8 +362,10 @@ def iartest(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1,
         
         # simulate treatment indicators
         Z_sim = getZsim(Z_sim_templates)
-        Y_pred = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
 
+        # impute the missing values and get the predicted Y values        
+        Y_pred = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
+        
         # get the test statistics 
         t_sim[l] = getT(Y_pred, Z_sim, Y.shape[1], M)
 
@@ -363,11 +376,15 @@ def iartest(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1,
         print("=========================================================")
         print("Re-impute mean t-value:"+str(np.mean(t_sim)))
 
+    # convert t_sim to numpy array
     t_sim = np.array(t_sim)
 
     # perform Holm-Bonferroni correction
     p_values = []
-    p_values.append(np.mean(t_sim[:] >= t_obs, axis=0))
+    for i in range(Y.shape[1]):
+        p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
+
+    # perform Holm-Bonferroni correction
     reject = holm_bonferroni(p_values,alpha = alpha)
 
     if verbose:

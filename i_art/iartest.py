@@ -12,6 +12,7 @@ from sklearn.impute import SimpleImputer
 import time
 from sklearn.exceptions import DataConversionWarning
 import warnings
+from sklearn.metrics import mean_squared_error, accuracy_score
 
 def holm_bonferroni(p_values, alpha = 0.05):
     """

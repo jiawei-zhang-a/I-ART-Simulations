@@ -113,12 +113,14 @@ def getZsimTemplates(Z_sorted, S):
     # Create a Z_sim template for each unique value in S
     Z_sim_templates = []
     unique_strata = np.unique(S)
+
+    # Iterate over each unique stratum to create a Z_sim template based on the mean of Z_sorted in that stratum
     for stratum in unique_strata:
         strata_indices = np.where(S == stratum)[0]
         strata_Z = Z_sorted[strata_indices]
         p = np.mean(strata_Z)
         strata_size = len(strata_indices)
-        Z_sim_template = [0.0] * int(strata_size * (1 - p)) + [1.0] * int(strata_size * p)
+        Z_sim_template = [0.0] * int(strata_size * (1 - p)) + [1.0] * int(strata_size * p)       
         Z_sim_templates.append(Z_sim_template)
     return Z_sim_templates
 

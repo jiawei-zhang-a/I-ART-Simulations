@@ -56,8 +56,8 @@ class RetrainTest:
         else:
             # Original Y_head
             Y_head = df_imputed[:, indexY:indexY+lenY]
-            print("Original Y variance")
-            print(np.var(Y_head))
+            #print("Original Y variance")
+            #print(np.var(Y_head))
 
 
 

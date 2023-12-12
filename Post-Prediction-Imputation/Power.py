@@ -15,7 +15,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 50
+L = 10
 S_size = 10
 
 def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
@@ -40,6 +40,7 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,
         p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size=strata_size, L=L,G=BayesianRidge,verbose=verbose)
         # Append p-values to corresponding lists
         values_LR = [ *p_values, reject, test_time]
+        print(test_time)
 
         # If the folder does not exist, create it
         if not os.path.exists(filepath):
@@ -52,13 +53,15 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,
             XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter,random_state=0)
             p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G=XGBoost, verbose=1)
             values_xgboost = [*p_values, reject, test_time]
+            print(test_time)
 
         #LightGBM
         if small_size == False:
             print("LightGBM")
-            LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter,random_state=0)
+            LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=10,verbosity=-1), max_iter=max_iter,random_state=0)
             p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=L, G=LightGBM, verbose=verbose)
             values_lightgbm = [*p_values, reject, test_time]
+            print(test_time)
 
     #Save the file in numpy format
     if(save_file):
@@ -85,7 +88,6 @@ if __name__ == '__main__':
     else:
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
-
 
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {

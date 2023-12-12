@@ -25,9 +25,8 @@ pip -version >= 22.0.4
 `module load  python/intel/3.8.6`
  - Create the venv 
  `python -m venv venv`
-
- re-enter HPC
-
+  - deactivate python module
+  `module purge`
   - activate 
   `source venv/bin/activate`
  - Upgrade the pip vesion

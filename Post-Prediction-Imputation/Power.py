@@ -31,7 +31,7 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    pd.DataFrame(X).describe().to_csv("X.csv")
+    X = X - X.mean(axis=0)
 
     #LR imputer
     if adjust == 0 or adjust == 1:

@@ -27,27 +27,25 @@ class DataGenerator:
   
   def GenerateX(self):
       # Generate Xn1 and Xn2
-      mean = [0, 0]
-      cov = [[1, 1], [1, 1]]
+      mean = [1/2, -1/3]
+      cov = [[1, 1/2], [1/2, 1]]
       X1_2 = np.random.multivariate_normal(mean, cov, self.N)
 
       # Generate Xn3 and Xn4
-      loc = [0, 0]
-      cov = [[1, 1], [1, 1]]
+      loc = [0, 1/np.sqrt(3)]
+      cov = [[1, 1/np.sqrt(2)], [1/np.sqrt(2), 1]]
 
       # Assuming you have an MvLaplaceSampler defined somewhere with a sample method
       sampler = MvLaplaceSampler(loc, cov)
       X3_4 = sampler.sample(self.N)
 
       # Generate Xn5
-      X5 = np.random.uniform(low=0.0, high=1.0, size=self.N)
+      p = 1/3
+      X5 = np.random.binomial(1, p, self.N)
 
       # Combine all generated variables into a single matrix
       X = np.hstack((X1_2, X3_4, X5.reshape(-1, 1)))
       
-      # Subtract the mean of each feature
-      #X_mean_centered = X - X.mean(axis=0)
-
       return X
 
   def GenerateU(self):

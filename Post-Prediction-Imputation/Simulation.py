@@ -39,8 +39,9 @@ class DataGenerator:
       sampler = MvLaplaceSampler(loc, cov)
       X3_4 = sampler.sample(self.N)
 
-      # Generate Xn5# uniform distribution between 0 and 1
-      X5 = np.random.uniform(0, 1, self.N)
+      # Generate Xn5
+      p = 1/3
+      X5 = np.random.binomial(1, p, self.N)
 
       # Combine all generated variables into a single matrix
       X = np.hstack((X1_2, X3_4, X5.reshape(-1, 1)))
@@ -137,7 +138,7 @@ class DataGenerator:
 
     sum6 = np.zeros(self.N)
     for p in range(1, 6):
-        sum6 += X[:, p-1]**2 + np.cos(5* X[:, p-1])
+        sum6 += X[:, p-1]**2
     sum6 = (1.0 / np.sqrt(5)) * sum6
 
     sum8 = np.zeros(self.N)
@@ -150,7 +151,7 @@ class DataGenerator:
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
-    Y_n3 =self.beta_22 * Z+ self.beta_22 * Z * X[:,0] ** 2 + self.beta_12 * Z * sum5 + sum6 #+ U +  StrataEps+ IndividualEps
+    Y_n3 =self.beta_22 * Z * X[:,0] ** 2 + sum6#+ self.beta_12 * Z * sum5 + sum6 #+ U +  StrataEps+ IndividualEps
     #Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4  + U +  StrataEps+ IndividualEps
     
     Y = Y_n3.reshape(-1, 1)

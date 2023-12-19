@@ -15,7 +15,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 100
+L = 2000
 S_size = 10
 
 def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
@@ -91,15 +91,16 @@ if __name__ == '__main__':
 
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
-        0.0: 15.338280233232549,
-        0.05: 15.513632949165219,
-        0.1: 15.700965399935757,
-        0.15: 15.778598987947303,
-        0.2: 15.919273976686219,
-        0.25: 16.090606547366434,
+        0.0: 16.177150885454697,
+        0.1: 16.2694615519701,
+        0.2: 16.32049345428536,
+        0.3: 16.39758255463026,
+        0.4: 16.488028543910794,
+        0.5: 16.535288510759447,
     }
+    
 
-    for coef in np.arange(0.0,0.3 ,0.05):
+    for coef in np.arange(0.0,0.6 ,0.1):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)
@@ -113,15 +114,15 @@ if __name__ == '__main__':
 
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
-        0.0: 15.64623838541569,
-        0.2: 15.914767907195158,
-        0.4: 16.139500824890415,
-        0.6: 16.744323425885444,
-        0.8: 16.996508871283982,
-        1.0: 17.340156028716592,
+        0.0: 16.12504713635269,
+        1: 16.94090023084058,
+        2: 17.195256529230846,
+        3: 17.69671093992372,
+        4: 17.990403650030704,
+        5: 18.479387446480725,
     }
 
-    for coef in np.arange(0.0,1.2,0.2):
+    for coef in np.arange(0.0,6,1):
         beta_coef = coef
         # Round to nearest integer to match dictionary keys
         beta_coef_rounded = round(beta_coef)

@@ -188,6 +188,8 @@ class DataGenerator:
       
 
         if self.Missing_lambda == None:
+          #with open("lambda.txt", "a") as myfile:
+            #myfile.write(str(np.percentile(M_lamda, 100 * (1-self.MaskRate))) + "\n")
           lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
         else:
           lambda1 = self.Missing_lambda
@@ -209,7 +211,7 @@ class DataGenerator:
             M_lamda_U[i][0] = U[i]
             M_lamda_XInter[i][0] = XInter[i]
             M_lamda_YInter[i][0] = YInter[i]
-     
+
           if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
             M[i][0] = 1 
 

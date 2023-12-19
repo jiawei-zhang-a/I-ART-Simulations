@@ -31,7 +31,7 @@ def run(Nsize, Unobserved, Single, filepath, adjust, strata_size, linear_method)
     Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
 
     # Simulate data
-    DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size, beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single, linear_method = linear_method,verbose=0)
+    DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size, beta_11 = beta_coef, beta_12 = beta_coef, beta_21 = beta_coef, beta_22 = beta_coef, beta_23 = beta_coef, beta_31 = beta_coef, beta_32 = beta_coef, MaskRate=0.5,Unobserved=Unobserved, Single=Single,verbose=0)
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
 def calculate_average(filename):
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     beta_to_lambda = {}
 
-    for coef in np.arange(0.0,0.3,0.05):
+    for coef in np.arange(0.0,0.6,0.1):
         if os.path.isfile("lambda.txt"):
             # If the file exists, delete it
             os.remove("lambda.txt")
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     print("=====================================================")
 
-    for coef in np.arange(0.0,1.2,0.2):
+    for coef in np.arange(0.0,6,1):
         if os.path.isfile("lambda.txt"):
             os.remove("lambda.txt")
         for i in range(100):

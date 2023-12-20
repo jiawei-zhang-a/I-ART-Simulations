@@ -7,6 +7,8 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --output=Runtime/%a.out
 #SBATCH --error=Runtime/%a.err
+export OMP_NUM_THREADS=1
+
 
 module purge
 

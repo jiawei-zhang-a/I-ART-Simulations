@@ -65,7 +65,7 @@ def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,
         #LightGBM
         if small_size == False:
             print("LightGBM")
-            LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=10,verbosity=-1), max_iter=max_iter,random_state=0)
+            LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter,random_state=0)
             p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=L, G=LightGBM, verbose=verbose)
             values_lightgbm = [*p_values, reject, test_time]
             print(test_time)
@@ -114,9 +114,9 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             if beta_coef_rounded == 0.00:
-                L = 4000
+                L = 5000
             else:
-                L = 1000
+                L = 2000
             run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
             run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted_3" + "_single", adjust = 3, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
             run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted_1" + "_single", adjust = 1, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)

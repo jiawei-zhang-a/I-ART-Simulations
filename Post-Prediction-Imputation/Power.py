@@ -11,11 +11,18 @@ import lightgbm as lgb
 import xgboost as xgb
 import pandas as pd
 
+"""
+import psutil
+
+def get_memory_usage():
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss / (1024 * 1024) 
+"""
 beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 2000
+L = 1000
 S_size = 10
 
 def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
@@ -111,7 +118,10 @@ if __name__ == '__main__':
             run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted_1" + "_single", adjust = 1, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-
+    """
+    memory_usage = get_memory_usage()
+    print(f"Memory usage: {memory_usage:.2f} MB")
+    exit()"""
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
         0.0: 16.12504713635269,

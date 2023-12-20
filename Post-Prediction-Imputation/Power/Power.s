@@ -2,8 +2,8 @@
 #
 #SBATCH --job-name=Power
 #SBATCH --nodes=1
-#SBATCH --time=79:29:00
-#SBATCH --mem=1GB
+#SBATCH --time=29:29:00
+#SBATCH --mem=250
 #SBATCH --cpus-per-task=1
 #SBATCH --output=Runtime/%a.out
 #SBATCH --error=Runtime/%a.err

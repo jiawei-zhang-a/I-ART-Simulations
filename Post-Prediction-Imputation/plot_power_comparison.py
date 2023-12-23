@@ -50,7 +50,7 @@ def plot_results(data, title, xsticks):
 def main():
     Power_data = []
     Power_data_small = []
-    for coef in np.arange(0.0,0.3 ,0.05):
+    for coef in np.arange(0.0,0.6 ,0.1):
         row_power = [coef]
         for directory in [ "Result/HPC_power_1000_unobserved_interference_single/%f" % (coef)]:
             results = read_npz_files(directory,small_size=False)
@@ -63,9 +63,9 @@ def main():
             row_power.extend([ results['lr_power'] ])
         Power_data.append(row_power)
     print(Power_data)
-    plot_results(Power_data,  "Size-1000, Single: Covariance Adjusted, ", np.arange(0.0,0.3 ,0.05)) 
+    plot_results(Power_data,  "Size-1000, Single: Covariance Adjusted, ", np.arange(0.0,0.6 ,0.1)) 
 
-    for coef in np.arange(0.0,1.2,0.2):
+    for coef in np.arange(0.0,12,2):
         row_power_small = [coef]
         for directory in ["Result/HPC_power_50_unobserved_interference_single/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True)
@@ -78,6 +78,6 @@ def main():
             row_power_small.extend([results['lr_power']])
         Power_data_small.append(row_power_small)
     print(Power_data)
-    plot_results(Power_data_small, "Size-50, Single: Covariance Adjusted, ", np.arange(0.0,1.2,0.2))   
+    plot_results(Power_data_small, "Size-50, Single: Covariance Adjusted, ", np.arange(0.0,12 ,2))   
 
 main()

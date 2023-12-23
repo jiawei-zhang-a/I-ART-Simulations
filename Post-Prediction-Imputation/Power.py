@@ -22,7 +22,7 @@ beta_coef = None
 task_id = 1
 save_file = False
 max_iter = 3
-L = 1000
+L = 1
 S_size = 10
 
 def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,verbose=1):
@@ -114,7 +114,7 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             if beta_coef_rounded == 0.00:
-                L = 5000
+                L = 10000
             else:
                 L = 2000
             run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
@@ -128,24 +128,24 @@ if __name__ == '__main__':
     exit()"""
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
-        0.0: 16.12504713635269,
-        1: 16.94090023084058,
-        2: 17.195256529230846,
-        3: 17.69671093992372,
-        4: 17.990403650030704,
-        5: 18.479387446480725,
+        0.0: 16.265649924457033,
+        2: 17.21432550487863,
+        4: 18.087456903923293,
+        6: 18.649472657362512,
+        8: 19.420990078924586,
+        10: 20.14457251114643,
     }
 
-    for coef in np.arange(0.0,6,1):
+    for coef in np.arange(0.0,12,2):
         beta_coef = coef
         # Round to nearest integer to match dictionary keys
         beta_coef_rounded = round(beta_coef)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             if beta_coef_rounded == 0.00:
-                L = 4000
+                L = 10000
             else:
-                L = 1000
+                L = 2000
             run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference_adjusted_2" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value,small_size=True)
             run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference_adjusted_1" + "_single", adjust = 1, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
             run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)

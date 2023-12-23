@@ -188,8 +188,8 @@ class DataGenerator:
       
 
         if self.Missing_lambda == None:
-          #with open("lambda.txt", "a") as myfile:
-            #myfile.write(str(np.percentile(M_lamda, 100 * (1-self.MaskRate))) + "\n")
+          with open("lambda.txt", "a") as myfile:
+            myfile.write(str(np.percentile(M_lamda, 100 * (1-self.MaskRate))) + "\n")
           lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
         else:
           lambda1 = self.Missing_lambda

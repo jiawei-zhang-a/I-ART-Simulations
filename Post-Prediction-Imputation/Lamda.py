@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     beta_to_lambda = {}
 
-    for coef in np.arange(0.0,0.6,0.1):
+    """for coef in np.arange(0.0,0.6,0.1):
         if os.path.isfile("lambda.txt"):
             # If the file exists, delete it
             os.remove("lambda.txt")
@@ -64,9 +64,9 @@ if __name__ == '__main__':
         print("beta: "+str(coef) + "   lambda:" + str(avg_lambda))
         beta_to_lambda[coef] = avg_lambda
 
-    print("=====================================================")
+    print("=====================================================")"""
 
-    for coef in np.arange(0.0,6,1):
+    for coef in np.arange(0.0,12,2):
         if os.path.isfile("lambda.txt"):
             os.remove("lambda.txt")
         for i in range(100):

@@ -127,16 +127,9 @@ if __name__ == '__main__':
     print(f"Memory usage: {memory_usage:.2f} MB")
     exit()"""
     # Define your dictionary here based on the table you've given
-    beta_to_lambda = {
-        0.0: 16.265649924457033,
-        2: 17.21432550487863,
-        4: 18.087456903923293,
-        6: 18.649472657362512,
-        8: 19.420990078924586,
-        10: 20.14457251114643,
-    }
+    beta_to_lambda = {0.0: 16.25069356464228, 3.0: 17.75715746593936, 6.0: 18.532506670181, 9.0: 19.67384869752687, 12.0: 20.628760065374117, 15.0: 21.526767917745328}
 
-    for coef in np.arange(0.0,12,2):
+    for coef in np.arange(0.0,18,3):
         beta_coef = coef
         # Round to nearest integer to match dictionary keys
         beta_coef_rounded = round(beta_coef)

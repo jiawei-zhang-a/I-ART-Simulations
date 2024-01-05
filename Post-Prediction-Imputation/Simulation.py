@@ -151,7 +151,8 @@ class DataGenerator:
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
-    Y_n3 =self.beta_22 * Z * X[:,0] ** 2 + sum6 + U +  StrataEps+ IndividualEps
+    Y_n3 = self.beta_32 * Z + sum3 +  U +  StrataEps+ IndividualEps 
+    #Y_n3 =self.beta_22 * Z * X[:,0] ** 2 + sum6 + U +  StrataEps+ IndividualEps
     #Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4  + U +  StrataEps+ IndividualEps
     
     Y = Y_n3.reshape(-1, 1)
@@ -184,7 +185,7 @@ class DataGenerator:
             sum2 += p * np.cos(X[i,p-1])
           sum2 =  (1.0  / np.sqrt(5)) * sum2
 
-          M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i]
+          M_lamda[i][0] = sum3 + Y[i, 0] + U[i] 
       
 
         if self.Missing_lambda == None:
@@ -212,8 +213,8 @@ class DataGenerator:
             M_lamda_XInter[i][0] = XInter[i]
             M_lamda_YInter[i][0] = YInter[i]
 
-          if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
-            M[i][0] = 1 
+          if sum3 + Y[i, 0] + U[i]  > lambda1:
+            M[i][0] = 1
 
         return M
 

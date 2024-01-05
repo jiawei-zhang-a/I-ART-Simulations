@@ -96,6 +96,54 @@ if __name__ == '__main__':
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
 
+    beta_to_lambda = {
+        0.0: 2.1787055504687562,
+        0.25: 2.28963313895537,
+        0.5: 2.399665894406236,
+        0.75: 2.5410585490501814,
+        1.0: 2.667076303976076,
+        1.25: 2.7966310587259215
+    }
+    for coef in np.arange(0,1.5,0.25):
+        beta_coef = coef
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            if beta_coef_rounded == 0.00:
+                L = 10000
+            else:
+                L = 2000
+            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference_adjusted_2" + "_single", adjust = 2, strata_size = S_size, Missing_lambda = lambda_value,small_size=True)
+            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference_adjusted_1" + "_single", adjust = 1, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
+            run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)        
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+    
+    beta_to_lambda = {
+        0.0: 2.1659638283676497,
+        0.07: 2.194178516004058,
+        0.14: 2.221743571595057,
+        0.21:2.295154195430412,
+        0.28: 2.297113192055471,
+        0.35: 2.323331258818355
+    }
+    for coef in np.arange(0.0,0.42,0.07):
+        beta_coef = coef
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            if beta_coef_rounded == 0.00:
+                L = 10000
+            else:
+                L = 2000
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference" + "_single", adjust = 0, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted_3" + "_single", adjust = 3, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
+            run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted_1" + "_single", adjust = 1, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)        
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+    """
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {
         0.0: 16.177150885454697,
@@ -122,10 +170,6 @@ if __name__ == '__main__':
             run(1000, Single = 1, filepath = "Result/HPC_power_1000_unobserved_interference_adjusted_1" + "_single", adjust = 1, strata_size = S_size, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    """
-    memory_usage = get_memory_usage()
-    print(f"Memory usage: {memory_usage:.2f} MB")
-    exit()"""
     # Define your dictionary here based on the table you've given
     beta_to_lambda = {0.0: 16.25069356464228, 3.0: 17.75715746593936, 6.0: 18.532506670181, 9.0: 19.67384869752687, 12.0: 20.628760065374117, 15.0: 21.526767917745328}
 
@@ -144,3 +188,4 @@ if __name__ == '__main__':
             run(50, Single = 1, filepath = "Result/HPC_power_50_unobserved_interference" + "_single", adjust = 0, strata_size = S_size,  Missing_lambda = lambda_value,small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+    """

@@ -52,6 +52,18 @@ if __name__ == '__main__':
     # Mask Rate
 
     beta_to_lambda = {}
+    for coef in np.arange(0,1.5,0.25):
+        if os.path.isfile("lambda.txt"):
+            # If the file exists, delete it
+            os.remove("lambda.txt")
+        for i in range(100):
+            beta_coef = coef
+            run(1000, Unobserved = 1, Single = 1, filepath = "Result/HPC_power_2000_unobserved_nonlinearZ_nonlinearX" + "_single", strata_size = 10, adjust = 0, linear_method = 2)
+        avg_lambda = calculate_average('lambda.txt')
+        print("beta: "+str(coef) + "   lambda:" + str(avg_lambda))
+        beta_to_lambda[coef] = avg_lambda
+
+    print("=====================================================")
 
     """for coef in np.arange(0.0,0.6,0.1):
         if os.path.isfile("lambda.txt"):
@@ -64,7 +76,7 @@ if __name__ == '__main__':
         print("beta: "+str(coef) + "   lambda:" + str(avg_lambda))
         beta_to_lambda[coef] = avg_lambda
 
-    print("=====================================================")"""
+    print("=====================================================")
 
     for coef in np.arange(0.0,18,3):
         if os.path.isfile("lambda.txt"):
@@ -77,4 +89,5 @@ if __name__ == '__main__':
         beta_to_lambda[coef] = avg_lambda
 
     print(beta_to_lambda)
+    """
 

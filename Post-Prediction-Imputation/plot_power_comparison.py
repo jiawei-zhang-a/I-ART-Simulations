@@ -65,7 +65,7 @@ def main():
     print(Power_data)
     plot_results(Power_data,  "Size-1000, Single: Covariance Adjusted, ", np.arange(0.0,0.6 ,0.1)) 
 
-    for coef in np.arange(0.0,12,2):
+    for coef in np.arange(0.0,18,3):
         row_power_small = [coef]
         for directory in ["Result/HPC_power_50_unobserved_interference_single/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True)
@@ -78,6 +78,6 @@ def main():
             row_power_small.extend([results['lr_power']])
         Power_data_small.append(row_power_small)
     print(Power_data)
-    plot_results(Power_data_small, "Size-50, Single: Covariance Adjusted, ", np.arange(0.0,12 ,2))   
+    plot_results(Power_data_small, "Size-50, Single: Covariance Adjusted, ", np.arange(0.0,18,3))   
 
 main()

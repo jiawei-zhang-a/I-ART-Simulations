@@ -132,8 +132,8 @@ class DataGenerator:
 
     sum6 = np.zeros(self.N)
     for p in range(1, 6):
-        sum6 += X[:, p-1]**2
-    sum6 = (1.0 / np.sqrt(5)) * sum6
+        sum6 += X[:, p-1]**2 + np.sin(X[:, p-1])
+    sum6 = (1.0 / np.sqrt(5)) 
 
     sum7 = np.zeros(self.N)
     for p in range(1, 6):
@@ -166,9 +166,9 @@ class DataGenerator:
     if self.linear_method == 0:
       Y_n3 = self.beta_32 * Z + sum3 +  U +  StrataEps+ IndividualEps 
     if self.linear_method == 1:
-      Y_n3 = self.beta_32 * Z + sum6 + U+  StrataEps+ IndividualEps 
+      Y_n3 = self.beta_32 * Z +  sum3 + sum6 + sum7 + U+  StrataEps+ IndividualEps 
     if self.linear_method == 2:
-      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum6 +U +  StrataEps+ IndividualEps
+      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum6  +sum7 +U +  StrataEps+ IndividualEps
     
     Y = Y_n3.reshape(-1, 1)
 
@@ -251,6 +251,9 @@ class DataGenerator:
           data['Yinter'] = M_lamda_YInter[:,0]
           print(data.describe())
           print(pd.DataFrame(M).describe())
+        if self.Missing_lambda == None:
+          with open('lambda.txt', 'a') as f:
+            f.write(str(lambda1) + '\n')
 
         return M
 

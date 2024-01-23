@@ -168,7 +168,7 @@ class DataGenerator:
     if self.linear_method == 1:
       Y_n3 = self.beta_32 * Z + sum6 + U+  StrataEps+ IndividualEps 
     if self.linear_method == 2:
-      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum6 +U +  StrataEps+ IndividualEps
+      Y_n3 = self.beta_32 * Z +  10 * self.beta_22 * Z * X[:,0] ** 2 + self.beta_12 * Z * sum5 + sum6 +U +  StrataEps+ IndividualEps
     
     Y = Y_n3.reshape(-1, 1)
 

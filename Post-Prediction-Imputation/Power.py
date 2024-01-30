@@ -21,13 +21,13 @@ def get_memory_usage():
 beta_coef = None
 task_id = 1
 save_file = False
-max_iter = 3
+max_iter = 1
 L = 100
 S_size = 10
 
 def run(Nsize, Single, filepath, adjust, Missing_lambda,strata_size, small_size,linear_method = 0, verbose=1):
 
-    Missing_lambda = None
+    #Missing_lambda = None
     # Create an instance of the OneShot class
     Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
 

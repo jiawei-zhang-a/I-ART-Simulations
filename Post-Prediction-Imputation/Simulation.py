@@ -168,7 +168,7 @@ class DataGenerator:
     if self.linear_method == 1:
       Y_n3 = self.beta_32 * Z  + sum4 #+ U+  StrataEps+ IndividualEps 
     if self.linear_method == 2:
-      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5  + sum4  #+ U +  StrataEps+ IndividualEps
+      Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 +U +  StrataEps+ IndividualEps
     
     Y = Y_n3.reshape(-1, 1)
 
@@ -202,11 +202,13 @@ class DataGenerator:
 
           assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
           if self.linear_method == 0:
+            print("AAAAAAAA")
             M_lamda[i][0] = sum3 + Y[i, 0] + U[i] 
           if self.linear_method == 1:
+            print("AAAAAAAA")
             M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + U[i] 
           if self.linear_method == 2:
-            M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i]
+            M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0])+ XInter[i] + YInter[i] + U[i]
 
         if self.Missing_lambda == None:
           lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
@@ -232,6 +234,7 @@ class DataGenerator:
             M_lamda_YInter[i][0] = YInter[i]
 
           assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
+      
           if self.linear_method == 0:
             if sum3 + Y[i, 0] + U[i]  > lambda1:
               M[i][0] = 1
@@ -239,7 +242,7 @@ class DataGenerator:
             if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])+ U[i] > lambda1:
               M[i][0] = 1            
           if self.linear_method == 2:
-            if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] > lambda1:
+            if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
               M[i][0] = 1 
 
 

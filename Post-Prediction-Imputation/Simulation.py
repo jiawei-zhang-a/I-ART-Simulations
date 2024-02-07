@@ -51,7 +51,7 @@ class DataGenerator:
   def GenerateU(self):
       # generate U
       mean = 0
-      std = 0.5
+      std = 0.707
       U = np.random.normal(mean, std, self.N)
       U = U.reshape(-1, 1)
       return U
@@ -79,7 +79,7 @@ class DataGenerator:
 
   def GenerateIndividualEps(self):
       mean = 0
-      std = 0.2
+      std = 0.44721359549996
       eps = np.random.normal(mean, std, self.N)
       eps = eps.reshape(-1,)
 
@@ -89,7 +89,7 @@ class DataGenerator:
       eps = []
 
       for i in range(self.totalStrataNumber):
-          eps.append(np.full(self.strata_size, np.random.normal(0, 0.1)))
+          eps.append(np.full(self.strata_size, np.random.normal(0, 0.31623)))
 
       eps = np.concatenate(eps).reshape(-1,)
       return eps
@@ -160,15 +160,20 @@ class DataGenerator:
       Y_n3_U =  U +  StrataEps+ IndividualEps
 
       data = pd.DataFrame({'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U})
-      print(data.describe())
     
     assert(self.linear_method == 0 or self.linear_method == 1 or self.linear_method == 2)
     if self.linear_method == 0:
       Y_n3 = self.beta_32 * Z + sum3 + U +  StrataEps+ IndividualEps 
     if self.linear_method == 1:
-      Y_n3 = self.beta_32 * Z  + sum4 #+ U+  StrataEps+ IndividualEps 
+      Y_n3 = self.beta_32 * Z  + sum3 + sum4 + U+  StrataEps+ IndividualEps 
     if self.linear_method == 2:
       Y_n3 = self.beta_32 * Z +  self.beta_22 * Z * X[:,0]+ self.beta_12 * Z * sum5 + sum3 + sum4 +U +  StrataEps+ IndividualEps
+
+      #Y_n3_X = sum3 + sum4
+      #Y_n3_U =  U +  StrataEps + IndividualEps
+      #data = pd.DataFrame({'Y_n': Y_n3, 'Y_n3_X': Y_n3_X, 'Y_n3_U':Y_n3_U, 'U': U, 'Y_n3_StrataEps': StrataEps, 'Y_n3_IndividualEps': IndividualEps})
+      #print(data.describe())
+      #exit()
     
     Y = Y_n3.reshape(-1, 1)
 
@@ -244,6 +249,7 @@ class DataGenerator:
           if self.linear_method == 2:
             if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] + XInter[i] + YInter[i] > lambda1:
               M[i][0] = 1 
+
 
 
         if self.verbose:

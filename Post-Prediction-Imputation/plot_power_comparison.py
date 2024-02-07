@@ -85,8 +85,8 @@ def plot(range,range_small, path,path_small, title, title_small):
 
 
 def main():
-    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "Result/HPC_power_1000_unobserved_linearZ_linearX", "Result/HPC_power_50_unobserved_linearZ_linearX", "Size-1000, Single: Covariance Adjusted- linearX-linearZ, ", "Size-50, Single: Covariance Adjusted-linearX-linearZ ")
-    plot(np.arange(0.0,0.96,0.16), np.arange(0,4.8,0.8), "Result/HPC_power_1000_unobserved_linearZ_nonlinearX", "Result/HPC_power_50_unobserved_linearZ_nonlinearX", "Size-1000, Single: Covariance Adjusted- linearZ-nonlinearX, ", "Size-50, Single: Covariance Adjusted-linearZ-nonlinearX ")
+    #plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "Result/HPC_power_1000_unobserved_linearZ_linearX", "Result/HPC_power_50_unobserved_linearZ_linearX", "Size-1000, Single: Covariance Adjusted- linearX-linearZ, ", "Size-50, Single: Covariance Adjusted-linearX-linearZ ")
+    #plot(np.arange(0.0,0.96,0.16), np.arange(0,4.8,0.8), "Result/HPC_power_1000_unobserved_linearZ_nonlinearX", "Result/HPC_power_50_unobserved_linearZ_nonlinearX", "Size-1000, Single: Covariance Adjusted- linearZ-nonlinearX, ", "Size-50, Single: Covariance Adjusted-linearZ-nonlinearX ")
     plot(np.arange(0.0,0.36,0.06), np.arange(0,1.5,0.25), "Result/HPC_power_1000_unobserved_nonlinearZ_nonlinearX", "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX", "Size-1000, Single: Covariance Adjusted- nonlinearZ-nonlinearX, ", "Size-50, Single: Covariance Adjusted-nonlinearZ-nonlinearX ")
 
     """

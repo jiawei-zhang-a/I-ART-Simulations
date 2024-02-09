@@ -17,13 +17,13 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-L = 1000
+L = 2000
 
 def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 10,model = 0, verbose=1):
 
     # If the folder does not exist, create it
     if beta_coef == 0:
-        Iter = 2000
+        Iter = 5000
     else:
         Iter = L 
 

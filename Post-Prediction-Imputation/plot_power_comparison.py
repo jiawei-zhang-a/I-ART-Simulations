@@ -54,13 +54,13 @@ def plot(range,range_small, path,path_small, title, title_small):
 
     for coef in range:
         row_power = [coef]
-        for directory in [path + "_single/%f" % (coef)]:
+        for directory in [path + "/%f" % (coef)]:
             results = read_npz_files(directory,small_size=False)
             row_power.extend([ results['lightGBM_power'], results['lr_power']])
-        for directory in [path + "_adjusted_3_single/%f" % (coef)]:
+        for directory in [path + "_adjusted_LightGBM/%f" % (coef)]:
             results = read_npz_files(directory,small_size=False, type='adjusted')
             row_power.extend([ results['lightGBM_power'] ])
-        for directory in [path + "_adjusted_1_single/%f" % (coef)]:
+        for directory in [path + "_adjusted_LR/%f" % (coef)]:
             results = read_npz_files(directory,small_size=False, type='adjusted')
             row_power.extend([ results['lr_power'] ])
         Power_data.append(row_power)
@@ -69,13 +69,13 @@ def plot(range,range_small, path,path_small, title, title_small):
 
     for coef in range_small:
         row_power_small = [coef]
-        for directory in [path_small + "_single/%f" % (coef)]:
+        for directory in [path_small + "/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True)
             row_power_small.extend([results['xgboost_power'], results['lr_power']])
-        for directory in [path_small + "_adjusted_2_single/%f" % (coef)]:
+        for directory in [path_small + "_adjusted_Xgboost/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['xgboost_power']])
-        for directory in [path_small + "_adjusted_1_single/%f" % (coef)]:
+        for directory in [path_small + "_adjusted_LR/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['lr_power']])
         Power_data_small.append(row_power_small)
@@ -87,8 +87,11 @@ def plot(range,range_small, path,path_small, title, title_small):
 def main():
     #plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "Result/HPC_power_1000_unobserved_linearZ_linearX", "Result/HPC_power_50_unobserved_linearZ_linearX", "Size-1000, Single: Covariance Adjusted- linearX-linearZ, ", "Size-50, Single: Covariance Adjusted-linearX-linearZ ")
     #plot(np.arange(0.0,0.96,0.16), np.arange(0,4.8,0.8), "Result/HPC_power_1000_unobserved_linearZ_nonlinearX", "Result/HPC_power_50_unobserved_linearZ_nonlinearX", "Size-1000, Single: Covariance Adjusted- linearZ-nonlinearX, ", "Size-50, Single: Covariance Adjusted-linearZ-nonlinearX ")
-    plot(np.arange(0.0,0.36,0.06), np.arange(0,1.5,0.25), "Result/HPC_power_1000_unobserved_nonlinearZ_nonlinearX", "Result/HPC_power_50_unobserved_nonlinearZ_nonlinearX", "Size-1000, Single: Covariance Adjusted- nonlinearZ-nonlinearX, ", "Size-50, Single: Covariance Adjusted-nonlinearZ-nonlinearX ")
-
+    #plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "Result/HPC_power_1000_model1", "Result/HPC_power_50_model1", "Size1000_Model1_CovariateAdjusted", "Size50_Model1_CovariateAdjusted")
+    #plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "Result/HPC_power_1000_model2", "Result/HPC_power_50_model2", "Size1000_Model2_CovariateAdjusted", "Size50_Model2_CovariateAdjusted")
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "Result/HPC_power_1000_model3", "Result/HPC_power_50_model3", "Size1000_Model3_CovariateAdjusted", "Size50_Model3_CovariateAdjusted")
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "Result/HPC_power_1000_model4", "Result/HPC_power_50_model4", "Size1000_Model4_CovariateAdjusted", "Size50_Model4_CovariateAdjusted")
+    plot(np.arange(0.0,0.6 ,0.1), np.arange(0.0,18,3), "Result/HPC_power_1000_model6", "Result/HPC_power_50_model6", "Size1000_Model6_CovariateAdjusted", "Size50_Model6_CovariateAdjusted")
     """
     Power_data = []
     Power_data_small = []

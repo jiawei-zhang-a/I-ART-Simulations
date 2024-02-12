@@ -17,7 +17,7 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-L = 2000
+L = 1000
 
 def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 10,model = 0, verbose=1):
 
@@ -26,6 +26,8 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
         Iter = 5000
     else:
         Iter = L 
+    
+    Iter = 1
 
     # Create an instance of the OneShot class
     Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
@@ -89,7 +91,7 @@ if __name__ == '__main__':
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
     # Model 1
-    beta_to_lambda = {0.0: 2.159275141001102, 0.07: 2.165387531267955, 0.14: 2.285935405246937, 0.21000000000000002: 2.258923945496463, 0.28: 2.2980720651301794, 0.35000000000000003: 2.3679216299985613}
+    beta_to_lambda = {0.0: 2.159275141001102, 0.07: 2.165387531267955, 0.14: 2.285935405246937, 0.21: 2.258923945496463, 0.28: 2.2980720651301794, 0.35: 2.3679216299985613}
     for coef in np.arange(0.0,0.42,0.07):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
@@ -129,7 +131,7 @@ if __name__ == '__main__':
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
-    beta_to_lambda = {0.0: 14.335704307321487, 0.8: 14.971101330156632, 1.6: 15.366375386649604, 2.4000000000000004: 15.724510367662774, 3.2: 15.831265197313604, 4.0: 16.011150941155087}
+    beta_to_lambda = {0.0: 14.335704307321487, 0.8: 14.971101330156632, 1.6: 15.366375386649604, 2.4: 15.724510367662774, 3.2: 15.831265197313604, 4.0: 16.011150941155087}
     for coef in np.arange(0.0,4.8,0.8):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
@@ -197,7 +199,7 @@ if __name__ == '__main__':
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
     # Model 6
-    beta_to_lambda = {0.0: 15.52272711345184, 0.1: 15.686703500976, 0.2: 15.686402633876, 0.30000000000000004: 15.787598335083226, 0.4: 15.753018503387455, 0.5: 15.73965750718643}
+    beta_to_lambda = {0.0: 15.52272711345184, 0.1: 15.686703500976, 0.2: 15.686402633876, 0.3: 15.787598335083226, 0.4: 15.753018503387455, 0.5: 15.73965750718643}
     for coef in np.arange(0.0,0.6 ,0.1):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys

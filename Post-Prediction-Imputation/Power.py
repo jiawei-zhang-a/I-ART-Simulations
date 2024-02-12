@@ -28,7 +28,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
         Iter = L 
     
     "asddasd"
-    Iter = 1
+    Iter = 100
     Missing_lambda = None
     "asddasd"
 

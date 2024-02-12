@@ -44,7 +44,7 @@ class DataGenerator:
   def GenerateU(self):
       # generate U
       mean = 0
-      std = 0.707
+      std = np.sqrt(0.5)
       U = np.random.normal(mean, std, self.N)
       U = U.reshape(-1, 1)
       return U
@@ -72,7 +72,7 @@ class DataGenerator:
 
   def GenerateIndividualEps(self):
       mean = 0
-      std = 0.44721359549996
+      std = np.sqrt(0.2)
       eps = np.random.normal(mean, std, self.N)
       eps = eps.reshape(-1,)
 
@@ -82,7 +82,7 @@ class DataGenerator:
       eps = []
 
       for i in range(self.totalStrataNumber):
-          eps.append(np.full(self.strata_size, np.random.normal(0, 0.31623)))
+          eps.append(np.full(self.strata_size, np.random.normal(0, np.sqrt(0.1))))
 
       eps = np.concatenate(eps).reshape(-1,)
       return eps
@@ -142,11 +142,11 @@ class DataGenerator:
     if self.model == 1:
       Y = self.beta * Z + sum3 + U +  StrataEps+ IndividualEps 
     if self.model == 2:
-      Y = self.beta * Z  + sum3 + sum4 + U +  StrataEps+ IndividualEps 
+      Y = self.beta * Z  + sum3 + sum4 + sum6 + U +  StrataEps+ IndividualEps 
     if self.model == 3:
-      Y = self.beta * Z +  self.beta * Z * X[:,0] + self.beta * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
+      Y = self.beta * Z +  self.beta * Z * X[:,0] + self.beta * Z * sum5 + sum3 + sum4 + sum6 + U +  StrataEps+ IndividualEps
     if self.model == 4:
-      Y = self.beta * Z +  self.beta * Z * X[:,0 ]+ self.beta * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
+      Y = self.beta * Z +  self.beta * Z * X[:,0 ]+ self.beta * Z * sum5 + sum3 + sum4 + sum6 + U +  StrataEps+ IndividualEps
     if self.model == 6:
       Y = self.beta * Z * X[:,0] ** 2 + sum6 + U +  StrataEps+ IndividualEps
     
@@ -195,9 +195,8 @@ class DataGenerator:
       if self.Missing_lambda == None:
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
         # wirte in Lamda.txt
-        with open('lambda.txt', 'a') as f:
-          f.write(str(lambda1) + '\n')
-
+        #with open('lambda.txt', 'a') as f:
+          #f.write(str(lambda1) + '\n')
       else:
         lambda1 = self.Missing_lambda
 

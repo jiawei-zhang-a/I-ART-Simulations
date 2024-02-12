@@ -27,8 +27,6 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     else:
         Iter = L 
     
-    Iter = 1
-
     # Create an instance of the OneShot class
     Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
 

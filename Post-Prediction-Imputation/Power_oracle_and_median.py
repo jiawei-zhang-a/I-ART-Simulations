@@ -30,6 +30,8 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     else:
         Iter = L 
     
+    Iter = 100
+
     # Create an instance of the OneShot class
     Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
 
@@ -47,7 +49,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G = median_imputer,verbose=verbose)
+    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G = median_imputer,verbose=0)
     # Append p-values to corresponding lists
     values_median = [ *p_values, reject, test_time]
 
@@ -175,33 +177,6 @@ if __name__ == '__main__':
             run(50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
             run(50, filepath = "Result/HPC_power_50_model4_adjusted_Xgboost", adjust = 2, model = 4, Missing_lambda = lambda_value, small_size=True)
             run(50, filepath = "Result/HPC_power_50_model4_adjusted_LR", adjust = 1, model = 4,Missing_lambda = lambda_value, small_size=True)
-        else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    
-    # Model 6
-    beta_to_lambda = {0.0: 15.52272711345184, 0.1: 15.686703500976, 0.2: 15.686402633876, 0.3: 15.787598335083226, 0.4: 15.753018503387455, 0.5: 15.73965750718643}
-    for coef in np.arange(0.0,0.6 ,0.1):
-        beta_coef = coef
-        # Round to two decimal places to match dictionary keys
-        beta_coef_rounded = round(beta_coef, 2)
-        if beta_coef_rounded in beta_to_lambda:
-            lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result/HPC_power_1000_model6", adjust = 0, model = 6, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model6_adjusted_LightGBM", adjust = 3, model = 6, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model6_adjusted_LR", adjust = 1, model = 6, Missing_lambda = lambda_value, small_size=False)
-        else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-
-    beta_to_lambda = {0.0: 15.583775008005304, 3.0: 16.2044899667755, 6.0: 16.364986769719895, 9.0: 16.572385216230238, 12.0: 16.508220779651012, 15.0: 16.572190364153975}
-    for coef in np.arange(0.0,18,3):
-        beta_coef = coef
-        # Round to two decimal places to match dictionary keys
-        beta_coef_rounded = round(beta_coef, 2)
-        if beta_coef_rounded in beta_to_lambda:
-            lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result/HPC_power_50_model6", adjust = 0, model = 6, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model6_adjusted_Xgboost", adjust = 2, model = 6, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model6_adjusted_LR", adjust = 1, model = 6,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     

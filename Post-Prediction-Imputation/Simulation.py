@@ -117,7 +117,7 @@ class DataGenerator:
     for p in range(1,6):
       for p_2 in range(1,6):
         sum4 += X[:,p-1] * logistic.cdf(1 - X[:,p_2-1])
-    sum4 = (1.0 / np.sqrt(5 * 5)) * sum4
+    sum4 = (1.0 / np.sqrt(5)) * sum4
 
     sum6 = np.zeros(self.N)
     for p in range(1, 6):
@@ -146,7 +146,7 @@ class DataGenerator:
     if self.model == 3:
       Y = self.beta * Z +  self.beta * Z * X[:,0] + self.beta * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
     if self.model == 4:
-      Y = self.beta * Z +  self.beta * Z * X[:,0 ]+ self.beta * Z * sum5 + sum3 + sum4 + U +  StrataEps+ IndividualEps
+      Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum3 + sum4 + U +  StrataEps+ IndividualEps
     if self.model == 6:
       Y = self.beta * Z * X[:,0] ** 2 + sum6 + U +  StrataEps+ IndividualEps
     

@@ -122,7 +122,7 @@ class DataGenerator:
     sum6 = np.zeros(self.N)
     for p in range(1, 6):
         sum6 += X[:, p-1]**2
-    sum6 = (1.0 / np.sqrt(5)) * sum6
+    #sum6 = (1.0 / np.sqrt(5)) * sum6
 
     sum7 = np.zeros(self.N)
     for p in range(1, 6):

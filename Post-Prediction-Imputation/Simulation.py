@@ -21,14 +21,12 @@ class DataGenerator:
   def GenerateX(self):
 
       # generate Xn1 and Xn2
-      #mean = [1/2, -1/3]
-      mean = [0, 0]
+      mean = [1/2, -1/3]
       cov = [[1, 1/2], [1/2, 1]]
       X1_2 = np.random.multivariate_normal(mean, cov, self.N)
 
       # generate Xn3 and Xn4
-      #loc = [0, 1/np.sqrt(3)]
-      loc = [0, 0]
+      loc = [0, 1/np.sqrt(3)]
       cov = [[1,1/np.sqrt(2)], [1/np.sqrt(2),1]]
 
       sampler = MvLaplaceSampler(loc, cov)
@@ -144,9 +142,9 @@ class DataGenerator:
     if self.model == 1:
       Y = self.beta * Z + sum3 + U +  StrataEps+ IndividualEps 
     if self.model == 2:
-      Y = self.beta * Z  + sum3 + sum6 + U +  StrataEps+ IndividualEps 
+      Y = self.beta * Z  + sum6 + U +  StrataEps+ IndividualEps 
     if self.model == 3:
-      Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum3 + sum6 + U +  StrataEps+ IndividualEps
+      Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum6 + U +  StrataEps+ IndividualEps
     if self.model == 4:
       Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum3 + sum4 + sum7 +U +  StrataEps+ IndividualEps
     if self.model == 6:

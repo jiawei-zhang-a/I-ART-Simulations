@@ -42,15 +42,6 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    Y = np.ma.masked_array(Y, mask=M)
-    Y = Y.filled(np.nan)
-    M = np.isnan(Y)
-        # write y one by one
-    with open("y.txt", "w") as f:
-        for i in range(len(Y)):
-            f.write(str(Y[i]) + "\n")
-    
-
 
     #LR imputer
     if adjust == 0 or adjust == 1:

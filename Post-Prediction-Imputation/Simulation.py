@@ -21,12 +21,14 @@ class DataGenerator:
   def GenerateX(self):
 
       # generate Xn1 and Xn2
-      mean = [1/2, -1/3]
+      #mean = [1/2, -1/3]
+      mean = [0, 0]
       cov = [[1, 1/2], [1/2, 1]]
       X1_2 = np.random.multivariate_normal(mean, cov, self.N)
 
       # generate Xn3 and Xn4
-      loc = [0, 1/np.sqrt(3)]
+      #loc = [0, 1/np.sqrt(3)]
+      loc = [0, 0]
       cov = [[1,1/np.sqrt(2)], [1/np.sqrt(2),1]]
 
       sampler = MvLaplaceSampler(loc, cov)
@@ -122,7 +124,7 @@ class DataGenerator:
     sum6 = np.zeros(self.N)
     for p in range(1, 6):
         sum6 += X[:, p-1]**2
-    #sum6 = (1.0 / np.sqrt(5)) * sum6
+    sum6 = (1.0 / np.sqrt(5)) * sum6
 
     sum7 = np.zeros(self.N)
     for p in range(1, 6):

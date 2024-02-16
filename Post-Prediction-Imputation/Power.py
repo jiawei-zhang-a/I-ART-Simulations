@@ -46,7 +46,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     #LR imputer
     if adjust == 0 or adjust == 1:
         print("LR")
-        BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter,random_state=0)
+        BayesianRidge = IterativeImputer(estimator = linear_model.LinearRegression(),max_iter=max_iter,random_state=0)
         p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size=strata_size, L=Iter,G=BayesianRidge,verbose=verbose)
         # Append p-values to corresponding lists
         values_LR = [ *p_values, reject, test_time]

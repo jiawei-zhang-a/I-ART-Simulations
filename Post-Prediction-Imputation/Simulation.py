@@ -122,7 +122,7 @@ class DataGenerator:
     sum6 = np.zeros(self.N)
     for p in range(1, 6):
         sum6 += X[:, p-1]**2
-    #sum6 = (1.0 / np.sqrt(5)) * sum6
+    sum6 = (1.0 / np.sqrt(5)) * sum6
 
     sum7 = np.zeros(self.N)
     for p in range(1, 6):
@@ -142,9 +142,9 @@ class DataGenerator:
     if self.model == 1:
       Y = self.beta * Z + sum3 + U +  StrataEps+ IndividualEps 
     if self.model == 2:
-      Y = self.beta * Z  + sum6 + U +  StrataEps+ IndividualEps 
+      Y = self.beta * Z  + sum3 + sum6 + U +  StrataEps+ IndividualEps 
     if self.model == 3:
-      Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum6 + U +  StrataEps+ IndividualEps
+      Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum3 + sum6 + U +  StrataEps+ IndividualEps
     if self.model == 4:
       Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum3 + sum4 + sum7 +U +  StrataEps+ IndividualEps
     if self.model == 6:

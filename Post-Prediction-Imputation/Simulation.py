@@ -142,9 +142,9 @@ class DataGenerator:
     if self.model == 1:
       Y = self.beta * Z + sum3 + U +  StrataEps+ IndividualEps 
     if self.model == 2:
-      Y = self.beta * Z  + sum3 + sum6 + U +  StrataEps+ IndividualEps 
+      Y = self.beta * Z  + sum3 + sum4 + U +  StrataEps+ IndividualEps 
     if self.model == 3:
-      Y = self.beta * Z * (X[:,0 ]**2 + X[:,1 ]**2) + sum3 + sum6 + U +  StrataEps+ IndividualEps
+      Y = self.beta * Z * (X[:,0 ]**2 + X[:,1 ]**2) + sum3 + sum4 + U +  StrataEps+ IndividualEps
     if self.model == 4:
       Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum3 + sum4 + sum7 +U +  StrataEps+ IndividualEps
     if self.model == 6:

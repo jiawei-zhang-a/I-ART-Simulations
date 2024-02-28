@@ -108,54 +108,41 @@ class DataGenerator:
 
   def GenerateY(self, X, U, Z,  StrataEps, IndividualEps):
         
-    sum3 = np.zeros(self.N)
+    sum1 = np.zeros(self.N)
     for p in range(1,6):
-      sum3 += X[:,p-1]
+      sum1 += X[:,p-1]
+    sum1 = (1.0 / np.sqrt(5)) * sum1
+
+    sum2 = np.zeros(self.N)
+    for p in range(1,6):
+      for p_2 in range(1,6):
+        sum2 += X[:,p-1] * logistic.cdf(1 - X[:,p_2-1])
+    sum2 = (1.0 / np.sqrt(5 * 5)) * sum2
+
+    sum3 = np.zeros(self.N)
+    for p in range(1, 6):
+        sum3 += X[:, p-1]**2
     sum3 = (1.0 / np.sqrt(5)) * sum3
 
     sum4 = np.zeros(self.N)
     for p in range(1,6):
-      for p_2 in range(1,6):
-        sum4 += X[:,p-1] * logistic.cdf(1 - X[:,p_2-1])
-    sum4 = (1.0 / np.sqrt(5 * 5)) * sum4
-
-    sum6 = np.zeros(self.N)
-    for p in range(1, 6):
-        sum6 += X[:, p-1]**2
-    sum6 = (1.0 / np.sqrt(5)) * sum6
-
-    sum7 = np.zeros(self.N)
-    for p in range(1, 6):
-       for p_2 in range(1, 6):
-           sum7 += X[:, p-1] * X[:, p_2-1]
-    sum7 = (1.0 / np.sqrt(5 * 5)) * sum7
-
-    sum5 = np.zeros(self.N)
-    for p in range(1,6):
-      sum5 += np.absolute(X[:,p-1])
-    sum5 = (1.0  / np.sqrt(5)) * sum5
+      sum4 += np.absolute(X[:,p-1])
+    sum4 = (1.0  / np.sqrt(5)) * sum4
 
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
     assert(self.model == 1 or self.model == 2 or self.model == 3 or self.model == 4 or self.model == 6)
     if self.model == 1:
-      Y = self.beta * Z + sum3 + U +  StrataEps+ IndividualEps 
+      Y = self.beta * Z + sum1 + U +  StrataEps+ IndividualEps 
     if self.model == 2:
-      Y = self.beta * Z  + sum3 + sum4 + U +  StrataEps+ IndividualEps 
+      Y = self.beta * Z  + sum1 + sum2 + U +  StrataEps+ IndividualEps 
     if self.model == 3:
-      Y = self.beta * Z * (X[:,0 ]**2 + X[:,1 ]**2) + sum3 + sum4 + U +  StrataEps+ IndividualEps
+      Y = self.beta * Z +  self.beta * Z * X[:,0 ] + self.beta * Z * sum4 + sum1 + sum2 + U +  StrataEps+ IndividualEps
     if self.model == 4:
-      Y = self.beta * Z +  self.beta * Z * (X[:,0 ] + X[:,1 ]**2 + X[:,2 ]**2) + sum3 + sum4 + sum7 +U +  StrataEps+ IndividualEps
+      Y = self.beta * Z +  self.beta * Z * X[:,0 ] + self.beta * Z * sum4 + sum1 + sum2 + U +  StrataEps+ IndividualEps
     if self.model == 6:
-      Y = self.beta * Z * X[:,0] ** 2 + sum6 + U +  StrataEps+ IndividualEps
-    
-    if self.verbose:
-      Y_n3_Z = self.beta * Z +  self.beta * Z * X[:,0]+ self.beta * Z * sum5 + sum3 + sum4 +U +  StrataEps+ IndividualEps
-      Y_n3_X = sum3 + sum4
-      Y_n3_U = IndividualEps
-      data = pd.DataFrame({ 'Y_n3_Z': Y_n3_Z, 'Y_n3_X': Y_n3_X, 'Y_n3_U': Y_n3_U})
-      print(data.describe())
+      Y = self.beta * Z * X[:,0] ** 2 + sum3 + U +  StrataEps+ IndividualEps
 
     Y = Y.reshape(-1, 1)
 
@@ -170,10 +157,10 @@ class DataGenerator:
       M = np.zeros((n, 1))
       M_lamda = np.zeros((n, 1))
       for i in range(n):
-        sum3 = 0
+        sum1 = 0
         for p in range(1,6):
-            sum3 += p * X[i,p-1] 
-        sum3 = (1.0  / np.sqrt(5)) * sum3
+            sum1 += p * X[i,p-1] 
+        sum1 = (1.0  / np.sqrt(5)) * sum1
 
         sum2 = 0
         for p in range(1,6):
@@ -182,29 +169,26 @@ class DataGenerator:
 
         assert( self.model == 1 or self.model == 2 or self.model == 3 or self.model == 4 or self.model == 6) 
         if self.model == 1:
-          M_lamda[i][0] = sum3 + Y[i, 0] + U[i] 
+          M_lamda[i][0] = sum1 + Y[i, 0] + U[i] 
         if self.model == 2:
-          M_lamda[i][0] = sum3 + sum2 + 10 * logistic.cdf(Y[i, 0]) + U[i] 
+          M_lamda[i][0] = sum1 + sum2 + 10 * logistic.cdf(Y[i, 0]) + U[i] 
         if self.model == 3:
-          M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i]
+          M_lamda[i][0] = sum1 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i]
         if self.model == 4:
-          M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0])+ XInter[i] + YInter[i] + U[i]
+          M_lamda[i][0] = sum1 + sum2  + 10 * logistic.cdf(Y[i, 0])+ XInter[i] + YInter[i] + U[i]
         if self.model == 6:
-          M_lamda[i][0] = sum3 + sum2  + 10 * logistic.cdf(Y[i, 0])+ XInter[i] + YInter[i] + U[i]
+          M_lamda[i][0] = sum1 + sum2  + 10 * logistic.cdf(Y[i, 0])+ XInter[i] + YInter[i] + U[i]
 
       if self.Missing_lambda == None:
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
-        # wirte in Lamda.txt
-        #with open('lambda.txt', 'a') as f:
-          #f.write(str(lambda1) + '\n')
       else:
         lambda1 = self.Missing_lambda
 
       for i in range(n):
-        sum3 = 0
+        sum1 = 0
         for p in range(1,6):
-            sum3 += p * X[i,p-1] 
-        sum3 = (1.0  / np.sqrt(5)) * sum3
+            sum1 += p * X[i,p-1] 
+        sum1 = (1.0  / np.sqrt(5)) * sum1
 
         sum2 = 0
         for p in range(1,6):
@@ -214,19 +198,19 @@ class DataGenerator:
         assert(self.model == 1 or self.model == 2 or self.model == 3 or self.model == 4 or self.model == 6)
     
         if self.model == 1:
-          if sum3 + Y[i, 0] + U[i]  > lambda1:
+          if sum1 + Y[i, 0] + U[i]  > lambda1:
             M[i][0] = 1
         if self.model == 2:
-          if sum3 + sum2   + 10 * logistic.cdf(Y[i, 0])+ U[i] > lambda1:
+          if sum1 + sum2   + 10 * logistic.cdf(Y[i, 0])+ U[i] > lambda1:
             M[i][0] = 1            
         if self.model == 3:
-          if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] > lambda1:
+          if sum1 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] > lambda1:
             M[i][0] = 1 
         if self.model == 4:
-          if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i] + U[i] > lambda1:
+          if sum1 + sum2  + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i] + U[i] > lambda1:
             M[i][0] = 1
         if self.model == 6:
-          if sum3 + sum2  + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i] + U[i] > lambda1:
+          if sum1 + sum2  + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i] + U[i] > lambda1:
             M[i][0] = 1
 
       return M

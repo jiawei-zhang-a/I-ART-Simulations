@@ -27,10 +27,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     else:
         Iter = L 
 
-    Iter = 100
-
-    # Create an instance of the OneShot class
-    Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
+    Iter = 50
 
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
@@ -45,10 +42,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     if adjust == 0 or adjust == 1:
         print("LR")
         BayesianRidge = IterativeImputer(estimator = linear_model.LinearRegression(),max_iter=max_iter,random_state=0)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=BayesianRidge,L=Iter)
-        #p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size=strata_size, L=Iter,G=BayesianRidge,verbose=verbose)
-        # Append p-values to corresponding lists
-        #values_LR = [ *p_values, reject, test_time]
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=BayesianRidge,L=Iter, covariate_adjustment=(adjust == 1)  )
         values_LR = [ *p_values, reject ]
 
         # If the folder does not exist, create it
@@ -60,18 +54,14 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
         if small_size == True:
             print("Xgboost")
             XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter,random_state=0)
-            #p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=Iter, G=XGBoost, verbose=1)
-            #values_xgboost = [*p_values, reject, test_time]
-            reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=XGBoost,L=Iter)
+            reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=XGBoost,L=Iter, covariate_adjustment=(adjust == 2))
             values_xgboost = [ *p_values, reject ]
 
         #LightGBM
         if small_size == False:
             print("LightGBM")
             LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter,random_state=0)
-            #p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size=strata_size,L=Iter, G=LightGBM, verbose=verbose)
-            #values_lightgbm = [*p_values, reject, test_time]
-            reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter)
+            reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter, covariate_adjustment=(adjust == 3))
             values_lightgbm = [ *p_values, reject ]
 
     #Save the file in numpy format

@@ -2,14 +2,11 @@ import sys
 import numpy as np
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
-from sklearn import linear_model
 from sklearn.impute import SimpleImputer
 import Simulation as Generator
-import Retrain
+import RandomizationTest
 import os
-import lightgbm as lgb
-import xgboost as xgb
-import pandas as pd
+import iArt
 
 # Do not change this parameter
 beta_coef = None
@@ -30,10 +27,8 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     else:
         Iter = L 
     
-    Iter = 100
-
     # Create an instance of the OneShot class
-    Framework = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
+    Framework = RandomizationTest.RandomizationTest(N = Nsize, covariance_adjustment=adjust)
 
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
@@ -42,16 +37,19 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
 
     #Oracale imputer
     print("Oracle")
-    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
+    p_values, reject, test_time = Framework.test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject, test_time]
 
     #Median imputer
+    
+    #mask Y with M
+    Y = np.ma.masked_array(Y, mask=M)
+    Y = Y.filled(np.nan)
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    p_values, reject, test_time = Framework.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G = median_imputer,verbose=0)
-    # Append p-values to corresponding lists
-    values_median = [ *p_values, reject, test_time]
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=median_imputer,L=Iter)
+    values_median = [ *p_values, reject ]
 
     #Save the file in numpy format
     if(save_file):
@@ -81,8 +79,6 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(1000, filepath = "Result/HPC_power_1000_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model1_adjusted_LightGBM", adjust = 3, model = 1, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model1_adjusted_LR", adjust = 1, model = 1, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -94,8 +90,6 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(50, filepath = "Result/HPC_power_50_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model1_adjusted_Xgboost", adjust = 2, model = 1, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model1_adjusted_LR", adjust = 1, model = 1,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -108,8 +102,6 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(1000, filepath = "Result/HPC_power_1000_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model2_adjusted_LightGBM", adjust = 3, model = 2, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model2_adjusted_LR", adjust = 1, model = 2, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -121,8 +113,6 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(50, filepath = "Result/HPC_power_50_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model2_adjusted_Xgboost", adjust = 2, model = 2, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model2_adjusted_LR", adjust = 1, model = 2,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
           
@@ -135,8 +125,6 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(1000, filepath = "Result/HPC_power_1000_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model3_adjusted_LightGBM", adjust = 3, model = 3, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model3_adjusted_LR", adjust = 1, model = 3, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -148,8 +136,6 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(50, filepath = "Result/HPC_power_50_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model3_adjusted_Xgboost", adjust = 2, model = 3, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model3_adjusted_LR", adjust = 1, model = 3,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -162,8 +148,6 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(1000, filepath = "Result/HPC_power_1000_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model4_adjusted_LightGBM", adjust = 3, model = 4, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model4_adjusted_LR", adjust = 1, model = 4, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -175,8 +159,6 @@ if __name__ == '__main__':
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model4_adjusted_Xgboost", adjust = 2, model = 4, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model4_adjusted_LR", adjust = 1, model = 4,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     

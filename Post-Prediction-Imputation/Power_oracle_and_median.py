@@ -5,6 +5,7 @@ from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
 import Simulation as Generator
 import RandomizationTest
+import Retrain
 import os
 import iArt
 
@@ -44,12 +45,17 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     #Median imputer
     
     #mask Y with M
+    Framework2 = Retrain.RetrainTest(N = Nsize, covariance_adjustment=adjust)
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=median_imputer,L=Iter)
-    values_median = [ *p_values, reject ]
+    p_values, reject, test_time = Framework2.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G = median_imputer,verbose=verbose)
+    # Append p-values to corresponding lists
+    values_median = [ *p_values, reject, test_time]
+    #median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    #reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=median_imputer,L=Iter)
+    #values_median = [ *p_values, reject ]
 
     #Save the file in numpy format
     if(save_file):

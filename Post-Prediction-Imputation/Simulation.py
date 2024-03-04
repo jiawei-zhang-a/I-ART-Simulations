@@ -132,7 +132,7 @@ class DataGenerator:
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
-    assert(self.model == 1 or self.model == 2 or self.model == 3 or self.model == 4 or self.model == 6)
+    assert(self.model == 1 or self.model == 2 or self.model == 3 or self.model == 4 or self.model == 5 or self.model == 6)
     if self.model == 1:
       Y = self.beta * Z + sum1 + U +  StrataEps+ IndividualEps 
     if self.model == 2:

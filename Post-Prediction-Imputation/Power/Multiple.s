@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --job-name=Complement
+#SBATCH --job-name=Multiple
 #SBATCH --nodes=1
 #SBATCH --time=89:29:00
 #SBATCH --mem=250

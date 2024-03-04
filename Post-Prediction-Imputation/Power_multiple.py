@@ -5,6 +5,7 @@ from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 from sklearn.impute import SimpleImputer
 import SimulationMultiple as Generator
+import Retrain
 import RandomizationTest
 import os
 import lightgbm as lgb
@@ -16,7 +17,7 @@ beta_coef = None
 task_id = 1
 
 # Set the default values
-max_iter = 3
+max_iter = 1
 L = 1000
 
 def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, model = 0, verbose=1):
@@ -26,7 +27,7 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
         Iter = 5000
     else:
         Iter = L 
-
+        
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta=beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
 
@@ -39,16 +40,22 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
     print("Oracle")
     p_values, reject, test_time = Framework.test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
     # Append p-values to corresponding lists
-    values_oracle = [ *p_values, reject, test_time]
+    values_oracle = [ *p_values, reject]
 
     #Median imputer
     #mask Y with M
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
 
+
+    Framework2 = Retrain.RetrainTest(N = Nsize)
+    print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=median_imputer,L=Iter)
-    values_median = [ *p_values, reject ]
+    p_values, reject, test_time = Framework2.retrain_test(Z, X, M, Y, strata_size = strata_size,L=L, G = median_imputer,verbose=verbose)
+    values_median = [ *p_values, reject]
+    #median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    #reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=median_imputer,L=Iter)
+    #values_median = [ *p_values, reject ]
 
     #LR imputer
     print("LR")

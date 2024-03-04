@@ -44,7 +44,7 @@ class DataGenerator:
   def GenerateU(self):
       # generate U
       mean = 0
-      std = 0.5
+      std = np.sqrt(0.2)
       U = np.random.normal(mean, std, self.N)
       U = U.reshape(-1, 1)
       return U
@@ -71,7 +71,7 @@ class DataGenerator:
 
   def GenerateIndividualEps(self):
       mean = 0
-      std = 0.2
+      std = np.sqrt(0.2)
       eps = np.random.normal(mean, std, (self.N, 3))
       return eps
 
@@ -81,9 +81,9 @@ class DataGenerator:
       eps3 = []
 
       for i in range(self.totalStrataNumber):
-          eps1.append(np.full((self.strata_size), np.random.normal(0, 0.1)))
-          eps2.append(np.full((self.strata_size), np.random.normal(0, 0.1)))
-          eps3.append(np.full((self.strata_size), np.random.normal(0, 0.1)))
+          eps1.append(np.full((self.strata_size), np.random.normal(0, np.sqrt(0.1))))
+          eps2.append(np.full((self.strata_size), np.random.normal(0, np.sqrt(0.1))))
+          eps3.append(np.full((self.strata_size), np.random.normal(0, np.sqrt(0.1))))
 
       eps1 = np.concatenate(eps1)
       eps2 = np.concatenate(eps2)
@@ -243,7 +243,6 @@ class DataGenerator:
           M[i][1] =  (values[1] > lambda2)
           M[i][2] =  (values[2] > lambda3)
       
-      print(pd.DataFrame(M).describe())
       return M
   
   

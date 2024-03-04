@@ -23,7 +23,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     
     # If the folder does not exist, create it
     if beta_coef == 0:
-        Iter = 5000
+        Iter = 10000
     else:
         Iter = L 
     

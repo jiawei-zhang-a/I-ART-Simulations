@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-def plot_results(data, title,xsticks):
+def plot_results(data, title, xsticks):
     columns = ['beta', 'Imputer_Median', 'Imputer_PREP-RidgeReg',  'Imputer_PREP-GBM', 'Imputer_Oracle']
 
     df = pd.DataFrame(data, columns=columns)
@@ -41,14 +41,14 @@ def plot_results(data, title,xsticks):
     plt.savefig("pic/" + title + ".pdf", bbox_inches='tight')
 
 
-def plot(range,range_small, path,path_small, title, title_small):
+def plot(range,range_small, path,path_small, title, title_small, multiple = False):
     Power_data = []
     Power_data_small = []
 
     for coef in range:
         row_power = [coef]
         for directory in [path + "/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=False)
+            results = read_npz_files_main(directory,small_size=False, multiple = multiple)
             row_power.extend([results['median_power'], results['lr_power'], results['lightGBM_power'],results['oracle_power']])
         Power_data.append(row_power)
     print(Power_data)
@@ -57,7 +57,7 @@ def plot(range,range_small, path,path_small, title, title_small):
     for coef in range_small:
         row_power_small = [coef]
         for directory in [path_small + "/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=True)
+            results = read_npz_files_main(directory,small_size=True, multiple = multiple)
             row_power_small.extend([results['median_power'], results['lr_power'], results['xgboost_power'],results['oracle_power']])
         Power_data_small.append(row_power_small)
     print(Power_data_small)
@@ -66,9 +66,11 @@ def plot(range,range_small, path,path_small, title, title_small):
 
 
 def main_pic_generator():
-    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "Result/HPC_power_1000_model1", "Result/HPC_power_50_model1", "Size1000_Model1", "Size50_Model1")
-    plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "Result/HPC_power_1000_model2", "Result/HPC_power_50_model2", "Size1000_Model2", "Size50_Model2")
-    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "Result/HPC_power_1000_model3", "Result/HPC_power_50_model3", "Size1000_Model3", "Size50_Model3")
-    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "Result/HPC_power_1000_model4", "Result/HPC_power_50_model4", "Size1000_Model4", "Size50_Model4") 
+    #plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "Result/HPC_power_1000_model1", "Result/HPC_power_50_model1", "Size1000_Model1", "Size50_Model1")
+    #plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "Result/HPC_power_1000_model2", "Result/HPC_power_50_model2", "Size1000_Model2", "Size50_Model2")
+    #plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "Result/HPC_power_1000_model3", "Result/HPC_power_50_model3", "Size1000_Model3", "Size50_Model3")
+    #plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "Result/HPC_power_1000_model4", "Result/HPC_power_50_model4", "Size1000_Model4", "Size50_Model4") 
+    plot(np.arange(0.0, 0.18, 0.03), np.arange(0.0, 0.72, 0.12), "Result/HPC_power_1000_Model5", "Result/HPC_power_50_Model5", "Size1000_Model5", "Size50_Model5", multiple=True)
+
 main_pic_generator()
 

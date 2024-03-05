@@ -28,7 +28,7 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
     else:
         Iter = L 
     
-    Iter = 50
+    Iter = 1
         
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta=beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
@@ -40,7 +40,7 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
 
     #Oracale imputer
     print("Oracle")
-    p_values, reject, test_time = Framework.test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
+    p_values, reject, test_time = Framework.test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=verbose)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject]
 
@@ -62,21 +62,21 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
     #LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.LinearRegression(),max_iter=max_iter,random_state=0)
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=BayesianRidge,L=Iter  )
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=BayesianRidge,L=Iter, verbose=verbose )
     values_LR = [ *p_values, reject ]
 
     #XGBoost
     if small_size == True:
         print("Xgboost")
         XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter,random_state=0)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=XGBoost,L=Iter)
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=XGBoost,L=Iter, verbose=verbose)
         values_xgboost = [ *p_values, reject ]
 
     #LightGBM
     if small_size == False:
         print("LightGBM")
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter,random_state=0)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter)
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter,verbose=verbose )
         values_lightgbm = [ *p_values, reject ]
 
     #Save the file in numpy format
@@ -122,10 +122,10 @@ if __name__ == '__main__':
         }
     }
     # 1000 size coef loop
-    for coef in np.arange(0.0, 0.18, 0.03): 
+    for coef in np.arange(0.09, 0.18, 0.03): 
         beta_coef = coef
         run(1000, filepath="Result/HPC_power_1000_model5",  Missing_lambda=lambda_values[1000].get(coef, None),model = 5, small_size=False)
-
+        exit()
     # 50 size coef loop
     for coef in np.arange(0.0, 0.72, 0.12): 
         beta_coef = coef

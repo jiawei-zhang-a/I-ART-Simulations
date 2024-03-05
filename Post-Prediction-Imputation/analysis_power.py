@@ -113,7 +113,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                     else:
                         summed_p_values_oracle += p_values
 
-        column = 3
+        column = 1
         if small_size:
             results = {
                 'median_power': summed_p_values_median[column] / N,

@@ -163,7 +163,7 @@ class DataGenerator:
     Y_n2 = self.beta * Z  + self.beta * Z * X[:,0] + self.beta * Z * U - sum4  + StrataEps[:,1] + IndividualEps[:,1]
 
     # Compute Yn3
-    Y_n3 = self.beta * Z * sum5  + sum6 + sum7 + U +  StrataEps[:,2]  + IndividualEps[:,2]
+    Y_n3 = self.beta * Z * sum5  + sum7 + U +  StrataEps[:,2]  + IndividualEps[:,2]
   
     Y = np.concatenate((Y_n1.reshape(-1, 1), Y_n2.reshape(-1, 1),Y_n3.reshape(-1, 1)), axis=1) 
   

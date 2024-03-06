@@ -18,7 +18,7 @@ pip -version >= 22.0.4
 - please go to your scratch palce
   `cd /scratch/$YourNetID`
 - Get the repository 
-  `git clone https://github.com/jiawei-zhang-a/Post-prediction-Causal-Inference.git`
+
 - Get into the directory
  `cd Post-prediction-Causal-Inference`
  - Get the python module from HPC to have a python version great than 3.8

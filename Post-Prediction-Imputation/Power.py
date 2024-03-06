@@ -39,7 +39,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 1
     #LR imputer
     if adjust == 0 or adjust == 1:
         print("LR")
-        BayesianRidge = IterativeImputer(estimator = linear_model.LinearRegression(),max_iter=max_iter,random_state=0)
+        BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter,random_state=0)
         reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=BayesianRidge,L=Iter, covariate_adjustment=(adjust == 1)  )
         values_LR = [ *p_values, reject ]
 

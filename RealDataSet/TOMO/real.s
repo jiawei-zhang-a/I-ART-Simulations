@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --time=20:29:00
 #SBATCH --mem=250
-#SBATCH --cpus-per-task=100
+#SBATCH --cpus-per-task=28
 
 export OMP_NUM_THREADS=1
 

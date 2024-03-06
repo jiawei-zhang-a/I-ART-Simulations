@@ -6,6 +6,8 @@
 #SBATCH --mem=250
 #SBATCH --cpus-per-task=100
 
+export OMP_NUM_THREADS=1
+
 module purge
 
 source /scratch/jz4721/Post-prediction-Causal-Inference/venv/bin/activate

@@ -5,7 +5,8 @@ import lightgbm as lgb
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
-
+from sklearn import linear_model
+import sys
 
 # Define the path to the TSV file
 file_path = 'DS0001/36158-0001-Data.tsv'
@@ -77,28 +78,40 @@ S = np.array(matched_S).reshape(-1, 1)
 Z = np.array(matched_Z).reshape(-1, 1)
 
 
-file_path = 'p_values.txt'
-L = 10000
+task_id = int(sys.argv[1])
+file_path = 'Result/p_values%d.txt' % (task_id)
+L = 1
 verbose = 0
+random_state = task_id
+
 
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=verbose,mode = 'cluster',random_state=1)
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=verbose,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("median: " + str(result) + '\n')
 
-result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose = verbose,mode = 'cluster',random_state=0)
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose = verbose,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("RidgeRegression: " + str(result) + '\n')
 
-result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=True,random_state=0)
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=True,random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("RidgeRegression with covariate adjustment: " + str(result) + '\n')
 
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs = 26,verbosity=-1), max_iter=1)
-result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster',random_state=0)
+LR = IterativeImputer(estimator = linear_model.LinearRegression(), max_iter=1)
+result = iArt.test(Z=Z, X=X, Y=Y,G=LR,S=S,L=L, verbose=verbose,mode = 'cluster',random_state=random_state)
+with open(file_path, 'a') as file:
+    file.write("LinearRegression: " + str(result) + '\n')
+
+result = iArt.test(Z=Z, X=X, Y=Y,G=LR,S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=True,random_state=random_state)
+with open(file_path, 'a') as file:
+    file.write("LinearRegression with covariate adjustment: " + str(result) + '\n')
+
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs = 1,verbosity=-1), max_iter=1)
+result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM: " + str(result) + '\n')
 
-result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=True,random_state=0)
+result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=True,random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM with covariate adjustment: " + str(result) + '\n')

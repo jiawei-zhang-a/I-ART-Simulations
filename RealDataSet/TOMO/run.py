@@ -80,7 +80,7 @@ Z = np.array(matched_Z).reshape(-1, 1)
 
 task_id = int(sys.argv[1])
 file_path = 'Result/p_values%d.txt' % (task_id)
-L = 1
+L = 10000
 verbose = 0
 random_state = task_id
 

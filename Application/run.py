@@ -47,7 +47,7 @@ for adminlink in wave1_df['ADMINLINK'].unique():
     matched_Y.append(outcome_record)
     
     # Add the covariates to matched_X
-    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DISTI','SCEM_STRSI','SCWM_FTWCI', 'SCWM_TIMEALLI']].values)
+    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DISTI','SCWM_FTWCI', 'SCWM_TIMEALLI']].values)
     
     # Add the study group to matched_S
     matched_S.append(covariate_record['STUDYGROUP'])
@@ -78,12 +78,36 @@ S = np.array(matched_S).reshape(-1, 1)
 Z = np.array(matched_Z).reshape(-1, 1)
 
 
-task_id = int(sys.argv[1])
-file_path = 'Result/p_values%d.txt' % (task_id)
+"""
+# Print the description of the data
+cluster_sizes = np.bincount(S.flatten())
+cluster_sizes.pop(0)
+print("cluster_sizes",cluster_sizes)
+# largest cluster size
+max_size = np.max(cluster_sizes)
+# smallest cluster size
+min_size = np.min(cluster_sizes)
+
+print("max_size",max_size)
+print("min_size",min_size)
+
+#print total number of individuals
+print("Total number of individuals: ", len(Y))
+
+# print the missing percentage of the outcome
+missing_percentage = np.mean(np.isnan(Y))
+print("Missing percentage of the outcome: ", missing_percentage)
+
+# print the missing percentage of the covariates SCWM_CWH
+missing_percentage = np.mean(np.isnan(X[:,0]))
+print("Missing percentage of the covariates: ", missing_percentage)
+
+"""
+
+file_path = "p_values.txt"
 L = 10000
 verbose = 0
-random_state = task_id
-
+random_state = 123
 
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
 result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=verbose,mode = 'cluster',random_state=random_state)
@@ -98,6 +122,7 @@ result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose=verbose,mode = 'cluster', cov
 with open(file_path, 'a') as file:
     file.write("RidgeRegression with covariate adjustment: " + str(result) + '\n')
 
+"""
 LR = IterativeImputer(estimator = linear_model.LinearRegression(), max_iter=1)
 result = iArt.test(Z=Z, X=X, Y=Y,G=LR,S=S,L=L, verbose=verbose,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
@@ -106,8 +131,9 @@ with open(file_path, 'a') as file:
 result = iArt.test(Z=Z, X=X, Y=Y,G=LR,S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=True,random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LinearRegression with covariate adjustment: " + str(result) + '\n')
+"""
 
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs = 1,verbosity=-1), max_iter=1)
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs = 26,verbosity=-1), max_iter=1)
 result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM: " + str(result) + '\n')

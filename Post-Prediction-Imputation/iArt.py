@@ -359,13 +359,13 @@ def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1, mo
 
     # preprocess the variable
     Z, X, Y, S, M = preprocess(Z, X, Y, S)
-    #X = transformX(X,threshholdForX,verbose)
+    X = transformX(X,threshholdForX,verbose)
 
     # Check the validity of the input parameters
-    #check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L, mode=mode, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
-
+    check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L, mode=mode, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
+    
     # Set random seed
-    #np.random.seed(random_state)
+    np.random.seed(random_state)
 
     # choose the imputation model
     G_model = choosemodel(G)

@@ -20,7 +20,7 @@ task_id = 1
 max_iter = 3
 L = 1000
 
-def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, model = 0, verbose=1):
+def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, model = 0, verbose=0):
 
     # If the folder does not exist, create it
     if beta_coef == 0:
@@ -28,7 +28,6 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
     else:
         Iter = L 
     
-        
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta=beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
 

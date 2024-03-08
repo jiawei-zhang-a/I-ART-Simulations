@@ -7,6 +7,7 @@ from sklearn.impute import IterativeImputer
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import linear_model
 import lightgbm as lgb
+from sklearn.exceptions import DataConversionWarning
 import xgboost as xgb
 from sklearn.impute import SimpleImputer
 import time
@@ -43,6 +44,7 @@ def getY(G, Z, X,Y, covariate_adjustment = False):
     X = df_imputed[:, 1:1+X.shape[1]]
     if covariate_adjustment == 0:
         return Y_head
+    warnings.filterwarnings(action='ignore', category=DataConversionWarning)
     if covariate_adjustment == 1:
         # use linear regression to adjust the predicted Y values based on X
         lm = linear_model.BayesianRidge()

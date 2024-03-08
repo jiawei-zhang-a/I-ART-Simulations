@@ -10,10 +10,6 @@ if len(sys.argv) < 2:
 # Convert the command-line argument to a float
 beta_value = float(sys.argv[1])
 
-# Placeholder function to check if dataset satisfies assumptions
-def check_assumptions(data):
-    pass
-
 # Example function f_k
 def f_k(y_0, beta_0k, x):
     return y_0 + np.dot(beta_0k, x)
@@ -35,10 +31,6 @@ def transform_outcomes(Y, M, Z, beta_0, X):
             
     return Y_transformed
 
-# Compute p-value: Placeholder function
-def compute_p_value(Z, X, Y_transformed):
-    pass
-
 # Confidence Set Construction
 def construct_confidence_set(data, alpha=0.05):
     if not check_assumptions(data):
@@ -48,7 +40,7 @@ def construct_confidence_set(data, alpha=0.05):
     CI = []
 
     Y_transformed = transform_outcomes(Y, M, Z, beta_value, X)
-    p_value = compute_p_value(Z, X, Y_transformed)
+    p_value = iArt(Z, X, Y_transformed)
     if p_value >= alpha:
         CI.append(beta_value)
 

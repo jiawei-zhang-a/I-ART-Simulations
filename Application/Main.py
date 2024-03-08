@@ -45,7 +45,7 @@ for adminlink in wave1_df['ADMINLINK'].unique():
     matched_Y.append(outcome_record)
     
     # Add the covariates to matched_X
-    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DISTI','SCWM_FTWCI', 'SCWM_TIMEALLI', 'SCEM_STRS']].values)
+    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DISTI','SCWM_FTWCI', 'SCWM_TIMEALLI', 'SCEM_STRSI']].values)
     
     # Add the study group to matched_S
     matched_S.append(covariate_record['STUDYGROUP'])
@@ -75,12 +75,10 @@ X = np.array([[convert_to_float(x) for x in row] for row in X])
 S = np.array(matched_S).reshape(-1, 1)
 Z = np.array(matched_Z).reshape(-1, 1)
 
-
-"""
 # Print the description of the data
 cluster_sizes = np.bincount(S.flatten())
-cluster_sizes.pop(0)
-print("cluster_sizes",cluster_sizes)
+cluster_sizes = cluster_sizes[cluster_sizes > 0]
+print("cluster_sizes",len(cluster_sizes))
 # largest cluster size
 max_size = np.max(cluster_sizes)
 # smallest cluster size
@@ -100,8 +98,7 @@ print("Missing percentage of the outcome: ", missing_percentage)
 missing_percentage = np.mean(np.isnan(X[:,0]))
 print("Missing percentage of the covariates: ", missing_percentage)
 
-"""
-
+# Run the iArt test
 file_path = "p_values.txt"
 L = 10000
 verbose = 0

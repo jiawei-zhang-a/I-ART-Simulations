@@ -97,7 +97,7 @@ print("Missing percentage of the covariates: ", missing_percentage)
 
 # Run the iArt test
 file_path = "p_values.txt"
-L = 1
+L = 10000
 verbose = 0
 random_state = 0
 

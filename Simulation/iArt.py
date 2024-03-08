@@ -7,7 +7,6 @@ from sklearn.impute import IterativeImputer
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import linear_model
 import lightgbm as lgb
-from sklearn.exceptions import DataConversionWarning
 import xgboost as xgb
 from sklearn.impute import SimpleImputer
 import time
@@ -42,25 +41,34 @@ def getY(G, Z, X,Y, covariate_adjustment = False):
 
     Y_head = df_imputed[:, indexY:indexY+lenY]
     X = df_imputed[:, 1:1+X.shape[1]]
+    
     if covariate_adjustment == 0:
         return Y_head
-    warnings.filterwarnings(action='ignore', category=DataConversionWarning)
+    
+    # suppress the warnings
+    warnings.filterwarnings('ignore', category=ConvergenceWarning)
+
     if covariate_adjustment == 1:
         # use linear regression to adjust the predicted Y values based on X
         lm = linear_model.BayesianRidge()
-        lm.fit(X, Y_head)
+        # Ensure Y_head is a 1D array before fitting
+        Y_head_1d = Y_head.ravel()
+        lm.fit(X, Y_head_1d)
         Y_head_adjusted = lm.predict(X)
         return Y_head - Y_head_adjusted
     if covariate_adjustment == 2:
         # use xgboost to adjust the predicted Y values based on X
         xg = xgb.XGBRegressor()
-        xg.fit(X, Y_head)
+        Y_head_1d = Y_head.ravel() 
+        xg.fit(X, Y_head_1d)
         Y_head_adjusted = xg.predict(X)
         return Y_head - Y_head_adjusted
+    
     if covariate_adjustment == 3:
         # use lightgbm to adjust the predicted Y values based on X
         lg = lgb.LGBMRegressor()
-        lg.fit(X, Y_head)
+        Y_head_1d = Y_head.ravel()
+        lg.fit(X, Y_head_1d)
         Y_head_adjusted = lg.predict(X)
         return Y_head - Y_head_adjusted
 
@@ -237,6 +245,8 @@ def check_param(*,Z, X, Y, S, G, L,mode, verbose, covariate_adjustment,alpha,alt
     # Check mode: must be one of "strata" or "cluster"
     if mode not in ["strata", "cluster"]:
         raise ValueError("mode must be one of strata or cluster")
+    
+
     
 def choosemodel(G):
     """ 

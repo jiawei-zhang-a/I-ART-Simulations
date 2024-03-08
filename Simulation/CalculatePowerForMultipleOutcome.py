@@ -9,7 +9,10 @@ import Simulation.RandomizationTest as RandomizationTest
 import os
 import lightgbm as lgb
 import xgboost as xgb
-import iArt
+# add ../ to the path
+import sys
+sys.path.append('../')
+import Application.iArt as iArt
 
 # Do not change this parameter
 beta_coef = None
@@ -17,7 +20,7 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-Iter = 10000
+L = 10000
 
 def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, model = 0, verbose=0):
     

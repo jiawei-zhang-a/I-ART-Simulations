@@ -1,10 +1,10 @@
-import iArt
 import pandas as pd
 import numpy as np
 import lightgbm as lgb
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
+import iArt
 
 # Define the path to the TSV file
 file_path = 'Data/36158-0001-Data.tsv'
@@ -12,10 +12,7 @@ file_path = 'Data/36158-0001-Data.tsv'
 # Load the TSV file into a DataFrame
 df = pd.read_csv(file_path, sep='\t')
 
-# Filter the DataFrame for rows where 'WAVE' equals 2
-# Adjust the CONDITION column in the whole DataFrame before filtering
-
-# Assuming df is your combined DataFrame with all necessary columns including 'CONDITION'
+# Assuming df is DataFrame with all necessary columns including 'CONDITION'
 
 # Adjust the CONDITION column in the whole DataFrame before filtering
 df['CONDITION'] = df['CONDITION'].replace(2, 0)
@@ -100,7 +97,7 @@ print("Missing percentage of the covariates: ", missing_percentage)
 
 # Run the iArt test
 file_path = "p_values.txt"
-L = 10000
+L = 1
 verbose = 0
 random_state = 0
 
@@ -125,3 +122,31 @@ with open(file_path, 'a') as file:
 result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=3,random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM with covariate adjustment: " + str(result) + '\n')
+
+
+# Write the results with two-sided test
+with open(file_path, 'a') as file:
+    file.write("Two-sided test\n")
+median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=verbose,mode = 'cluster',random_state=random_state, alternative='two-sided')
+with open(file_path, 'a') as file:
+    file.write("median: " + str(result) + '\n')
+
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose = verbose,mode = 'cluster',random_state=random_state, alternative='two-sided')
+with open(file_path, 'a') as file:
+    file.write("RidgeRegression: " + str(result) + '\n')
+
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=1,random_state=random_state, alternative='two-sided')
+with open(file_path, 'a') as file:
+    file.write("RidgeRegression with covariate adjustment: " + str(result) + '\n')
+
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs = 26,verbosity=-1), max_iter=1)
+result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster',random_state=random_state, alternative='two-sided')
+with open(file_path, 'a') as file:
+    file.write("LightGBM: " + str(result) + '\n')
+
+result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=3,random_state=random_state, alternative='two-sided')
+with open(file_path, 'a') as file:
+    file.write("LightGBM with covariate adjustment: " + str(result) + '\n')
+
+

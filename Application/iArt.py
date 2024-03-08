@@ -41,24 +41,34 @@ def getY(G, Z, X,Y, covariate_adjustment = False):
 
     Y_head = df_imputed[:, indexY:indexY+lenY]
     X = df_imputed[:, 1:1+X.shape[1]]
+    
     if covariate_adjustment == 0:
         return Y_head
+    
+    # suppress the warnings
+    warnings.filterwarnings('ignore', category=ConvergenceWarning)
+
     if covariate_adjustment == 1:
         # use linear regression to adjust the predicted Y values based on X
         lm = linear_model.BayesianRidge()
-        lm.fit(X, Y_head)
+        # Ensure Y_head is a 1D array before fitting
+        Y_head_1d = Y_head.ravel()
+        lm.fit(X, Y_head_1d)
         Y_head_adjusted = lm.predict(X)
         return Y_head - Y_head_adjusted
     if covariate_adjustment == 2:
         # use xgboost to adjust the predicted Y values based on X
         xg = xgb.XGBRegressor()
-        xg.fit(X, Y_head)
+        Y_head_1d = Y_head.ravel() 
+        xg.fit(X, Y_head_1d)
         Y_head_adjusted = xg.predict(X)
         return Y_head - Y_head_adjusted
+    
     if covariate_adjustment == 3:
         # use lightgbm to adjust the predicted Y values based on X
         lg = lgb.LGBMRegressor()
-        lg.fit(X, Y_head)
+        Y_head_1d = Y_head.ravel()
+        lg.fit(X, Y_head_1d)
         Y_head_adjusted = lg.predict(X)
         return Y_head - Y_head_adjusted
 

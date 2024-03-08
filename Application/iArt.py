@@ -10,7 +10,6 @@ import lightgbm as lgb
 import xgboost as xgb
 from sklearn.impute import SimpleImputer
 import time
-from sklearn.exceptions import DataConversionWarning
 import warnings
 
 def holm_bonferroni(p_values, alpha = 0.05):
@@ -32,8 +31,6 @@ def getY(G, Z, X,Y, covariate_adjustment = False):
     if covariate_adjustment is True, return the adjusted Y values based on predicted Y values and X
     else return the predicted Y values
     """
-    if covariate_adjustment:
-        G_adjusted = clone(G)
     df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
     # lenY is the number of how many columns are Y
     lenY = Y.shape[1]
@@ -44,15 +41,27 @@ def getY(G, Z, X,Y, covariate_adjustment = False):
 
     Y_head = df_imputed[:, indexY:indexY+lenY]
     X = df_imputed[:, 1:1+X.shape[1]]
-    if covariate_adjustment:
-        warnings.filterwarnings(action='ignore', category=DataConversionWarning)
+    if covariate_adjustment == 0:
+        return Y_head
+    if covariate_adjustment == 1:
         # use linear regression to adjust the predicted Y values based on X
-        lm = linear_model.LinearRegression()
+        lm = linear_model.BayesianRidge()
         lm.fit(X, Y_head)
         Y_head_adjusted = lm.predict(X)
         return Y_head - Y_head_adjusted
-    else:
-        return Y_head
+    if covariate_adjustment == 2:
+        # use xgboost to adjust the predicted Y values based on X
+        xg = xgb.XGBRegressor()
+        xg.fit(X, Y_head)
+        Y_head_adjusted = xg.predict(X)
+        return Y_head - Y_head_adjusted
+    if covariate_adjustment == 3:
+        # use lightgbm to adjust the predicted Y values based on X
+        lg = lgb.LGBMRegressor()
+        lg.fit(X, Y_head)
+        Y_head_adjusted = lg.predict(X)
+        return Y_head - Y_head_adjusted
+
 
 def T(z,y):
     """
@@ -212,8 +221,8 @@ def check_param(*,Z, X, Y, S, G, L,mode, verbose, covariate_adjustment,alpha,alt
         raise ValueError("G cannot be None")
     
     # Check covariate_adjustment: must be True or False
-    if covariate_adjustment not in [True, False, 1, 0]:
-        raise ValueError("covariate_adjustment must be True or False")
+    if covariate_adjustment not in [0, 1, 2, 3]:
+        raise ValueError("covariate_adjustment must be one of 0, 1, 2, 3")
 
     # Check alternative: must be one of "greater", "less" or "two-sided" 
     if alternative not in ["greater", "less", "two-sided"]:
@@ -299,7 +308,7 @@ def transformX(X, threshold=0.1, verbose=True):
 
     return X
 
-def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1, mode = 'strata',verbose = False, covariate_adjustment = False, random_state=None, alternative = "greater", alpha = 0.05):
+def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
     """Imputation-Assisted Randomization Tests (iArt) for testing 
     the null hypothesis that the treatment has no effect on the outcome.
 
@@ -330,8 +339,11 @@ def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1, mo
     verbose : bool, default: False
         A boolean indicating whether to print training start and end 
 
-    covarite_adjustment : bool, default: False
-        A boolean indicating whether to do covariate adjustment ()
+    covarite_adjustment : int, default: 0
+        if 0, covariate adjustment is not used
+        if 1, ridge covariate adjustment is used
+        if 2, xgboost covariate adjustment is used
+        if 3, lightgbm covariate adjustment is used
 
     random_state : {None, int, `numpy.random.Generator`,`numpy.random.RandomState`}, default: None
         If `seed` is None (or `np.random`), the `numpy.random.RandomState`

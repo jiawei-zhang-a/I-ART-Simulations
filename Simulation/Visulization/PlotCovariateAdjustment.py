@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import os
 from ReadData import read_npz_files
 
-
-
 def plot_results(data, title, xsticks):
     plt.clf()
 

@@ -43,8 +43,6 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
     Y_head = df_imputed[:, indexY:indexY+lenY]
     X = df_imputed[:, 1:1+X.shape[1]]
     
-    pd.DataFrame(X).to_csv('X.csv')
-
     if covariate_adjustment == 0:
         return Y_head
     
@@ -54,30 +52,50 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
     if covariate_adjustment == 1:
         warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use linear regression to adjust the predicted Y values based on X
-        lm = linear_model.BayesianRidge()
-        lm.fit(X, Y_head)
-        Y_head_adjusted = lm.predict(X)
-        print(Y_head_adjusted.shape)
-        pd.DataFrame(Y_head).to_csv('y.csv')
-        #pd.DataFrame(Y_head - Y_head_adjusted).to_csv('y_adjusted.csv')
-        exit()
-        return Y_head - Y_head_adjusted
+        Y_head_adjusted = np.zeros_like(Y_head)
+        for i in range(lenY):
+            # Extract the current target predictions
+            Y_current = Y_head[:, i]
+
+            # Fit the model to current target
+            lm = linear_model.BayesianRidge()
+            lm.fit(X, Y_current)
+
+            # Predict and adjust for the current target
+            Y_current_adjusted = lm.predict(X)
+            Y_head_adjusted[:, i] = Y_current - Y_current_adjusted
+
+        return Y_head_adjusted
     
     if covariate_adjustment == 2:
         warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use xgboost to adjust the predicted Y values based on X
-        xg = xgb.XGBRegressor()
-        xg.fit(X, Y_head)
-        Y_head_adjusted = xg.predict(X)
-        return Y_head - Y_head_adjusted
+        Y_head_adjusted = np.zeros_like(Y_head)
+        for i in range(lenY):
+            # Extract the current target predictions
+            Y_current = Y_head[:, i]
+
+            xg = xgb.XGBRegressor()
+            xg.fit(X, Y_current)
+            Y_current_adjusted = xg.predict(X)
+            Y_head_adjusted[:, i] = Y_current - Y_current_adjusted
+
+        return Y_head_adjusted
     
     if covariate_adjustment == 3:
         warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use lightgbm to adjust the predicted Y values based on X
-        lg = lgb.LGBMRegressor()
-        lg.fit(X, Y_head)
-        Y_head_adjusted = lg.predict(X)
-        return Y_head - Y_head_adjusted
+        Y_head_adjusted = np.zeros_like(Y_head)
+        for i in range(lenY):
+            # Extract the current target predictions
+            Y_current = Y_head[:, i]
+
+            lgbm = lgb.LGBMRegressor()
+            lgbm.fit(X, Y_current)
+            Y_current_adjusted = lgbm.predict(X)
+            Y_head_adjusted[:, i] = Y_current - Y_current_adjusted
+        
+        return Y_head_adjusted
 
 def T(z,y):
     """

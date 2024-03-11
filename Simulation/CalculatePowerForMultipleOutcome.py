@@ -69,7 +69,7 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
     if small_size == False:
         print("LightGBM")
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter,verbose=verbose )
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter,verbose=verbose ,covariate_adjustment=3)
         values_lightgbm = [ *p_values, reject ]
 
     #Save the file in numpy format

@@ -57,8 +57,9 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         lm = linear_model.BayesianRidge()
         lm.fit(X, Y_head)
         Y_head_adjusted = lm.predict(X)
+        print(Y_head_adjusted.shape)
         pd.DataFrame(Y_head).to_csv('y.csv')
-        pd.DataFrame(Y_head - Y_head_adjusted).to_csv('y_adjusted.csv')
+        #pd.DataFrame(Y_head - Y_head_adjusted).to_csv('y_adjusted.csv')
         exit()
         return Y_head - Y_head_adjusted
     

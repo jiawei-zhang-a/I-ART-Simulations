@@ -306,7 +306,7 @@ def transformX(X, threshold=0.1, verbose=True):
     
     # Columns that are not imputed
     not_imputed_columns = [col for col in range(X.shape[1]) if col not in imputed_columns]
-    
+
     if verbose:
         print(f"Missing Rate Before Imputation for X: {missing_rate * 100}")
         
@@ -314,7 +314,7 @@ def transformX(X, threshold=0.1, verbose=True):
             print(f"Missing Rate After Imputation for X: {missing_rate_after * 100}")
             print(f"Columns Imputed for X: {imputed_columns}")
         print(f"Columns Not Imputed for X: {not_imputed_columns}")
-
+    
     return X
 
 def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):

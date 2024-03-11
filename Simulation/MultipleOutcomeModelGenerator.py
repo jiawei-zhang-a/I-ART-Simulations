@@ -102,20 +102,20 @@ class DataGenerator:
     for p in range(1,6):
       for p_2 in range(1,6):
         sum2 += X[:,p-1] * X[:,p_2-1]
-    sum2 = (1.0 / np.sqrt(5 * 5)) * sum2
+    sum2 = (1.0 / np.sqrt(5)) * sum2
 
     #def sum3():
     sum3 = np.zeros(self.N)
     for p in range(1,6):
       sum3 += X[:,p-1]
-    sum3 = (1.0 / np.sqrt(5)) * sum3
+    #sum3 = (1.0 / np.sqrt(5)) * sum3
 
     #def sum4():
     sum4 = np.zeros(self.N)
     for p in range(1,6):
       for p_2 in range(1,6):
         sum4 += X[:,p-1] * logistic.cdf(1 - X[:,p_2-1])
-    sum4 = (1.0 / np.sqrt(5 * 5)) * sum4
+    sum4 = (1.0 / np.sqrt(5)) * sum4
 
     #def sum5():
     sum5 = np.zeros(self.N)
@@ -143,7 +143,7 @@ class DataGenerator:
       for p_2 in range(1,6):
         for p_3 in range(1,6):
           sum8 += X[:,p-1] * X[:,p_2-1] * np.cos(1 - 4*X[:,p_3-1])
-    sum8 = (1.0  / np.sqrt(5 * 5 * 5)) * sum8  
+    sum8 = (1.0  / np.sqrt(5 * 5)) * sum8  
 
     #def sum9():
     sum9 = np.zeros(self.N)
@@ -155,13 +155,13 @@ class DataGenerator:
     Z = Z.reshape(-1,)
     
       # Calculate Y_n1
-    Y_n1 = 1/4 * self.beta * Z  + sum2 + sum3 + np.sin(U) + 1/3*( StrataEps[:,0]  +  IndividualEps[:,0])
+    Y_n1 = 1/4 * self.beta * Z  + sum2 + sum3 + np.sin(U) + ( StrataEps[:,0]  +  IndividualEps[:,0])
 
     # Compute Yn2
-    Y_n2 = self.beta * Z  + self.beta * Z * X[:,0] - sum4  + 1/3*( StrataEps[:,1] + IndividualEps[:,1])
+    Y_n2 = self.beta * Z  + self.beta * Z * X[:,0] - sum4  + ( StrataEps[:,1] + IndividualEps[:,1])
 
     # Compute Yn3
-    Y_n3 = self.beta * Z * sum5  + sum8 + U + 1/3*( StrataEps[:,2]  +  IndividualEps[:,2])
+    Y_n3 = self.beta * Z * sum5  + sum8 + U + ( StrataEps[:,2]  +  IndividualEps[:,2])
   
     Y = np.concatenate((Y_n1.reshape(-1, 1), Y_n2.reshape(-1, 1),Y_n3.reshape(-1, 1)), axis=1) 
   
@@ -211,6 +211,10 @@ class DataGenerator:
         lambda1 = self.Missing_lambda[0]
         lambda2 = self.Missing_lambda[1]
         lambda3 = self.Missing_lambda[2]
+      else:
+        lambda1 = np.percentile(M_lamda[:,0], 100 - self.MaskRate*100)
+        lambda2 = np.percentile(M_lamda[:,1], 100 - self.MaskRate*100)
+        lambda3 = np.percentile(M_lamda[:,2], 100 - self.MaskRate*100)
           
       for i in range(n):
           values = np.zeros(3)

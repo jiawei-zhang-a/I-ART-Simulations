@@ -123,7 +123,6 @@ class RandomizationTest:
         return t
 
     def test(self, Z, X, M, Y, G, strata_size, L=10000, verbose = False):
-        start_time = time.time()
 
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
 
@@ -183,7 +182,6 @@ class RandomizationTest:
             p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
         reject = self.holm_bonferroni(p_values)
 
-        end_time = time.time()
-        test_time = end_time - start_time
 
-        return p_values, reject, test_time
+
+        return p_values, reject

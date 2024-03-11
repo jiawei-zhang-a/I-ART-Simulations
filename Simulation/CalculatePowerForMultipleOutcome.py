@@ -5,7 +5,7 @@ from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 from sklearn.impute import SimpleImputer
 import MultipleOutcomeModelGenerator as Generator
-import Simulation.RandomizationTest as RandomizationTest
+import RandomizationTest as RandomizationTest
 import os
 import lightgbm as lgb
 import xgboost as xgb
@@ -20,16 +20,25 @@ max_iter = 3
 L = 10000
 
 def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, model = 0, verbose=0):
-    
+
+    Missing_lambda = None
+
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta=beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
+    if beta_coef == 0:
+        Iter = 5000
+    else:
+        Iter = L     
+
+    Iter = 100
+
     #Oracale imputer
     print("Oracle")
     Framework = RandomizationTest.RandomizationTest(N = Nsize)
-    p_values, reject, test_time = Framework.test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=verbose)
+    p_values, reject= Framework.test(Z, X, M, Y,strata_size = strata_size, L=Iter, G = None,verbose=verbose)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject]
     
@@ -107,8 +116,8 @@ if __name__ == '__main__':
     # 1000 size coef loop
     for coef in np.arange(0.00, 0.18, 0.03): 
         beta_coef = coef
-        run(1000, filepath="Result/HPC_power_1000_model5",  Missing_lambda=lambda_values[1000].get(coef, None),model = 5, small_size=False)
+        run(1000, filepath="ResultMultiple/HPC_power_1000_model5",  Missing_lambda=lambda_values[1000].get(coef, None),model = 5, small_size=False)
     # 50 size coef loop
     for coef in np.arange(0.0, 0.72, 0.12): 
         beta_coef = coef
-        run(50, filepath="Result/HPC_power_50_model5", Missing_lambda=lambda_values[50].get(coef, None),model = 5, small_size=True)
+        run(50, filepath="ResultMultiple/HPC_power_50_model5", Missing_lambda=lambda_values[50].get(coef, None),model = 5, small_size=True)

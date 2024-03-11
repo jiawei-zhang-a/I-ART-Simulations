@@ -4,6 +4,7 @@ from statsmodels.stats.multitest import multipletests
 from sklearn.base import clone
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from sklearn.exceptions import DataConversionWarning
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import linear_model
 import lightgbm as lgb
@@ -49,28 +50,52 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
     warnings.filterwarnings('ignore', category=ConvergenceWarning)
 
     if covariate_adjustment == 1:
+        warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use linear regression to adjust the predicted Y values based on X
-        lm = linear_model.BayesianRidge()
-        Y_head = np.array(Y_head)
-        lm.fit(X, Y_head)
-        Y_head_adjusted = lm.predict(X)
-        return Y_head - Y_head_adjusted
+        Y_head_adjusted = np.zeros_like(Y_head)
+        for i in range(lenY):
+            # Extract the current target predictions
+            Y_current = Y_head[:, i]
+
+            # Fit the model to current target
+            lm = linear_model.BayesianRidge()
+            lm.fit(X, Y_current)
+
+            # Predict and adjust for the current target
+            Y_current_adjusted = lm.predict(X)
+            Y_head_adjusted[:, i] = Y_current - Y_current_adjusted
+
+        return Y_head_adjusted
     
     if covariate_adjustment == 2:
+        warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use xgboost to adjust the predicted Y values based on X
-        xg = xgb.XGBRegressor()
-        Y_head = np.array(Y_head)
-        xg.fit(X, Y_head)
-        Y_head_adjusted = xg.predict(X)
-        return Y_head - Y_head_adjusted
+        Y_head_adjusted = np.zeros_like(Y_head)
+        for i in range(lenY):
+            # Extract the current target predictions
+            Y_current = Y_head[:, i]
+
+            xg = xgb.XGBRegressor()
+            xg.fit(X, Y_current)
+            Y_current_adjusted = xg.predict(X)
+            Y_head_adjusted[:, i] = Y_current - Y_current_adjusted
+
+        return Y_head_adjusted
     
     if covariate_adjustment == 3:
+        warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use lightgbm to adjust the predicted Y values based on X
-        lg = lgb.LGBMRegressor()
-        Y_head = np.array(Y_head)
-        lg.fit(X, Y_head)
-        Y_head_adjusted = lg.predict(X)
-        return Y_head - Y_head_adjusted
+        Y_head_adjusted = np.zeros_like(Y_head)
+        for i in range(lenY):
+            # Extract the current target predictions
+            Y_current = Y_head[:, i]
+
+            lgbm = lgb.LGBMRegressor()
+            lgbm.fit(X, Y_current)
+            Y_current_adjusted = lgbm.predict(X)
+            Y_head_adjusted[:, i] = Y_current - Y_current_adjusted
+        
+        return Y_head_adjusted
 
 def T(z,y):
     """
@@ -306,7 +331,7 @@ def transformX(X, threshold=0.1, verbose=True):
     
     # Columns that are not imputed
     not_imputed_columns = [col for col in range(X.shape[1]) if col not in imputed_columns]
-    
+
     if verbose:
         print(f"Missing Rate Before Imputation for X: {missing_rate * 100}")
         
@@ -314,10 +339,10 @@ def transformX(X, threshold=0.1, verbose=True):
             print(f"Missing Rate After Imputation for X: {missing_rate_after * 100}")
             print(f"Columns Imputed for X: {imputed_columns}")
         print(f"Columns Not Imputed for X: {not_imputed_columns}")
-
+    
     return X
 
-def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
+def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.2, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
     """Imputation-Assisted Randomization Tests (iArt) for testing 
     the null hypothesis that the treatment has no effect on the outcome.
 

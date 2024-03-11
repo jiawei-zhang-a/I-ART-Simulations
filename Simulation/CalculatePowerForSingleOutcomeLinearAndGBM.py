@@ -52,14 +52,14 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     if adjust == 0 or adjust == 2 or adjust == 3:
         if small_size == True:
             print("Xgboost")
-            XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
+            XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(), max_iter=max_iter)
             reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=XGBoost,L=Iter, covariate_adjustment=adjust)
             values_xgboost = [ *p_values, reject ]
 
         #LightGBM
         if small_size == False:
             print("LightGBM")
-            LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
+            LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=max_iter)
             reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter, covariate_adjustment=adjust)
             values_lightgbm = [ *p_values, reject ]
 

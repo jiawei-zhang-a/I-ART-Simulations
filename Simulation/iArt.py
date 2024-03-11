@@ -4,6 +4,7 @@ from statsmodels.stats.multitest import multipletests
 from sklearn.base import clone
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from sklearn.exceptions import DataConversionWarning
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import linear_model
 import lightgbm as lgb
@@ -49,25 +50,25 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
     warnings.filterwarnings('ignore', category=ConvergenceWarning)
 
     if covariate_adjustment == 1:
+        warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use linear regression to adjust the predicted Y values based on X
         lm = linear_model.BayesianRidge()
-        Y_head = np.array(Y_head)
         lm.fit(X, Y_head)
         Y_head_adjusted = lm.predict(X)
         return Y_head - Y_head_adjusted
     
     if covariate_adjustment == 2:
+        warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use xgboost to adjust the predicted Y values based on X
         xg = xgb.XGBRegressor()
-        Y_head = np.array(Y_head)
         xg.fit(X, Y_head)
         Y_head_adjusted = xg.predict(X)
         return Y_head - Y_head_adjusted
     
     if covariate_adjustment == 3:
+        warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use lightgbm to adjust the predicted Y values based on X
         lg = lgb.LGBMRegressor()
-        Y_head = np.array(Y_head)
         lg.fit(X, Y_head)
         Y_head_adjusted = lg.predict(X)
         return Y_head - Y_head_adjusted

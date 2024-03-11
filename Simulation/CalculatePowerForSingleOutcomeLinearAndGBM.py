@@ -7,11 +7,7 @@ import SingleOutcomeModelGenerator as Generator
 import os
 import lightgbm as lgb
 import xgboost as xgb
-
-# add ../ to the path
-import sys
-sys.path.append('../')
-import Application.iArt as iArt
+import iArt
 
 # Do not change this parameter
 beta_coef = None
@@ -28,8 +24,8 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     else:
         Iter = L     
     
-    Iter = 1000
-
+    Iter = 1
+    
     Missing_lambda = None
 
     # Simulate data

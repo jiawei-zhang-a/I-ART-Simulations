@@ -55,6 +55,7 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         lm.fit(X, Y_head)
         Y_head_adjusted = lm.predict(X)
         return Y_head - Y_head_adjusted
+    
     if covariate_adjustment == 2:
         # use xgboost to adjust the predicted Y values based on X
         xg = xgb.XGBRegressor()

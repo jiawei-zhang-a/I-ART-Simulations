@@ -9,10 +9,7 @@ import Simulation.RandomizationTest as RandomizationTest
 import os
 import lightgbm as lgb
 import xgboost as xgb
-# add ../ to the path
-import sys
-sys.path.append('../')
-import Application.iArt as iArt
+import iArt
 
 # Do not change this parameter
 beta_coef = None

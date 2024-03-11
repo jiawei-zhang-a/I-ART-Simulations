@@ -5,8 +5,6 @@
 #SBATCH --time=11:29:00
 #SBATCH --mem=250
 #SBATCH --cpus-per-task=28
-#SBATCH --output=Runtime/%a.out
-#SBATCH --error=Runtime/%a.err
 
 export OMP_NUM_THREADS=1
 

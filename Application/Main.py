@@ -17,8 +17,10 @@ df = pd.read_csv(file_path, sep='\t')
 # Adjust the CONDITION column in the whole DataFrame before filtering
 df['CONDITION'] = df['CONDITION'].replace(2, 0)
 
+
 # Filter to include the CONDITION column for simplicity
-df_filtered = df[['ADMINLINK', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DISTI','SCEM_STRSI','SCWM_FTWCI', 'SCWM_WTFCI', 'SCWM_TIMEALLI' ]]
+df_filtered = df[df['EMPLOYEE'] == 1][['ADMINLINK', 'WAVE', 'SCWM_CWH', 'STUDYGROUP', 'CONDITION', 'SCWM_CWH', 'RMZFN', 'SCEM_DISTI', 'SCWM_FTWCI', 'SCWM_TIMEALLI', 'SCEM_STRSI']]
+
 
 # Separate DataFrames by wave
 wave1_df = df_filtered[df_filtered['WAVE'] == 1]
@@ -63,6 +65,7 @@ def convert_to_float(value):
     except ValueError:
         # Handle empty strings or other non-numeric values
         return np.nan
+
 
 # Convert lists to numpy arrays and reshape as needed
 Y = np.array(matched_Y).reshape(-1, 1)

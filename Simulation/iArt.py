@@ -25,7 +25,7 @@ def holm_bonferroni(p_values, alpha = 0.05):
 
     return any_rejected
 
-def getY(G, Z, X,Y, covariate_adjustment = False):
+def getY(G, Z, X,Y, covariate_adjustment = 0):
     """
     Calculate the imputed Y values using G and df_Z
     if covariate_adjustment is True, return the adjusted Y values based on predicted Y values and X
@@ -51,27 +51,25 @@ def getY(G, Z, X,Y, covariate_adjustment = False):
     if covariate_adjustment == 1:
         # use linear regression to adjust the predicted Y values based on X
         lm = linear_model.BayesianRidge()
-        # Ensure Y_head is a 1D array before fitting
-        Y_head_1d = Y_head.ravel()
-        lm.fit(X, Y_head_1d)
+        Y_head = np.array(Y_head)
+        lm.fit(X, Y_head)
         Y_head_adjusted = lm.predict(X)
         return Y_head - Y_head_adjusted
     if covariate_adjustment == 2:
         # use xgboost to adjust the predicted Y values based on X
         xg = xgb.XGBRegressor()
-        Y_head_1d = Y_head.ravel() 
-        xg.fit(X, Y_head_1d)
+        Y_head = np.array(Y_head)
+        xg.fit(X, Y_head)
         Y_head_adjusted = xg.predict(X)
         return Y_head - Y_head_adjusted
     
     if covariate_adjustment == 3:
         # use lightgbm to adjust the predicted Y values based on X
         lg = lgb.LGBMRegressor()
-        Y_head_1d = Y_head.ravel()
-        lg.fit(X, Y_head_1d)
+        Y_head = np.array(Y_head)
+        lg.fit(X, Y_head)
         Y_head_adjusted = lg.predict(X)
         return Y_head - Y_head_adjusted
-
 
 def T(z,y):
     """

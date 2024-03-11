@@ -1,13 +1,10 @@
 import numpy as np
 import pandas as pd
-from Simulation.Tool.ReadData import read_npz_files
 import matplotlib.pyplot as plt
 import os
+from ReadData import read_npz_files
 
-#add path ../
-import sys
-sys.path.append("..")
-from Tool.ReadData import read_npz_files_main
+
 
 def plot_results(data, title, xsticks):
     plt.clf()
@@ -87,11 +84,11 @@ def plot(range,range_small, path,path_small, title, title_small):
 
 
 def covariate_adjustment_pic_generator():
-    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "Result/HPC_power_1000_model1", "Result/HPC_power_50_model1", "Size1000_Model1_CovariateAdjusted", "Size50_Model1_CovariateAdjusted")
-    plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "Result/HPC_power_1000_model2", "Result/HPC_power_50_model2", "Size1000_Model2_CovariateAdjusted", "Size50_Model2_CovariateAdjusted")
-    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "Result/HPC_power_1000_model3", "Result/HPC_power_50_model3", "Size1000_Model3_CovariateAdjusted", "Size50_Model3_CovariateAdjusted")
-    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "Result/HPC_power_1000_model4", "Result/HPC_power_50_model4", "Size1000_Model4_CovariateAdjusted", "Size50_Model4_CovariateAdjusted")
-    plot(np.arange(0.0,0.6 ,0.1), np.arange(0.0,18,3), "Result/HPC_power_1000_model6", "Result/HPC_power_50_model6", "Size1000_Model6_CovariateAdjusted", "Size50_Model6_CovariateAdjusted")
+    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Data/Result/HPC_power_1000_model1", "../Data/Result/HPC_power_50_model1", "Size1000_Model1_CovariateAdjusted", "Size50_Model1_CovariateAdjusted")
+    plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Data/Result/HPC_power_1000_model2", "../Data/Result/HPC_power_50_model2", "Size1000_Model2_CovariateAdjusted", "Size50_Model2_CovariateAdjusted")
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Data/Result/HPC_power_1000_model3", "../Data/Result/HPC_power_50_model3", "Size1000_Model3_CovariateAdjusted", "Size50_Model3_CovariateAdjusted")
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Data/Result/HPC_power_1000_model4", "../Data/Result/HPC_power_50_model4", "Size1000_Model4_CovariateAdjusted", "Size50_Model4_CovariateAdjusted")
+    plot(np.arange(0.0,0.6 ,0.1), np.arange(0.0,18,3), "../Data/Result/HPC_power_1000_model6", "../Data/Result/HPC_power_50_model6", "Size1000_Model6_CovariateAdjusted", "Size50_Model6_CovariateAdjusted")
  
 covariate_adjustment_pic_generator()
 

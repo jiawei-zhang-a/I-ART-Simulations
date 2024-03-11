@@ -18,15 +18,19 @@ beta_coef = None
 task_id = 1
 
 # Set the default values
-max_iter = 3
+max_iter = 1
 L = 1000
 
-def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = 10,model = 0, verbose=1):
+def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = False,model = 0, verbose=1):
 
     if beta_coef == 0:
         Iter = 5000
     else:
         Iter = L     
+    
+    Iter = 1000
+
+    Missing_lambda = None
 
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
@@ -94,9 +98,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result/HPC_power_1000_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model1_adjusted_LightGBM", adjust = 3, model = 1, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model1_adjusted_LR", adjust = 1, model = 1, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model1_adjusted_LightGBM", adjust = 3, model = 1, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model1_adjusted_LR", adjust = 1, model = 1, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -107,9 +111,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result/HPC_power_50_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model1_adjusted_Xgboost", adjust = 2, model = 1, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model1_adjusted_LR", adjust = 1, model = 1,Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model1_adjusted_Xgboost", adjust = 2, model = 1, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model1_adjusted_LR", adjust = 1, model = 1,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -121,9 +125,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result/HPC_power_1000_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model2_adjusted_LightGBM", adjust = 3, model = 2, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model2_adjusted_LR", adjust = 1, model = 2, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model2_adjusted_LightGBM", adjust = 3, model = 2, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model2_adjusted_LR", adjust = 1, model = 2, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -134,9 +138,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result/HPC_power_50_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model2_adjusted_Xgboost", adjust = 2, model = 2, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model2_adjusted_LR", adjust = 1, model = 2,Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model2_adjusted_Xgboost", adjust = 2, model = 2, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model2_adjusted_LR", adjust = 1, model = 2,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
           
@@ -148,9 +152,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result/HPC_power_1000_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model3_adjusted_LightGBM", adjust = 3, model = 3, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model3_adjusted_LR", adjust = 1, model = 3, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model3_adjusted_LightGBM", adjust = 3, model = 3, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model3_adjusted_LR", adjust = 1, model = 3, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -161,9 +165,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result/HPC_power_50_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model3_adjusted_Xgboost", adjust = 2, model = 3, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model3_adjusted_LR", adjust = 1, model = 3,Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model3_adjusted_Xgboost", adjust = 2, model = 3, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model3_adjusted_LR", adjust = 1, model = 3,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -175,9 +179,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result/HPC_power_1000_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model4_adjusted_LightGBM", adjust = 3, model = 4, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model4_adjusted_LR", adjust = 1, model = 4, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model4_adjusted_LightGBM", adjust = 3, model = 4, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model4_adjusted_LR", adjust = 1, model = 4, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -188,9 +192,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model4_adjusted_Xgboost", adjust = 2, model = 4, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model4_adjusted_LR", adjust = 1, model = 4,Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model4_adjusted_Xgboost", adjust = 2, model = 4, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model4_adjusted_LR", adjust = 1, model = 4,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -202,9 +206,9 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result/HPC_power_1000_model6", adjust = 0, model = 6, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model6_adjusted_LightGBM", adjust = 3, model = 6, Missing_lambda = lambda_value, small_size=False)
-            run(1000, filepath = "Result/HPC_power_1000_model6_adjusted_LR", adjust = 1, model = 6, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model6", adjust = 0, model = 6, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model6_adjusted_LightGBM", adjust = 3, model = 6, Missing_lambda = lambda_value, small_size=False)
+            run(Nsize = 1000, filepath = "Result/HPC_power_1000_model6_adjusted_LR", adjust = 1, model = 6, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -215,8 +219,8 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result/HPC_power_50_model6", adjust = 0, model = 6, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model6_adjusted_Xgboost", adjust = 2, model = 6, Missing_lambda = lambda_value, small_size=True)
-            run(50, filepath = "Result/HPC_power_50_model6_adjusted_LR", adjust = 1, model = 6,Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model6", adjust = 0, model = 6, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model6_adjusted_Xgboost", adjust = 2, model = 6, Missing_lambda = lambda_value, small_size=True)
+            run(Nsize = 50, filepath = "Result/HPC_power_50_model6_adjusted_LR", adjust = 1, model = 6,Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")

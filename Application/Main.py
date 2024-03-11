@@ -17,9 +17,9 @@ df = pd.read_csv(file_path, sep='\t')
 # Adjust the CONDITION column in the whole DataFrame before filtering
 df['CONDITION'] = df['CONDITION'].replace(2, 0)
 
-
 # Filter to include the CONDITION column for simplicity
-df_filtered = df[df['EMPLOYEE'] == 1][['ADMINLINK', 'WAVE', 'SCWM_CWH', 'STUDYGROUP', 'CONDITION', 'SCWM_CWH', 'RMZFN', 'SCEM_DISTI', 'SCWM_FTWCI', 'SCWM_TIMEALLI', 'SCEM_STRSI']]
+df_filtered = df[['ADMINLINK', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DISTI','SCEM_STRSI','SCWM_FTWCI', 'SCWM_WTFCI', 'SCWM_TIMEALLI' ]]
+
 
 
 # Separate DataFrames by wave
@@ -65,7 +65,6 @@ def convert_to_float(value):
     except ValueError:
         # Handle empty strings or other non-numeric values
         return np.nan
-
 
 # Convert lists to numpy arrays and reshape as needed
 Y = np.array(matched_Y).reshape(-1, 1)
@@ -151,5 +150,4 @@ with open(file_path, 'a') as file:
 result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster', covariate_adjustment=3,random_state=random_state, alternative='two-sided')
 with open(file_path, 'a') as file:
     file.write("LightGBM with covariate adjustment: " + str(result) + '\n')
-
 

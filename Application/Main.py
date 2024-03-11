@@ -21,6 +21,7 @@ df['CONDITION'] = df['CONDITION'].replace(2, 0)
 df_filtered = df[['ADMINLINK','EMPLOYEE', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DISTI','SCEM_STRSI','SCWM_FTWCI', 'SCWM_WTFCI', 'SCWM_TIMEALLI' ]]
 
 # Filter EMPLOYEE column to include only 1
+df_filtered = df_filtered[df_filtered['EMPLOYEE'] == 1]
 
 # Save the filtered DataFrame to a CSV file
 df_filtered.to_csv('Data/filtered_data.csv', index=False)
@@ -145,7 +146,7 @@ result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose=verbose,mode = 'cluster', cov
 with open(file_path, 'a') as file:
     file.write("RidgeRegression with covariate adjustment: " + str(result) + '\n')
 
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs = 26,verbosity=-1), max_iter=1)
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=1)
 result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L, verbose=verbose,mode = 'cluster',random_state=random_state, alternative='two-sided')
 with open(file_path, 'a') as file:
     file.write("LightGBM: " + str(result) + '\n')

@@ -43,6 +43,8 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
     Y_head = df_imputed[:, indexY:indexY+lenY]
     X = df_imputed[:, 1:1+X.shape[1]]
     
+    pd.DataFrame(X).to_csv('X.csv')
+
     if covariate_adjustment == 0:
         return Y_head
     
@@ -55,6 +57,9 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         lm = linear_model.BayesianRidge()
         lm.fit(X, Y_head)
         Y_head_adjusted = lm.predict(X)
+        pd.DataFrame(Y_head).to_csv('y.csv')
+        pd.DataFrame(Y_head - Y_head_adjusted).to_csv('y_adjusted.csv')
+        exit()
         return Y_head - Y_head_adjusted
     
     if covariate_adjustment == 2:
@@ -318,7 +323,7 @@ def transformX(X, threshold=0.1, verbose=True):
     
     return X
 
-def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.1, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
+def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.2, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
     """Imputation-Assisted Randomization Tests (iArt) for testing 
     the null hypothesis that the treatment has no effect on the outcome.
 

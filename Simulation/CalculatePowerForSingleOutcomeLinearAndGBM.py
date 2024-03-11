@@ -24,7 +24,7 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     else:
         Iter = L     
 
-    Iter = 100
+    Iter = 1
         
     Missing_lambda = None
 

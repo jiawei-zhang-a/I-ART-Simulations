@@ -21,7 +21,7 @@ df['CONDITION'] = df['CONDITION'].replace(2, 0)
 df_filtered = df[['ADMINLINK','EMPLOYEE', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DISTI','SCEM_STRSI','SCWM_FTWCI', 'SCWM_WTFCI', 'SCWM_TIMEALLI' ]]
 
 # Filter EMPLOYEE column to include only 1
-df_filtered = df_filtered[df_filtered['EMPLOYEE'] == 1]
+#df_filtered = df_filtered[df_filtered['EMPLOYEE'] == 1]
 
 # Save the filtered DataFrame to a CSV file
 df_filtered.to_csv('Data/filtered_data.csv', index=False)
@@ -48,7 +48,7 @@ for adminlink in wave1_df['ADMINLINK'].unique():
     matched_Y.append(outcome_record)
     
     # Add the covariates to matched_X
-    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DISTI','SCWM_FTWCI', 'SCWM_TIMEALLI', 'SCEM_STRSI']].values)
+    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DISTI','SCWM_FTWCI', 'SCWM_TIMEALLI','EMPLOYEE', 'SCEM_STRSI']].values)
     
     # Add the study group to matched_S
     matched_S.append(covariate_record['STUDYGROUP'])
@@ -106,7 +106,6 @@ file_path = "p_values.txt"
 L = 10000
 verbose = 0
 random_state = 0
-
 
 # Write the results with one-sided test
 with open(file_path, 'a') as file:

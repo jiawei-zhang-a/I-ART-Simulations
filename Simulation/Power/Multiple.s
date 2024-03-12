@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=Multiple
 #SBATCH --nodes=1
-#SBATCH --time=08:29:00
+#SBATCH --time=38:29:00
 #SBATCH --mem=250
 #SBATCH --cpus-per-task=1
 #SBATCH --output=Runtime/%a.out

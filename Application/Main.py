@@ -20,9 +20,6 @@ df['CONDITION'] = df['CONDITION'].replace(2, 0)
 # Filter to include the CONDITION column for simplicity
 df_filtered = df[['ADMINLINK','EMPLOYEE', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DISTI','SCEM_STRSI','SCWM_FTWCI', 'SCWM_WTFCI', 'SCWM_TIMEALLI' ]]
 
-# Filter EMPLOYEE column to include only 1
-#df_filtered = df_filtered[df_filtered['EMPLOYEE'] == 1]
-
 # Save the filtered DataFrame to a CSV file
 df_filtered.to_csv('Data/filtered_data.csv', index=False)
 

@@ -70,4 +70,3 @@ def main_pic_generator():
     plot(np.arange(0.0, 0.18, 0.03), np.arange(0.0, 0.72, 0.12), "../Data/ResultMultiple/HPC_power_1000_Model5", "../Data/ResultMultiple/HPC_power_50_Model5", "Size1000_Model5", "Size50_Model5", multiple=True)
 
 main_pic_generator()
-

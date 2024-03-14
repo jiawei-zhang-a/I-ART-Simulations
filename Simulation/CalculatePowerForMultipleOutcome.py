@@ -114,7 +114,7 @@ if __name__ == '__main__':
         }
     }
     # 1000 size coef loop
-    for coef in np.arange(0.0, 0.18, 0.03): 
+    for coef in np.arange(0.0, 0.24, 0.04): 
         beta_coef = coef
         run(1000, filepath="ResultMultiple/HPC_power_1000_model5",  Missing_lambda=lambda_values[1000].get(coef, None),model = 5, small_size=False)
     # 50 size coef loop

@@ -33,24 +33,24 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
     else:
         Iter = L     
 
-    Iter = 100
+    Iter = 50
 
     #Oracale imputer
     print("Oracle")
     Framework = RandomizationTest.RandomizationTest(N = Nsize)
-    p_values, reject= Framework.test(Z, X, M, Y,strata_size = strata_size, L=Iter, G = None,verbose=verbose)
+    reject, p_values= Framework.test(Z, X, M, Y,strata_size = strata_size, L=Iter, G = None,verbose=verbose)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject]
-    
-    #mask Y with M
-    Y = np.ma.masked_array(Y, mask=M)
-    Y = Y.filled(np.nan)
 
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=median_imputer,L=Iter)
+    reject, p_values = Framework.test_imputed(Z=Z, X=X,M=M, Y=Y,strata_size = strata_size,G=median_imputer,L=Iter, verbose=verbose)
     values_median = [ *p_values, reject ]
+
+    #mask Y with M
+    Y = np.ma.masked_array(Y, mask=M)
+    Y = Y.filled(np.nan)
 
     #LR imputer
     print("LR")

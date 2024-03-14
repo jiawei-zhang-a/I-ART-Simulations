@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 from statsmodels.stats.multitest import multipletests
+from sklearn.base import clone
 
 class RandomizationTest:
     #load data
@@ -182,6 +183,86 @@ class RandomizationTest:
             p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
         reject = self.holm_bonferroni(p_values)
 
+        return reject,p_values
+
+    def test_imputed(self, Z, X, M, Y, G,  strata_size, L=10000, verbose = False):
+        """
+        A retrain framework for testing H_0.
+
+        Args:
+        Z: 2D array of observed treatment indicators
+        X: 2D array of observed covariates
+        M: 2D array of observed missing indicators
+        Y: 2D array of observed values for K outcomes
+        G: a function that takes (Z, X, M, Y_k) as input and returns the imputed value for outcome k
+        L: number of Monte Carlo simulations (default is 10000)
+        verbose: a boolean indicating whether to print training start and end (default is False)
+
+        Returns:
+        p_values: a 1D array of p-values for lenY outcomes
+        reject: a boolean indicating whether the null hypothesis is rejected for each outcome
+        corr: a 1D array of correlations between the imputed and observed values for lenY outcomes
+
+        """
+        # mask Y
+        Y = np.ma.masked_array(Y, mask=M)
+        Y = Y.filled(np.nan)
+
+        df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
 
 
-        return p_values, reject
+        df_noZ = pd.DataFrame(np.concatenate((X, Y), axis=1))
+        G_model = clone(G)
+
+        # lenY is the number of how many columns are Y
+        lenY = Y.shape[1]
+        lenX = X.shape[1]
+
+        # indexY is the index of the first column of Y
+        indexY = Z.shape[1] + X.shape[1]
+        indeX = 0
+
+        # N is the number of rows of the data frame
+        N = df_Z.shape[0]
+
+        # re-impute the missing values and calculate the observed test statistics in part 2
+        bias = self.getY(G, df_Z, df_noZ, indeX,lenX,indexY, lenY)
+        t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
+
+
+        # simulate data and calculate test statistics
+        t_sim = np.zeros((L,Y.shape[1]))
+
+        for l in range(L):
+            
+            # simulate treatment indicators
+            #Z_sim = np.random.binomial(1, 0.5, N).reshape(-1, 1)
+
+            Z_sim = []
+            half_strata_size = strata_size // 2  # Ensure strata_size is even
+
+            for i in range(int(N/strata_size)):
+                strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
+                np.random.shuffle(strata)
+                Z_sim.append(strata)
+            Z_sim = np.concatenate(Z_sim).reshape(-1, 1) 
+            
+            G_clone = clone(G_model)
+            df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
+            bias = self.getY(G_clone, df_Z, df_noZ, indeX,lenX, indexY, lenY)
+
+            # get the test statistics 
+            t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=False)
+
+
+        if verbose:
+            print("t_sims_mean:"+str(np.mean(t_sim)))
+            print("\n")
+
+        # perform Holm-Bonferroni correction
+        p_values = []
+        for i in range(lenY):
+            p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
+        reject = self.holm_bonferroni(p_values,alpha = 0.05)
+
+        return reject,p_values

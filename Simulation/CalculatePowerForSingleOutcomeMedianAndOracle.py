@@ -18,6 +18,8 @@ L = 10000
 
 def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, verbose=1):
     
+    Missing_lambda = None
+
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
 
@@ -26,11 +28,17 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     #Oracale imputer
     print("Oracle")
     Framework = RandomizationTest.RandomizationTest(N = Nsize, covariance_adjustment=adjust)
-    p_values, reject, test_time = Framework.test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
+    reject, p_values = Framework.test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject]
     
-    #mask Y with M
+    #Median imputer
+    print("Median")
+    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    reject, p_values = Framework.test_imputed(Z=Z, X=X,M=M, Y=Y,strata_size = strata_size,G=median_imputer,L=Iter, verbose=verbose)
+    values_median = [ *p_values, reject ]
+
+    """#mask Y with M
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
 
@@ -38,7 +46,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=median_imputer,L=Iter)
-    values_median = [ *p_values, reject ]
+    values_median = [ *p_values, reject ]"""
 
     #Save the file in numpy format
     if(save_file):

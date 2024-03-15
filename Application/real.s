@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=Real
 #SBATCH --nodes=1
-#SBATCH --time=21:29:00
+#SBATCH --time=35:29:00
 #SBATCH --mem=250
 #SBATCH --cpus-per-task=28
 

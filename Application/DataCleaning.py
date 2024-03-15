@@ -13,7 +13,7 @@ df = pd.read_csv(file_path, sep='\t')
 df['CONDITION'] = df['CONDITION'].replace(2, 0)
 
 # Filter to include the CONDITION column for simplicity
-df_filtered = df[['ADMINLINK','EMPLOYEE', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DISTI','SCEM_STRSI','SCWM_FTWCI', 'SCWM_WTFCI', 'SCWM_TIMEALLI' ]]
+df_filtered = df[['ADMINLINK','EMPLOYEE', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DIST','SCEM_STRS','SCWM_FTWC', 'SCWM_WTFC', 'SCWM_TIMEALL' ]]
 
 # Save the filtered DataFrame to a CSV file
 df_filtered.to_csv('Data/filtered_data.csv', index=False)
@@ -40,7 +40,7 @@ for adminlink in wave1_df['ADMINLINK'].unique():
     matched_Y.append(outcome_record)
     
     # Add the covariates to matched_X
-    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DISTI','SCWM_FTWCI', 'SCWM_TIMEALLI','EMPLOYEE', 'SCEM_STRSI']].values)
+    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DIST','SCWM_FTWC', 'SCWM_TIMEALL','EMPLOYEE', 'SCEM_STRS']].values)
     
     # Add the study group to matched_S
     matched_S.append(covariate_record['STUDYGROUP'])
@@ -70,6 +70,11 @@ X = np.array([[convert_to_float(x) for x in row] for row in X])
 S = np.array(matched_S).reshape(-1, 1)
 Z = np.array(matched_Z).reshape(-1, 1)
 
+print(pd.DataFrame(Y).describe())
+print(pd.DataFrame(X).describe())
+print(pd.DataFrame(S).describe())
+print(pd.DataFrame(Z).describe())
+
 
 # Print the description of the data
 cluster_sizes = np.bincount(S.flatten())
@@ -92,6 +97,35 @@ print("Missing percentage of the outcome: ", missing_percentage)
 
 # print the missing percentage of the covariates SCWM_CWH
 missing_percentage = np.mean(np.isnan(X[:,0]))
-print("Missing percentage of the covariates: ", missing_percentage)
+print("Missing percentage of the covariate SCWM_CWH: ", missing_percentage)
+
+# print the missing percentage of the covariates RMZFN
+missing_percentage = np.mean(np.isnan(X[:,1]))
+print("Missing percentage of the covariate RMZFN: ", missing_percentage)
+
+# print the missing percentage of the covariates SCEM_DISTI
+missing_percentage = np.mean(np.isnan(X[:,2]))
+print("Missing percentage of the covariate SCEM_DISTI: ", missing_percentage)
+
+# print the missing percentage of the covariates SCWM_FTWCI
+missing_percentage = np.mean(np.isnan(X[:,3]))
+print("Missing percentage of the covariate SCWM_FTWCI: ", missing_percentage)
+
+# print the missing percentage of the covariates SCWM_TIMEALLI
+missing_percentage = np.mean(np.isnan(X[:,4]))
+print("Missing percentage of the covariate SCWM_TIMEALLI: ", missing_percentage)
+
+# print the missing percentage of the covariates EMPLOYEE
+missing_percentage = np.mean(np.isnan(X[:,5]))
+print("Missing percentage of the covariate EMPLOYEE: ", missing_percentage)
+
+# print the missing percentage of the covariates SCEM_STRSI
+missing_percentage = np.mean(np.isnan(X[:,6]))
+print("Missing percentage of the covariate SCEM_STRSI: ", missing_percentage)
+
+# print the missing percentage of the covariates CONDITION
+missing_percentage = np.mean(np.isnan(Z))
+print("Missing percentage of the covariate CONDITION: ", missing_percentage)
+
 
 np.savez('Data/arrays.npz', Z=Z, X=X, Y=Y, S=S)

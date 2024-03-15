@@ -15,7 +15,7 @@ random_state = 0
 threshholdForX = 0.0
 
 # Define β values range 
-beta_values = np.linspace(0, 10, 100)  
+beta_values = np.linspace(-5, 5, 1000)  
 
 # Retrieve the job array index from SLURM
 array_index = int(sys.argv[1]) - 1 
@@ -36,7 +36,7 @@ beta = beta_values[array_index]
 # Adjust Y based on β for this task (Implement the logic as needed)
 Y_adjusted = Y.copy()
 # Example adjustment, adjust according to your actual logic
-Y_adjusted[(M == 0) & (Z == 1)] -= beta
+Y_adjusted[(M == 0) & (Z == 0)] += beta
 
 os.makedirs(os.path.dirname("Result"), exist_ok=True)  # Ensure the directory exists
 

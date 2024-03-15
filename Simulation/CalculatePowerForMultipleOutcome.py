@@ -16,8 +16,8 @@ beta_coef = None
 task_id = 1
 
 # Set the default values
-max_iter = 3
-L = 10000
+max_iter = 1
+L = 1000
 
 def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, model = 0, verbose=0):
 
@@ -29,11 +29,9 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
     if beta_coef == 0:
-        Iter = 5000
+        Iter = 1
     else:
         Iter = L     
-
-    Iter = 50
 
     #Oracale imputer
     print("Oracle")
@@ -114,10 +112,10 @@ if __name__ == '__main__':
         }
     }
     # 1000 size coef loop
-    for coef in np.arange(0.0, 0.24, 0.04): 
+    for coef in np.arange(0.0, 0.36, 0.06): 
         beta_coef = coef
         run(1000, filepath="ResultMultiple/HPC_power_1000_model5",  Missing_lambda=lambda_values[1000].get(coef, None),model = 5, small_size=False)
     # 50 size coef loop
-    for coef in np.arange(0.0, 1.2, 0.2): 
+    for coef in np.arange(0.0, 2.4, 0.4): 
         beta_coef = coef
         run(50, filepath="ResultMultiple/HPC_power_50_model5", Missing_lambda=lambda_values[50].get(coef, None),model = 5, small_size=True)

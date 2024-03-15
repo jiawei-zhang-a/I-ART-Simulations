@@ -17,7 +17,7 @@ task_id = 1
 
 # Set the default values
 max_iter = 1
-L = 1000
+L = 2000
 
 def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, model = 0, verbose=0):
 

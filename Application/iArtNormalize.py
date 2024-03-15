@@ -100,7 +100,7 @@ def getY(G, Z, X, Y, covariate_adjustment = 0):
 
 def getnormalizedY(G, Z, X, Y, covariate_adjustment, mode, S):
 
-    y = getY(G, Z, X, Y, covariate_adjustment)
+    Y = getY(G, Z, X, Y, covariate_adjustment)
     if mode == 'cluster':
         # Calculate cluster sizes
         unique_clusters, counts = np.unique(S, return_counts=True)
@@ -111,7 +111,7 @@ def getnormalizedY(G, Z, X, Y, covariate_adjustment, mode, S):
         
         return Y_normalized
     else:
-        return y
+        return Y
 
 def T(z,y):
     """

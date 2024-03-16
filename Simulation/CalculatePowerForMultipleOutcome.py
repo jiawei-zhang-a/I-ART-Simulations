@@ -29,9 +29,9 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
     if beta_coef == 0:
-        Iter = 1
+        Iter = 5000
     else:
-        Iter = L     
+        Iter = 1   
 
     #Oracale imputer
     print("Oracle")

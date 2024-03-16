@@ -90,7 +90,7 @@ class DataGenerator:
 
       for i in range(self.totalStrataNumber):
           strata = X[i * self.strata_size : (i+1) * self.strata_size, 0]  # select the first column in the strata
-          biases.append(np.full(self.strata_size, 5*np.mean(strata)))
+          biases.append(np.full(self.strata_size, (10/3)*np.mean(strata)))
 
       biases = np.concatenate(biases).reshape(-1,)
       return biases
@@ -99,7 +99,7 @@ class DataGenerator:
       biases = []
       for i in range(self.totalStrataNumber):
           strata = Y[i * self.strata_size : (i+1) * self.strata_size, 0]  # select the first column in the strata
-          biases.append(np.full(self.strata_size, 5*np.mean(strata)))
+          biases.append(np.full(self.strata_size, (10/3)*np.mean(strata)))
 
       biases = np.concatenate(biases).reshape(-1,)
       return biases

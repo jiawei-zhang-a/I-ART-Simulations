@@ -1,12 +1,10 @@
 import sys
 import numpy as np
 from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
-import SingelOutcomeModelGenerator as Generator
-import Simulation.RandomizationTest as RandomizationTest
+import SingleOutcomeModelGenerator as Generator
+import RandomizationTest as RandomizationTest
 import os
-import iArt
 
 # Do not change this parameter
 beta_coef = None
@@ -14,11 +12,18 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-L = 10000
+L = 1000
 
-def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, verbose=1):
+def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, verbose=1, save_file = True, small_size = True):
     
     Missing_lambda = None
+
+    if beta_coef == 0:
+        Iter = 5000
+    else:
+        Iter = L    
+    
+    Iter = 1
 
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
@@ -37,16 +42,6 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     reject, p_values = Framework.test_imputed(Z=Z, X=X,M=M, Y=Y,strata_size = strata_size,G=median_imputer,L=Iter, verbose=verbose)
     values_median = [ *p_values, reject ]
-
-    """#mask Y with M
-    Y = np.ma.masked_array(Y, mask=M)
-    Y = Y.filled(np.nan)
-
-    #Median imputer
-    print("Median")
-    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=median_imputer,L=Iter)
-    values_median = [ *p_values, reject ]"""
 
     #Save the file in numpy format
     if(save_file):

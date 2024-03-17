@@ -23,8 +23,6 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     else:
         Iter = L    
     
-    Iter = 1
-
     # Simulate data
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
 

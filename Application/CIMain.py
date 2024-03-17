@@ -14,7 +14,7 @@ random_state = 0
 threshholdForX = 0.0
 
 # Define β values range 
-beta_values = np.linspace(-5, 5, 1000)  
+beta_values = np.linspace(-0.1, 0.1, 2000)  
 
 # Retrieve the job array index from SLURM
 array_index = int(sys.argv[1]) - 1 
@@ -51,28 +51,28 @@ else:
 
 # Save the result for median imputer
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-reject,_ = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
 result_path = f"Result/test_median_{beta}.npy"
-np.save(result_path, np.array([beta, reject]))  # Adjust based on actual result structure
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for ridge regression
-reject,_ = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
+reject,p_values = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
 result_path = f"Result/test_ridge_{beta}.npy"
-np.save(result_path, np.array([beta, reject]))  # Adjust based on actual result structure
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for ridge regression with covariate adjustment
-reject,_ = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=3, random_state=random_state)
-result_path = f"Result/test_ridge_covariate_{beta}.npy"
-np.save(result_path, np.array([beta, reject]))  # Adjust based on actual result structure
+reject,p_values = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=3, random_state=random_state)
+result_path = f"Result/test_ridgecovariate_{beta}.npy"
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=1)
 # Save the result for LightGBM
-reject,_ = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
+reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
 result_path = f"Result/test_lightgbm_{beta}.npy"
-np.save(result_path, np.array([beta, reject]))  # Adjust based on actual result structure
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for LightGBM with covariate adjustment
-reject,_ = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=3, random_state=random_state)
-result_path = f"Result/test_lightgbm_covariate_{beta}.npy"
-np.save(result_path, np.array([beta, reject]))  # Adjust based on actual result structure
+reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=3, random_state=random_state)
+result_path = f"Result/test_lightgbmcovariate_{beta}.npy"
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 

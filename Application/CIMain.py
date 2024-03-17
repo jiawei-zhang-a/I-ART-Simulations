@@ -8,8 +8,7 @@ from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
 
 # Parameter for the iArt.test function
-file_path = "p_values.txt"
-L = 1
+L = 10000
 verbose = 0
 random_state = 0
 threshholdForX = 0.0
@@ -38,8 +37,16 @@ Y_adjusted = Y.copy()
 # Example adjustment, adjust according to your actual logic
 Y_adjusted[(M == 0) & (Z == 0)] += beta
 
-os.makedirs(os.path.dirname("Result"), exist_ok=True)  # Ensure the directory exists
+# Define the folder name
+folder_name = "Result"
 
+# Check if the folder does not exist
+if not os.path.exists(folder_name):
+    # Create the folder
+    os.makedirs(folder_name)
+    print(f"The folder '{folder_name}' has been created.")
+else:
+    print(f"The folder '{folder_name}' already exists.")
 # Run the iArt.test with the adjusted Y
 
 # Save the result for median imputer
@@ -58,7 +65,7 @@ reject,_ = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cl
 result_path = f"Result/test_ridge_covariate_{beta}.npy"
 np.save(result_path, np.array([beta, reject]))  # Adjust based on actual result structure
 
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs = 26,verbosity=-1), max_iter=1)
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=1)
 # Save the result for LightGBM
 reject,_ = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
 result_path = f"Result/test_lightgbm_{beta}.npy"

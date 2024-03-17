@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import os
-import iArt
+import iArtNormalize as iArt
 import lightgbm as lgb
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer

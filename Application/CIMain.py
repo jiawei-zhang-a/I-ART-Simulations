@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import os
-import iArt as iArt
+import iArtNormalize as iArt
 import lightgbm as lgb
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -51,18 +51,18 @@ else:
 
 # Save the result for median imputer
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
 result_path = f"Result/test_median_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for ridge regression
-reject,p_values = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
+reject,p_values = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
 result_path = f"Result/test_ridge_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for ridge regression with covariate adjustment
-reject,p_values = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=3, random_state=random_state)
-result_path = f"Result/test_ridgecovariate_{beta}.npy"
+reject,p_values = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
+result_path = f"Result/test_ridgecovariateadjustment_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=1)
@@ -73,6 +73,6 @@ np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actu
 
 # Save the result for LightGBM with covariate adjustment
 reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=3, random_state=random_state)
-result_path = f"Result/test_lightgbmcovariate_{beta}.npy"
+result_path = f"Result/test_lightgbmcovariateadjustment_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 

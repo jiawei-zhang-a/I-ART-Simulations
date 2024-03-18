@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import os
-import iArtNormalize as iArt
+import iArt as iArt
 import lightgbm as lgb
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -14,7 +14,7 @@ random_state = 0
 threshholdForX = 0.0
 
 # Define β values range 
-beta_values = np.linspace(-0.1, 0.1, 2000)  
+beta_values = np.linspace(-0.05, 0.05, 2000)  
 
 # Retrieve the job array index from SLURM
 array_index = int(sys.argv[1]) - 1 

@@ -31,8 +31,9 @@ for file in files:
 for imputer_type, results in results_by_imputer.items():
     results = np.array(results)  # Convert list to numpy array for easier processing
     
-    # Assuming the second element in the result indicates whether the null hypothesis is rejected
-    confidence_set = results[results[:, 1] == False, 0]
+    # Assuming the last element in the result is the p-value
+    # We consider the null hypothesis rejected if p-value <= 0.1
+    confidence_set = results[results[:, -1] > 0.1, 0]
 
     # Sort the confidence set
     confidence_set = np.sort(confidence_set)

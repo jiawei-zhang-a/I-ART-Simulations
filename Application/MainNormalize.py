@@ -17,7 +17,7 @@ S = arrays['S']
 
 # Run the iArt test
 file_path = "p_values_nomalizedY.txt"
-L = 10000
+L = 1000
 verbose = 0
 random_state = 0
 threshholdForX = 0.0

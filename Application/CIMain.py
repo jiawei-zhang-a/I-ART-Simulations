@@ -9,7 +9,7 @@ from sklearn.impute import SimpleImputer
 import pandas as pd
 
 # Parameter for the iArt.test function
-L = 10000
+L = 1
 verbose = 0
 random_state = 0
 threshholdForX = 0.0

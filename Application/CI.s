@@ -3,7 +3,7 @@
 #SBATCH --job-name=CI
 #SBATCH --nodes=1
 #SBATCH --time=09:29:00
-#SBATCH --mem=250G # Ensure you specify 'G' for GB
+#SBATCH --mem=250
 #SBATCH --cpus-per-task=1
 #SBATCH --output=Runtime/%a.out
 #SBATCH --error=Runtime/%a.err

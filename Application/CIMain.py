@@ -9,13 +9,13 @@ from sklearn.impute import SimpleImputer
 import pandas as pd
 
 # Parameter for the iArt.test function
-L = 1
+L = 10000
 verbose = 0
 random_state = 0
 threshholdForX = 0.0
 
 # Define β values range 
-beta_values = np.linspace(-5, 5, 1999)  
+beta_values = np.linspace(-5, 5, 2000)  
 
 # Retrieve the job array index from SLURM
 array_index = int(sys.argv[1]) - 1 

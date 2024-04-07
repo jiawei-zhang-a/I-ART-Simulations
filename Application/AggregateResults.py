@@ -1,8 +1,9 @@
 import numpy as np
 import os
 import re  # Import the regex module
+import matplotlib.pyplot as plt
 
-results_dir = 'Result'
+results_dir = 'Result_2'
 files = os.listdir(results_dir)
 
 # Initialize a dictionary to store results by imputer type
@@ -31,13 +32,25 @@ for file in files:
 for imputer_type, results in results_by_imputer.items():
     results = np.array(results)  # Convert list to numpy array for easier processing
     
+
+    # make a plot of the p-values over the beta values
+    # Assuming the first element in the result is the beta value
+    beta_values = results[:, 0]
+    p_values = results[:, 2]
+    plt.scatter(beta_values, p_values, label=imputer_type)
+    plt.xlabel('Beta')
+    plt.ylabel('p-value')
+    plt.title('p-values over beta values')
+    plt.legend()
+    #plt.show()
+
+
     # Assuming the last element in the result is the p-value
     # We consider the null hypothesis rejected if p-value <= 0.1
-    confidence_set = results[results[:, 2] > 0.1, 0]
+    confidence_set = results[results[:, 2] > 0.05, 0]
 
     # Sort the confidence set
     confidence_set = np.sort(confidence_set)
     
     print(f"One-way confidence set for beta using {imputer_type} imputer:", confidence_set)
 
-# Optionally, you can save or further process the `results_by_imputer` dictionary as needed

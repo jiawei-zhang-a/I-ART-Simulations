@@ -13,7 +13,7 @@ df = pd.read_csv(file_path, sep='\t')
 df['CONDITION'] = df['CONDITION'].replace(2, 0)
 
 # Filter to include the CONDITION column for simplicity
-df_filtered = df[['ADMINLINK','EMPLOYEE', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DIST','SCEM_STRS','SCWM_FTWC', 'SCWM_WTFC', 'SCWM_TIMEALL' ]]
+df_filtered = df[['ADMINLINK','EMPLOYEE', 'WAVE', 'SCWM_CWH', 'RMZFN', 'STUDYGROUP', 'CONDITION', 'SCEM_DISTI','SCEM_STRSI','SCWM_FTWCI', 'SCWM_WTFCI', 'SCWM_TIMEALLI' ]]
 
 # Save the filtered DataFrame to a CSV file
 df_filtered.to_csv('Data/filtered_data.csv', index=False)
@@ -40,7 +40,7 @@ for adminlink in wave1_df['ADMINLINK'].unique():
     matched_Y.append(outcome_record)
     
     # Add the covariates to matched_X
-    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DIST','SCWM_FTWC', 'SCWM_TIMEALL','EMPLOYEE', 'SCEM_STRS']].values)
+    matched_X.append(covariate_record[['SCWM_CWH', 'RMZFN', 'SCEM_DISTI','SCWM_FTWCI', 'SCWM_TIMEALLI','EMPLOYEE', 'SCEM_STRSI']].values)
     
     # Add the study group to matched_S
     matched_S.append(covariate_record['STUDYGROUP'])

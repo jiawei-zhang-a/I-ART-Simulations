@@ -7,6 +7,7 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
 import pandas as pd
+from sklearn import linear_model
 
 # Parameter for the iArt.test function
 L = 10000
@@ -56,17 +57,19 @@ reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, v
 result_path = f"Result/test_median_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
+
+RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=3)
 # Save the result for ridge regression
-reject,p_values = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
+reject,p_values = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
 result_path = f"Result/test_ridge_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for ridge regression with covariate adjustment
-reject,p_values = iArt.test(Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
+reject,p_values = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
 result_path = f"Result/test_ridgecovariateadjustment_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=1)
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=3)
 # Save the result for LightGBM
 reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
 result_path = f"Result/test_lightgbm_{beta}.npy"

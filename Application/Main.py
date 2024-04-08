@@ -16,7 +16,7 @@ Y = arrays['Y']
 S = arrays['S']
 
 # Run the iArt test
-file_path = "p_values2.txt"
+file_path = "p_values3.txt"
 L = 10
 verbose = 1
 random_state = 0

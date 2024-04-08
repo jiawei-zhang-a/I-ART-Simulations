@@ -40,7 +40,7 @@ result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G=RidgeRegression, verbose=verbose,mod
 with open(file_path, 'a') as file:
     file.write("RidgeRegression with covariate adjustment: " + str(result) + '\n')
 
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=1)
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), max_iter=1)
 result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L,threshholdForX = threshholdForX, verbose=verbose,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM: " + str(result) + '\n')

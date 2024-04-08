@@ -16,9 +16,9 @@ Y = arrays['Y']
 S = arrays['S']
 
 # Run the iArt test
-file_path = "p_values.txt"
+file_path = "p_values2.txt"
 L = 10000
-verbose = 0
+verbose = 1
 random_state = 0
 threshholdForX = 0.0
 

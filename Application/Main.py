@@ -17,8 +17,8 @@ S = arrays['S']
 
 # Run the iArt test
 file_path = "p_values3.txt"
-L = 10
-verbose = 1
+L = 10009
+verbose = 0
 random_state = 0
 threshholdForX = 0.0
 
@@ -31,7 +31,6 @@ with open(file_path, 'a') as file:
     file.write("median: " + str(result) + '\n')
 
 RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=3)
-
 result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G=RidgeRegression, verbose = verbose,mode = 'cluster',threshholdForX = threshholdForX,random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("RidgeRegression: " + str(result) + '\n')

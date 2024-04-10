@@ -3,7 +3,7 @@ import os
 import re  # Import the regex module
 import matplotlib.pyplot as plt
 
-results_dir = 'Result_2'
+results_dir = 'ConfidenceSets'
 files = os.listdir(results_dir)
 
 # Initialize a dictionary to store results by imputer type

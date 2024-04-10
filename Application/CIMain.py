@@ -17,9 +17,6 @@ threshholdForX = 0.0
 
 # Define β values range 
 beta_values = np.linspace(-0.5, 0.5, 1001)  
-print(beta_values)
-print(len(beta_values))
-exit()
 
 # Retrieve the job array index from SLURM
 array_index = int(sys.argv[1]) - 1 

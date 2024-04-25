@@ -16,7 +16,7 @@ Y = arrays['Y']
 S = arrays['S']
 
 # Run the iArt test
-file_path = "p_values.txt"
+file_path = "p_values_median.txt"
 L = 10000
 verbose = 0
 random_state = 0

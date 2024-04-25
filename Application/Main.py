@@ -16,14 +16,30 @@ Y = arrays['Y']
 S = arrays['S']
 
 # Run the iArt test
-file_path = "p_values3.txt"
-L = 10009
+file_path = "p_values.txt"
+L = 10000
 verbose = 0
 random_state = 0
 threshholdForX = 0.0
 
 # Write the results with one-sided test
 with open(file_path, 'a') as file:
+    file.write("One-sided test\n")
+median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=verbose,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state, covariate_adjustment=1)
+with open(file_path, 'a') as file:
+    file.write("median LR adjusted: " + str(result) + '\n')
+
+with open(file_path, 'a') as file:
+    file.write("One-sided test\n")
+median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=verbose,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state, covariate_adjustment=3)
+with open(file_path, 'a') as file:
+    file.write("median GBM adjusted: " + str(result) + '\n')
+
+
+
+"""with open(file_path, 'a') as file:
     file.write("One-sided test\n")
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
 result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=verbose,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state)
@@ -47,3 +63,4 @@ with open(file_path, 'a') as file:
 result = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,S=S,L=L,threshholdForX = threshholdForX, verbose=verbose,mode = 'cluster', covariate_adjustment=3,random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM with covariate adjustment: " + str(result) + '\n')
+"""

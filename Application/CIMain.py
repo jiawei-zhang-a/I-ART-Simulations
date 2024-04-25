@@ -53,6 +53,18 @@ else:
 
 # Save the result for median imputer
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state, covariate_adjustment=1)
+result_path = f"Result/test_medianLR_{beta}.npy"
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
+
+# Save the result for median imputer
+median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state, covariate_adjustment=3)
+result_path = f"Result/test_medianGBM_{beta}.npy"
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
+
+"""# Save the result for median imputer
+median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
 reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
 result_path = f"Result/test_median_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
@@ -78,5 +90,5 @@ np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actu
 # Save the result for LightGBM with covariate adjustment
 reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=3, random_state=random_state)
 result_path = f"Result/test_lightgbmcovariateadjustment_{beta}.npy"
-np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure"""
 

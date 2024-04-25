@@ -6,7 +6,7 @@ import pandas as pd
 arrays = np.load('Data/arrays.npz')
 
 X = arrays['X']
-Y = arrays['Z']
+Y = arrays['Y']
 
 def summarize_data(X, Y):
     summary = {}
@@ -55,14 +55,14 @@ def generate_latex_tables(summary_stats):
 \\begin{{tabular}}{{|l|l|}}
 \\hline
 \\textbf{{Statistic}} & \\textbf{{Value}} \\\\ \\hline
-Mean               & {stats['Mean']:.2f} \\\\ \\hline
-Median             & {stats['Median']:.2f} \\\\ \\hline
+Mean               & {stats['Mean']:.5f} \\\\ \\hline
+Median             & {stats['Median']:.5f} \\\\ \\hline
 Mode               & {stats['Mode']} \\\\ \\hline
-Minimum            & {stats['Minimum']:.2f} \\\\ \\hline
-Maximum            & {stats['Maximum']:.2f} \\\\ \\hline
-Standard Deviation & {stats['Standard Deviation']:.2f} \\\\ \\hline
+Minimum            & {stats['Minimum']:.5f} \\\\ \\hline
+Maximum            & {stats['Maximum']:.5f} \\\\ \\hline
+Standard Deviation & {stats['Standard Deviation']:.5f} \\\\ \\hline
 Missing            & {stats['Missing']} \\\\ \\hline
-Missing Portion    & {stats['Missing Portion']*100:.2f}\\% \\\\ \\hline
+Missing Portion    & {stats['Missing Portion']*100:.5f}\\% \\\\ \\hline
 \\end{{tabular}}
 \\caption{{Summary Statistics for {var}}}
 \\end{{table}}

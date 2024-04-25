@@ -3,7 +3,7 @@ import os
 import re  # Import the regex module
 import matplotlib.pyplot as plt
 
-results_dir = 'ConfidenceSets'
+results_dir = 'Result'
 files = os.listdir(results_dir)
 
 # Initialize a dictionary to store results by imputer type
@@ -31,23 +31,38 @@ for file in files:
 # Process each imputer type to calculate confidence sets or other statistics
 for imputer_type, results in results_by_imputer.items():
     results = np.array(results)  # Convert list to numpy array for easier processing
-    
 
     # make a plot of the p-values over the beta values
     # Assuming the first element in the result is the beta value
     beta_values = results[:, 0]
     p_values = results[:, 2]
-    plt.scatter(beta_values, p_values, label=imputer_type)
+    """plt.scatter(beta_values, p_values, label=imputer_type)
     plt.xlabel('Beta')
     plt.ylabel('p-value')
     plt.title('p-values over beta values')
     plt.legend()
-    #plt.show()
+    plt.show()"""
+    # Calculate the middle index
+    middle_index = len(beta_values) // 2
+    start_index = middle_index - 20
+    end_index = middle_index + 20
+
+    # Slice to get only the middle 100 values
+    middle_beta_values = beta_values[start_index:end_index]
+    middle_p_values = p_values[start_index:end_index]
+
+    # Create the plot with only the middle 100 points
+    plt.scatter(middle_beta_values, middle_p_values, label=imputer_type)
+    plt.xlabel('Beta')
+    plt.ylabel('p-value')
+    plt.title('p-values over beta values')
+    plt.legend()
+    plt.show()
 
 
     # Assuming the last element in the result is the p-value
     # We consider the null hypothesis rejected if p-value <= 0.1
-    confidence_set = results[results[:, 2] > 0.05, 0]
+    confidence_set = results[results[:, 2] > 0.05, 0].round(5)
 
     # Sort the confidence set
     confidence_set = np.sort(confidence_set)

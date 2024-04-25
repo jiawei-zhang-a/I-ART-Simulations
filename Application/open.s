@@ -1,1 +1,1 @@
-tar xvzf Result2.tar.gz
+tar xvzf Result.tar.gz

@@ -10,7 +10,7 @@ def read_npz_files(directory,small_size=False,type="original"):
     summed_p_values_xgboost = None
     summed_p_values_oracle = None
     if type == "original":
-        N = int(len(os.listdir(directory)) / 2)
+        N = int(len(os.listdir(directory)) / 4)
     else:
         N = int(len(os.listdir(directory)))
 

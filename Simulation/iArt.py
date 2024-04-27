@@ -1,3 +1,4 @@
+# Description: This file contains the implementation of the Imputation-Assisted Randomization Tests (iArt) 
 import pandas as pd
 import numpy as np
 from statsmodels.stats.multitest import multipletests
@@ -164,7 +165,7 @@ def getZsimTemplates(Z_sorted, S):
         strata_Z = Z_sorted[strata_indices]
         p = np.mean(strata_Z)
         strata_size = len(strata_indices)
-        Z_sim_template = [0.0] * int(strata_size * (1 - p)) + [1.0] * int(strata_size * p)
+        Z_sim_template = [0.0] * int(strata_size * (1 - p)) + [1.0] * (strata_size -int(strata_size * (1 - p)) )
         Z_sim_templates.append(Z_sim_template)
     return Z_sim_templates
 
@@ -270,7 +271,6 @@ def check_param(*,Z, X, Y, S, G, L,mode, verbose, covariate_adjustment,alpha,alt
     if mode not in ["strata", "cluster"]:
         raise ValueError("mode must be one of strata or cluster")
     
-
     
 def choosemodel(G):
     """ 
@@ -285,7 +285,7 @@ def choosemodel(G):
         warnings.filterwarnings('ignore', category=ConvergenceWarning)
         if G == 'xgboost':
             G = IterativeImputer(estimator = xgb.XGBRegressor(), max_iter = 1)
-        if G == 'bayesianridge':
+        if G == 'linear':
             G = IterativeImputer(estimator = linear_model.BayesianRidge(), max_iter = 1,verbose=0)
         if G == 'median':
             G = SimpleImputer(missing_values=np.nan, strategy='median')
@@ -293,11 +293,11 @@ def choosemodel(G):
             G = SimpleImputer(missing_values=np.nan, strategy='mean')
         if G == 'lightgbm':
             G = IterativeImputer(estimator = lgb.LGBMRegressor(verbosity = -1), max_iter = 1)
-        if G == 'mice':
+        if G == 'iterative+linear':
             G = IterativeImputer(estimator = linear_model.BayesianRidge())
-        if G == 'mice+lightgbm':
+        if G == 'iterative+lightgbm':
             G = IterativeImputer(estimator = lgb.LGBMRegressor(verbosity = -1))
-        if G == 'mice+xgboost':
+        if G == 'iterative+xgboost':
             G = IterativeImputer(estimator = xgb.XGBRegressor())
     return G
 
@@ -342,7 +342,7 @@ def transformX(X, threshold=0.1, verbose=True):
     
     return X
 
-def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.2, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
+def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshholdForX = 0.2, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
     """Imputation-Assisted Randomization Tests (iArt) for testing 
     the null hypothesis that the treatment has no effect on the outcome.
 
@@ -360,7 +360,7 @@ def test(*,Z, X, Y, G='bayesianridge', S=None,L = 10000,threshholdForX = 0.2, mo
     threshholdForX : float, default: 0.1
         The threshhold for missing outcome to be imputed in advance in covariate X
 
-    G : str or function, default: 'bayesianridge'
+    G : str or function, default: 'linear'
         A string for the eight available choice or a function that takes 
         (Z, M, Y_k) as input and returns the imputed complete values 
 

@@ -88,6 +88,17 @@ min_size = np.min(cluster_sizes)
 print("max_size",max_size)
 print("min_size",min_size)
 
+#print the missing percentage of the outcome in each cluster
+for i in range(0, len(cluster_sizes)):
+    missing_percentage = np.mean(np.isnan(Y[S.flatten() == i]))
+    print("Cluster ", i, " missing percentage of the outcome: ", missing_percentage)
+#draw a histogram of the missing percentage outcome in each cluster
+import matplotlib.pyplot as plt
+plt.hist([np.mean(np.isnan(Y[S.flatten() == i])) for i in range(0, len(cluster_sizes))])
+plt.show()
+
+
+
 #print total number of individuals
 print("Total number of individuals: ", len(Y))
 
@@ -129,3 +140,35 @@ print("Missing percentage of the covariate CONDITION: ", missing_percentage)
 
 
 np.savez('Data/arrays.npz', Z=Z, X=X, Y=Y, S=S)
+
+#Combine all the data into one DataFrame
+combined_data = pd.DataFrame(np.hstack((Z, X, Y, S)), columns=['CONDITION', 'SCWM_CWH', 'RMZFN', 'SCEM_DIST', 'SCWM_FTWC', 'SCWM_TIMEALL', 'EMPLOYEE', 'SCEM_STRS', 'SCWM_CWH_Y', 'STUDYGROUP'])
+
+# Drop the missing values
+#combined_data = combined_data.dropna()
+
+print(combined_data.describe())
+
+# Drop the missing values only based on outcomes Y
+combined_data = combined_data.dropna(subset=['SCWM_CWH_Y'])
+
+# Save the combined data to a CSV file
+#combined_data.to_csv('Data/combined_data.csv', index=False)
+
+# Print the description of the combined data
+print(combined_data.describe())
+
+# Save like this np.savez('Data/arrays.npz', Z=Z, X=X, Y=Y, S=S)
+np.savez('Data/arrays_Y_nomissing.npz', Z=combined_data['CONDITION'].values.reshape(-1, 1), X=combined_data[['SCWM_CWH', 'RMZFN', 'SCEM_DIST', 'SCWM_FTWC', 'SCWM_TIMEALL', 'EMPLOYEE', 'SCEM_STRS']].values, Y=combined_data['SCWM_CWH_Y'].values.reshape(-1, 1), S=combined_data['STUDYGROUP'].values.reshape(-1, 1))
+
+# Print the description of the data
+cluster_sizes = np.bincount(S.flatten())
+cluster_sizes = cluster_sizes[cluster_sizes > 0]
+print("cluster_sizes",len(cluster_sizes))
+# largest cluster size
+max_size = np.max(cluster_sizes)
+# smallest cluster size
+min_size = np.min(cluster_sizes)
+
+print("max_size",max_size)
+print("min_size",min_size)

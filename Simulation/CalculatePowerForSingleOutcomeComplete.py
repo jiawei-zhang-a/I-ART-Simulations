@@ -139,6 +139,7 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     S = combined_data['S'].values.reshape(-1, 1)
 
     G = NoOpImputer()
+    G = SimpleImputer(missing_values=np.nan, strategy='median')
     """Framework = RandomizationTest.RandomizationTest(N = 500)
     reject, p_values = Framework.test_imputed(Z=Z, X=X,M=M, Y=Y,S=S,strata_size = strata_size,G=G,L=L, verbose=verbose)
     values_complete = [ *p_values, reject ]"""

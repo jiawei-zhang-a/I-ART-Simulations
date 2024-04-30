@@ -163,8 +163,6 @@ def getZsimTemplates(Z_sorted, S):
     for stratum in unique_strata:
         strata_indices = np.where(S == stratum)[0]
         strata_Z = Z_sorted[strata_indices]
-
-        #n = sum(strata_Z)
         n = int(np.sum(strata_Z))
         strata_size = len(strata_indices)
         Z_sim_template = [0.0] * (strata_size - n) + [1.0] * n

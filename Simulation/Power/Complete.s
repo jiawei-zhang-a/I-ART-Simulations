@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --job-name=CI
+#SBATCH --job-name=COMPLETE
 #SBATCH --nodes=1
 #SBATCH --time=01:29:00
 #SBATCH --mem=250MB

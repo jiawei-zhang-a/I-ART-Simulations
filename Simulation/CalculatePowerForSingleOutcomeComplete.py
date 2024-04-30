@@ -21,7 +21,7 @@ task_id = 1
 
 # Set the default values
 max_iter = 1
-L = 10000
+L = 2000
 
 # For Compelete Analysis
 class NoOpImputer(BaseEstimator, TransformerMixin):
@@ -133,10 +133,10 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     print(df_imputed.shape)
     exit( ) """
 
-    X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
+    """X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
     Z = combined_data['Z'].values.reshape(-1, 1)
     Y = combined_data['Y'].values.reshape(-1, 1)
-    S = combined_data['S'].values.reshape(-1, 1)
+    S = combined_data['S'].values.reshape(-1, 1)"""
 
     G = NoOpImputer()
     G = SimpleImputer(missing_values=np.nan, strategy='median')

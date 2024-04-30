@@ -2,7 +2,29 @@ import numpy as np
 import os
 from statsmodels.stats.multitest import multipletests
 
+def read_npz_files_complete(directory,small_size=False, multiple=False, type="original"):
+    p_values_complete = None
+    N = int(len(os.listdir(directory)))
 
+    for filename in os.listdir(directory):
+        if filename.endswith(".npy"):
+            filepath = os.path.join(directory, filename)
+            p_values = np.load(filepath)
+
+            if "p_values_complete" in filename:
+                if p_values_complete is None:
+                    p_values_complete = (p_values<= 0.05).astype(int)
+                else:
+                    p_values_complete += (p_values<= 0.05).astype(int)
+
+    if p_values_complete is None:
+        p_values_complete = np.zeros(1)
+
+    results = {
+        'complete_power': p_values_complete[0] / N,
+    }
+
+    return results
 def read_npz_files(directory,small_size=False,type="original"):
     summed_p_values_median = None
     summed_p_values_LR = None

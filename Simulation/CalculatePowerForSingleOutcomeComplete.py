@@ -65,16 +65,14 @@ def runMultiple(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = T
     # Drop the missing values only based on outcomes Y
     combined_data = combined_data.dropna(subset=['Y1', 'Y2', 'Y3'])
 
-
+    
     X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
     Z = combined_data['Z'].values.reshape(-1, 1)
     Y = combined_data[['Y1', 'Y2', 'Y3']].values
     S = combined_data['S'].values.reshape(-1, 1)
 
     G = NoOpImputer()
-    #Framework = RandomizationTest.RandomizationTest(N = 500)
-    #reject, p_values = Framework.test_imputed(Z=Z, X=X,M=M, Y=Y,S=S,strata_size = strata_size,G=G,L=L, verbose=verbose)
-    #values_complete = [ *p_values, reject ]
+    #G = SimpleImputer(missing_values=np.nan, strategy='median')
 
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=G,L=L)
     values_complete = [ *p_values, reject ]
@@ -133,16 +131,13 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     print(df_imputed.shape)
     exit( ) """
 
-    """X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
+    X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
     Z = combined_data['Z'].values.reshape(-1, 1)
     Y = combined_data['Y'].values.reshape(-1, 1)
-    S = combined_data['S'].values.reshape(-1, 1)"""
+    S = combined_data['S'].values.reshape(-1, 1)
 
     G = NoOpImputer()
     G = SimpleImputer(missing_values=np.nan, strategy='median')
-    """Framework = RandomizationTest.RandomizationTest(N = 500)
-    reject, p_values = Framework.test_imputed(Z=Z, X=X,M=M, Y=Y,S=S,strata_size = strata_size,G=G,L=L, verbose=verbose)
-    values_complete = [ *p_values, reject ]"""
 
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
     values_complete = [ *p_values, reject ]

@@ -187,18 +187,18 @@ def preprocess(Z, X, Y, S):
     Preprocess the input variables, including reshaping, concatenating, sorting, and extracting
     """
 
-    # Reshape Z, X, Y, S, M to (-1, 1) if they're not already in that shape
+    if S is None:
+        S = np.ones(Z.shape).reshape(-1, 1)
+        M = np.isnan(Y).reshape(-1, Y.shape[1])
+        return Z, X, Y, S, M
+    
+    """# Reshape Z, X, Y, S, M to (-1, 1) if they're not already in that shape
     Z = np.array(Z)
     X = np.array(X)
     Y = np.array(Y)
     X = X.reshape(-1, X.shape[1])
     Z = Z.reshape(-1, 1)
 
-    if S is None:
-        S = np.ones(Z.shape).reshape(-1, 1)
-        M = np.isnan(Y).reshape(-1, Y.shape[1])
-        return Z, X, Y, S, M
-    
     S = np.array(S)
     S = S.reshape(-1, 1)
 
@@ -212,9 +212,10 @@ def preprocess(Z, X, Y, S):
     Z = df.iloc[:, :Z.shape[1]].values.reshape(-1, 1)
     X = df.iloc[:, Z.shape[1]:Z.shape[1] + X.shape[1]].values.reshape(-1, X.shape[1])
     Y = df.iloc[:, Z.shape[1] + X.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1]].values.reshape(-1, Y.shape[1])
-    S = df.iloc[:, Z.shape[1] + X.shape[1] + Y.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1] + S.shape[1]].values.reshape(-1, 1)
+    S = df.iloc[:, Z.shape[1] + X.shape[1] + Y.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1] + S.shape[1]].values.reshape(-1, 1) """
 
     M = np.isnan(Y).reshape(-1, Y.shape[1])
+
     return Z, X, Y, S, M
 
 

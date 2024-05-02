@@ -46,7 +46,7 @@ def plot(range,range_small, path,path_small, title, title_small, multiple = Fals
         row_power = [coef]
         for directory in [path + "/%f" % (coef)]:
             results = read_npz_files_main(directory,small_size=False, multiple = multiple)
-            row_power.extend([results['median_power'], results['lr_power'], results['lightGBM_power'],results['oracle_power']])
+            row_power.extend([results['median_power'], results['lr_power'], results['lightgbm_power'],results['oracle_power']])
         Power_data.append(row_power)
     print(Power_data)
     plot_results(Power_data, title, range)
@@ -69,7 +69,7 @@ def plot2(range,range_small, path,path_small,complete_path,complete_path_small,t
         for directory in [path + "/%f" % (coef)]:
             results = read_npz_files_main(directory,small_size=False, multiple = multiple)
             complete = read_npz_files_complete(complete_path + "/%f" % (coef),small_size=False, multiple = multiple,type = 'complete')
-            row_power.extend([results['median_power'], results['lr_power'], results['lightGBM_power'],results['oracle_power'],  complete['complete_power']])
+            row_power.extend([results['median_power'], results['lr_power'], results['lightgbm_power'],results['oracle_power'],  complete['complete_power']])
         Power_data.append(row_power)
     print(Power_data)
     plot_results(Power_data, title, range)

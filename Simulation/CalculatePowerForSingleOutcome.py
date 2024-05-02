@@ -45,7 +45,7 @@ class NoOpImputer(BaseEstimator, TransformerMixin):
         return self.fit(X, y).transform(X)
 
 
-def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, verbose=0, save_file = True, small_size = True):
+def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, verbose=1, save_file = True, small_size = True):
     
     Missing_lambda = None
 
@@ -58,6 +58,10 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     DataGen = Generator.DataGenerator(N = Nsize, strata_size=strata_size,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
+
+        #mask Y with M
+    Y = np.ma.masked_array(Y, mask=M)
+    Y = Y.filled(np.nan)
 
     #Oracale imputer
     NoOp = NoOpImputer()
@@ -87,7 +91,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     if small_size == False:
         print("LightGBM")
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose ,covariate_adjustment=3)
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
         values_lightgbm = [ *p_values, reject ]
 
     #Save the file in numpy format

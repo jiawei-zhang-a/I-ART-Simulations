@@ -1,23 +1,48 @@
 import sys
 import numpy as np
 from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import SimpleImputer
 from sklearn.impute import IterativeImputer
 from sklearn import linear_model
-from sklearn.impute import SimpleImputer
-import MultipleOutcomeModelGenerator as Generator
+import SingleOutcomeModelGenerator as Generator
 import RandomizationTest as RandomizationTest
 import os
+import iArt
 import lightgbm as lgb
 import xgboost as xgb
 import iArt
+from sklearn.base import BaseEstimator, TransformerMixin
+
+
 
 # Do not change this parameter
 beta_coef = None
 task_id = 1
 
 # Set the default values
-max_iter = 1
-L = 2000
+max_iter = 3
+L = 100
+
+# For Compelete Analysis
+class NoOpImputer(BaseEstimator, TransformerMixin):
+    def __init__(self):
+        # Initialization code can include parameters if needed
+        pass
+
+    def fit(self, X, y=None):
+        # Nothing to do here, return self to allow chaining
+        return self
+
+    def transform(self, X):
+        # Check if X is a numpy array, if not, convert it to avoid potential issues
+        if not isinstance(X, np.ndarray):
+            X = np.array(X)
+        # Return the data unchanged
+        return X
+
+    def fit_transform(self, X, y=None):
+        # This method can often be optimized but here we'll just use fit and transform sequentially
+        return self.fit(X, y).transform(X)
 
 def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, model = 0, verbose=0):
 
@@ -34,18 +59,15 @@ def run(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = True, mod
         Iter = 1   
 
     #Oracale imputer
-    print("Oracle")
-    Framework = RandomizationTest.RandomizationTest(N = Nsize)
-    reject, p_values= Framework.test(Z, X, M, Y,strata_size = strata_size, L=Iter, G = None,verbose=verbose)
-    # Append p-values to corresponding lists
+    NoOp = NoOpImputer()
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=NoOp,L=Iter, verbose=verbose)
     values_oracle = [ *p_values, reject]
-
+    
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = Framework.test_imputed(Z=Z, X=X,M=M, Y=Y,strata_size = strata_size,G=median_imputer,L=Iter, verbose=verbose)
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose)
     values_median = [ *p_values, reject ]
-
     #mask Y with M
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)

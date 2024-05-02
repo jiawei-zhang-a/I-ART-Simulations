@@ -111,6 +111,24 @@ def T(z,y):
 
     return t
 
+    
+def T2(z,y,y_non_missing):
+    """
+    Calculate the Wilcoxon rank sum test statistics
+    """
+
+    #the Wilcoxon rank sum test
+    
+    Y_rank = []
+    sorted_X = sorted(y_non_missing)
+    for Y in y:
+        Y_rank.append(sorted_X.index(Y) + 1)
+    
+    Y_rank = np.array(Y_rank)
+    t = np.sum(Y_rank[z == 1])
+
+    return t
+
 def split(y, z, M):
     """
     Split the data into missing and non-missing parts
@@ -139,12 +157,13 @@ def getT(y, z, lenY, M):
         y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
         
         # Calculate T for missing and non-missing parts
-        t_missing = T(z_missing, y_missing.reshape(-1,))
-        t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
+        #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
+        #t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
-        t_combined =  t_missing + t_non_missing
-        t.append(t_combined)
+        #t_combined =  t_missing + t_non_missing
+        t_whole = T(z.reshape(-1,), y[:,i].reshape(-1,))
+        t.append(t_whole)
 
     return np.array(t)
 

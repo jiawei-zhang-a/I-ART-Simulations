@@ -6,6 +6,7 @@ from sklearn.impute import SimpleImputer
 from sklearn import linear_model
 from sklearn.base import BaseEstimator, TransformerMixin
 import iArt
+import pandas as pd
 
 # Load the arrays from the .npz file
 arrays = np.load('Data/arrays.npz')
@@ -57,6 +58,8 @@ X = sorted_combined[:, 1:8]    # X has 7 columns
 Y = sorted_combined[:, 8:9]    # Y has 1 column
 S = sorted_combined[:, 9:10]   # S has 1 column
 
+#pd.DataFrame(Z).to_csv('Data/Z.csv')
+
 #print the shape of the arrays
 print(Z.shape)
 print(X.shape)
@@ -68,7 +71,7 @@ no_op_imputer = NoOpImputer()
 with open(file_path, 'a') as file:
     file.write("One-sided test\n")
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=verbose,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state)
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=1,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("NoOp: " + str(result) + '\n')
 

@@ -9,7 +9,7 @@ import iArt
 import pandas as pd
 
 # Load the arrays from the .npz file
-arrays = np.load('Data/arrays.npz')
+arrays = np.load('Data/arrays_Y_nomissing.npz')
 
 # Accessing each array using its key
 Z = arrays['Z']
@@ -70,8 +70,8 @@ print(S.shape)
 no_op_imputer = NoOpImputer()
 with open(file_path, 'a') as file:
     file.write("One-sided test\n")
-median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= median_imputer, verbose=1,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state)
+#median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= no_op_imputer, verbose=1,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("NoOp: " + str(result) + '\n')
 

@@ -147,7 +147,7 @@ def getT(y, z, lenY, M):
         t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
-        t_combined = t_missing + t_non_missing
+        t_combined = t_non_missing#t_missing + t_non_missing
         t.append(t_combined)
 
     return np.array(t)

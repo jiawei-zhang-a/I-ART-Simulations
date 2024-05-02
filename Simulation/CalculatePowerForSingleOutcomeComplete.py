@@ -59,7 +59,7 @@ def runMultiple(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = T
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
 
-    # Combine the data into DataFrame
+    """# Combine the data into DataFrame
     combined_data = pd.DataFrame(np.hstack((Z, X, Y, S)), columns=['Z', 'X1', 'X2', 'X3', 'X4', 'X5', 'Y1', 'Y2', 'Y3', 'S'])
 
     # Drop the missing values only based on outcomes Y
@@ -69,7 +69,7 @@ def runMultiple(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = T
     X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
     Z = combined_data['Z'].values.reshape(-1, 1)
     Y = combined_data[['Y1', 'Y2', 'Y3']].values
-    S = combined_data['S'].values.reshape(-1, 1)
+    S = combined_data['S'].values.reshape(-1, 1)"""
 
     G = NoOpImputer()
     #G = SimpleImputer(missing_values=np.nan, strategy='median')
@@ -92,8 +92,6 @@ def runMultiple(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = T
 
 
 def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = False,model = 0, verbose=1):
-
-    Iter = L     
     
     Missing_lambda = None
 
@@ -106,35 +104,18 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
 
-    # Combine the data into DataFrame
+    """# Combine the data into DataFrame
     combined_data = pd.DataFrame(np.hstack((Z, X, Y, S)), columns=['Z', 'X1', 'X2', 'X3', 'X4', 'X5', 'Y', 'S'])
 
     # Drop the missing values only based on outcomes Y
     combined_data = combined_data.dropna(subset=['Y'])
 
 
-    """df = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
-    XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(), max_iter=max_iter)
-    df_imputed = XGBoost.fit_transform(df)
-    print(df_imputed)
-    print(df_imputed.shape)
-
-
-    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    df_imputed = median_imputer.fit_transform(df)  
-    print(df_imputed)
-    print(df_imputed.shape)
-
-    Noop = NoOpImputer()
-    df_imputed = Noop.fit_transform(df)
-    print(df_imputed)
-    print(df_imputed.shape)
-    exit( ) """
 
     X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
     Z = combined_data['Z'].values.reshape(-1, 1)
     Y = combined_data['Y'].values.reshape(-1, 1)
-    S = combined_data['S'].values.reshape(-1, 1)
+    S = combined_data['S'].values.reshape(-1, 1)"""
 
     G = NoOpImputer()
     G = SimpleImputer(missing_values=np.nan, strategy='median')

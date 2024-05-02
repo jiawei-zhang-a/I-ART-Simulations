@@ -21,7 +21,7 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-L = 100
+L = 50
 
 # For Compelete Analysis
 class NoOpImputer(BaseEstimator, TransformerMixin):
@@ -60,14 +60,14 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
     #Oracale imputer
-    NoOp = NoOpImputer()
+    """NoOp = NoOpImputer()
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=NoOp,L=Iter, verbose=verbose)
-    values_oracle1 = [ *p_values, reject]
+    values_oracle1 = [ *p_values, reject]"""
 
     Framework = RandomizationTest.RandomizationTest(N = Nsize)
     reject, p_values= Framework.test(Z, X, M, Y,strata_size = strata_size, L=Iter, G = None,verbose=verbose)
     # Append p-values to corresponding lists
-    values_oracle2 = [ *p_values, reject]
+    values_oracle = [ *p_values, reject]
     
     #mask Y with M
     Y = np.ma.masked_array(Y, mask=M)
@@ -106,8 +106,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
             os.makedirs("%s/%f"%(filepath,beta_coef))
 
         # Save numpy arrays to files
-        np.save('%s/%f/p_values_oracle1_%d.npy' % (filepath, beta_coef, task_id), values_oracle1)
-        np.save('%s/%f/p_values_oracle2_%d.npy' % (filepath, beta_coef, task_id), values_oracle2)
+        np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
         if small_size == True:
@@ -126,13 +125,14 @@ if __name__ == '__main__':
         exit()
     # Model 1
     beta_to_lambda = {0.0: 2.159275141001102, 0.07: 2.165387531267955, 0.14: 2.285935405246937, 0.21: 2.258923945496463, 0.28: 2.2980720651301794, 0.35: 2.3679216299985613}
-    for coef in np.arange(0.0,0.42,0.07):
+    for coef in np.arange(0.14,0.42,0.07):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(1000, filepath = "Result/HPC_power_1000_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=False)
+            exit()
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 

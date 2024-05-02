@@ -32,7 +32,7 @@ def read_npz_files(directory,small_size=False,type="original"):
     summed_p_values_xgboost = None
     summed_p_values_oracle = None
     if type == "original":
-        N = int(len(os.listdir(directory)) / 4)
+        N = int(len(os.listdir(directory)) / 5)
     else:
         N = int(len(os.listdir(directory)))
 
@@ -61,7 +61,7 @@ def read_npz_files(directory,small_size=False,type="original"):
                     summed_p_values_xgboost = (p_values<= 0.05).astype(int)
                 else:
                     summed_p_values_xgboost += (p_values<= 0.05).astype(int)
-            elif "p_values_oracle" in filename:
+            elif "p_values_oracle1" in filename:
                 if summed_p_values_oracle is None:
                     summed_p_values_oracle = (p_values<= 0.05).astype(int)
                 else:
@@ -124,7 +124,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
     summed_p_values_xgboost = None
     summed_p_values_oracle = None
 
-    N = int(len(os.listdir(directory)) / 4)
+    N = int(len(os.listdir(directory)) / 5)
 
     if multiple:
         summed_p_values_median = 0
@@ -146,7 +146,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                     summed_p_values_lightgbm += reject
                 elif "p_values_xgboost" in filename:
                     summed_p_values_xgboost += reject
-                elif "p_values_oracle" in filename:
+                elif "p_values_oracle1" in filename:
                     summed_p_values_oracle += reject
 
         if small_size:
@@ -190,7 +190,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                         summed_p_values_xgboost = (p_values<= 0.05).astype(int)
                     else:
                         summed_p_values_xgboost += (p_values<= 0.05).astype(int)
-                elif "p_values_oracle" in filename:
+                elif "p_values_oracle2" in filename:
                     if summed_p_values_oracle is None:
                         summed_p_values_oracle = (p_values<= 0.05).astype(int)
                     else:

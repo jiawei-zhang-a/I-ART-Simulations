@@ -139,15 +139,18 @@ def getT(y, z, lenY, M):
         y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
         
         # Calculate T for missing and non-missing parts
-        t_missing = T(z_missing, y_missing.reshape(-1,))
-        t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
+        #t_missing = T(z_missing, y_missing.reshape(-1,))
+        #t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
 
+        t_whole = T(z.reshape(-1,), y[:,i].reshape(-1,))
         # Sum the T values for both parts
-        t_combined =  t_missing + t_non_missing 
-        print("t_missing", t_missing)
-        print("t_non_missing", t_non_missing)
+        #t_combined =  t_missing + t_non_missing 
+        #print("t_missing", t_missing)
+        #print("t_non_missing", t_non_missing)
+        #print("t_combined", t_combined)
+        #print("t_whole", t_whole)
 
-        t.append(t_combined)
+        t.append(t_whole)
 
     return np.array(t)
 

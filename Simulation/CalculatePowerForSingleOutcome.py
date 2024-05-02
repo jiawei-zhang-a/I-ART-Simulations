@@ -59,15 +59,20 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
 
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
-        #mask Y with M
-    Y = np.ma.masked_array(Y, mask=M)
-    Y = Y.filled(np.nan)
-
     #Oracale imputer
     NoOp = NoOpImputer()
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=NoOp,L=Iter, verbose=verbose)
-    values_oracle = [ *p_values, reject]
+    values_oracle1 = [ *p_values, reject]
+
+    Framework = RandomizationTest.RandomizationTest(N = Nsize)
+    reject, p_values= Framework.test(Z, X, M, Y,strata_size = strata_size, L=Iter, G = None,verbose=verbose)
+    # Append p-values to corresponding lists
+    values_oracle2 = [ *p_values, reject]
     
+    #mask Y with M
+    Y = np.ma.masked_array(Y, mask=M)
+    Y = Y.filled(np.nan)
+
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
@@ -101,7 +106,8 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
             os.makedirs("%s/%f"%(filepath,beta_coef))
 
         # Save numpy arrays to files
-        np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
+        np.save('%s/%f/p_values_oracle1_%d.npy' % (filepath, beta_coef, task_id), values_oracle1)
+        np.save('%s/%f/p_values_oracle2_%d.npy' % (filepath, beta_coef, task_id), values_oracle2)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
         if small_size == True:

@@ -15,12 +15,12 @@ task_id = 1
 
 # Set the default values
 max_iter = 1
-L = 1000
+L = 100
 
 def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size = False,model = 0, verbose=1):
 
     if beta_coef == 0:
-        Iter = 5000
+        Iter = L
     else:
         Iter = L     
     

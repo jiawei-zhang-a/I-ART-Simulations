@@ -2,9 +2,18 @@ import sys
 import numpy as np
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import SimpleImputer
+from sklearn.impute import IterativeImputer
+from sklearn import linear_model
 import SingleOutcomeModelGenerator as Generator
 import RandomizationTest as RandomizationTest
 import os
+import iArt
+import lightgbm as lgb
+import xgboost as xgb
+import iArt
+from sklearn.base import BaseEstimator, TransformerMixin
+
+
 
 # Do not change this parameter
 beta_coef = None
@@ -12,14 +21,36 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-L = 1000
+L = 100
 
-def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, verbose=1, save_file = True, small_size = True):
+# For Compelete Analysis
+class NoOpImputer(BaseEstimator, TransformerMixin):
+    def __init__(self):
+        # Initialization code can include parameters if needed
+        pass
+
+    def fit(self, X, y=None):
+        # Nothing to do here, return self to allow chaining
+        return self
+
+    def transform(self, X):
+        # Check if X is a numpy array, if not, convert it to avoid potential issues
+        if not isinstance(X, np.ndarray):
+            X = np.array(X)
+        # Return the data unchanged
+        return X
+
+    def fit_transform(self, X, y=None):
+        # This method can often be optimized but here we'll just use fit and transform sequentially
+        return self.fit(X, y).transform(X)
+
+
+def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, verbose=0, save_file = True, small_size = True):
     
     Missing_lambda = None
 
     if beta_coef == 0:
-        Iter = 5000
+        Iter = L
     else:
         Iter = L    
     
@@ -29,17 +60,35 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
     #Oracale imputer
-    print("Oracle")
-    Framework = RandomizationTest.RandomizationTest(N = Nsize, covariance_adjustment=adjust)
-    reject, p_values = Framework.test(Z, X, M, Y,strata_size = strata_size, L=L, G = None,verbose=0)
-    # Append p-values to corresponding lists
+    NoOp = NoOpImputer()
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=NoOp,L=Iter, verbose=verbose)
     values_oracle = [ *p_values, reject]
     
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = Framework.test_imputed(Z=Z, X=X,M=M, Y=Y,strata_size = strata_size,G=median_imputer,L=Iter, verbose=verbose)
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose)
     values_median = [ *p_values, reject ]
+
+    #LR imputer
+    print("LR")
+    BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=BayesianRidge,L=Iter, verbose=verbose )
+    values_LR = [ *p_values, reject ]
+
+    #XGBoost
+    if small_size == True:
+        print("Xgboost")
+        XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
+        values_xgboost = [ *p_values, reject ]
+
+    #LightGBM
+    if small_size == False:
+        print("LightGBM")
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose ,covariate_adjustment=3)
+        values_lightgbm = [ *p_values, reject ]
 
     #Save the file in numpy format
     if(save_file):
@@ -50,6 +99,12 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
         # Save numpy arrays to files
         np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
+        np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
+        if small_size == True:
+            np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
+        if small_size == False:
+            np.save('%s/%f/p_values_lightgbm_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
+        
  
 
 if __name__ == '__main__':

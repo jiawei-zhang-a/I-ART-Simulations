@@ -125,14 +125,13 @@ if __name__ == '__main__':
         exit()
     # Model 1
     beta_to_lambda = {0.0: 2.159275141001102, 0.07: 2.165387531267955, 0.14: 2.285935405246937, 0.21: 2.258923945496463, 0.28: 2.2980720651301794, 0.35: 2.3679216299985613}
-    for coef in np.arange(0.14,0.42,0.07):
+    for coef in np.arange(0.0,0.42,0.07):
         beta_coef = coef
         # Round to two decimal places to match dictionary keys
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(1000, filepath = "Result/HPC_power_1000_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=False)
-            exit()
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 

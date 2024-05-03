@@ -12,6 +12,7 @@ import lightgbm as lgb
 import xgboost as xgb
 import iArt
 from sklearn.base import BaseEstimator, TransformerMixin
+import pandas as pd
 
 
 
@@ -98,6 +99,24 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
         reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
         values_lightgbm = [ *p_values, reject ]
+    
+    # Combine the data into DataFrame
+    combined_data = pd.DataFrame(np.hstack((Z, X, Y, S)), columns=['Z', 'X1', 'X2', 'X3', 'X4', 'X5', 'Y', 'S'])
+
+    # Drop the missing values only based on outcomes Y
+    combined_data = combined_data.dropna(subset=['Y'])
+
+
+
+    X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
+    Z = combined_data['Z'].values.reshape(-1, 1)
+    Y = combined_data['Y'].values.reshape(-1, 1)
+    S = combined_data['S'].values.reshape(-1, 1)
+
+    G = NoOpImputer()
+
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
+    values_complete = [ *p_values, reject ]
 
     #Save the file in numpy format
     if(save_file):
@@ -113,6 +132,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
             np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
         if small_size == False:
             np.save('%s/%f/p_values_lightgbm_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
+        np.save('%s/%f/p_values_complete_%d.npy' % (filepath, beta_coef, task_id), values_complete)
         
  
 

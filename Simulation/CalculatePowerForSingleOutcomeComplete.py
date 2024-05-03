@@ -118,7 +118,6 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     S = combined_data['S'].values.reshape(-1, 1)"""
 
     G = NoOpImputer()
-    G = SimpleImputer(missing_values=np.nan, strategy='median')
 
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
     values_complete = [ *p_values, reject ]

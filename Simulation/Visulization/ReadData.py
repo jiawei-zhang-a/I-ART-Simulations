@@ -32,7 +32,7 @@ def read_npz_files(directory,small_size=False,type="original"):
     summed_p_values_xgboost = None
     summed_p_values_oracle = None
     if type == "original":
-        N = int(len(os.listdir(directory)) / 5)
+        N = int(len(os.listdir(directory)) / 4)
     else:
         N = int(len(os.listdir(directory)))
 
@@ -124,7 +124,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
     summed_p_values_xgboost = None
     summed_p_values_oracle = None
 
-    N = int(len(os.listdir(directory)) / 5)
+    N = int(len(os.listdir(directory)) / 4)
 
     if multiple:
         summed_p_values_median = 0
@@ -190,7 +190,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                         summed_p_values_xgboost = (p_values<= 0.05).astype(int)
                     else:
                         summed_p_values_xgboost += (p_values<= 0.05).astype(int)
-                elif "p_values_oracle2" in filename:
+                elif "p_values_oracle" in filename:
                     if summed_p_values_oracle is None:
                         summed_p_values_oracle = (p_values<= 0.05).astype(int)
                     else:

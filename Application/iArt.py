@@ -106,10 +106,10 @@ def T(z,y):
     """
 
     #the Wilcoxon rank sum test
-    #Y_rank = rankdata(y)
-    #t = np.sum(Y_rank[z == 1])
+    Y_rank = rankdata(y)
+    t = np.sum(Y_rank[z == 1])
 
-    t = np.sum(y[z == 1])
+    #t = np.sum(y[z == 1])
 
     return t
 
@@ -160,15 +160,15 @@ def getT(y, z, lenY, M):
         
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
-        t_missing = T(z_missing, y_missing.reshape(-1,))
-        t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
+        #t_missing = T(z_missing, y_missing.reshape(-1,))
+        #t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
-        t_combined =  t_missing + t_non_missing
-        
-        
-        #t_whole = T(z.reshape(-1,), y[:,i].reshape(-1,))
-        t.append(t_combined)
+        #t_combined =  t_missing + t_non_missing
+         
+        t_whole = T(z.reshape(-1,), y[:,i].reshape(-1,))
+        #t.append(t_combined)
+        t.append(t_whole)
 
     return np.array(t)
 

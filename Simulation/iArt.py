@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 from statsmodels.stats.multitest import multipletests
+from scipy import stats
 from sklearn.base import clone
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -100,16 +101,24 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         
         return Y_head_adjusted
 
+def tt(z,y):
+    # t-test
+    if len(y) == 0:
+        return 0
+
+    t, _ = stats.ttest_ind(y[z == 1], y[z == 0])
+    return t
+
 def T(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
     """
 
     #the Wilcoxon rank sum test
-    #Y_rank = rankdata(y)
-    #t = np.sum(Y_rank[z == 1])
+    Y_rank = rankdata(y)
+    t = np.sum(Y_rank[z == 1])
 
-    t = np.sum(y[z == 1])
+    #t = np.sum(y[z == 1])
 
     return t
 
@@ -160,13 +169,13 @@ def getT(y, z, lenY, M):
         
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
-        t_missing = T(z_missing, y_missing.reshape(-1,))
-        t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
+        t_missing = tt(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        t_non_missing = tt(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
         t_combined =  t_missing + t_non_missing
-         
-        #t_whole = T(z.reshape(-1,), y[:,i].reshape(-1,))
+
+        #t_combined = tt(z.reshape(-1,), y[:,i].reshape(-1,))
         t.append(t_combined)
 
     return np.array(t)

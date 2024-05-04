@@ -29,7 +29,7 @@ Y = sorted_combined[:, 8:9]    # Y has 1 column
 S = sorted_combined[:, 9:10]   # S has 1 column
 
 # Run the iArt test
-file_path = "p_values_combined.txt"
+file_path = "p_values_ttest.txt"
 L = 10000
 verbose = 0
 random_state = 0

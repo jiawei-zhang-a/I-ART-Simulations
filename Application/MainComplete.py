@@ -70,7 +70,6 @@ print(S.shape)
 no_op_imputer = NoOpImputer()
 with open(file_path, 'a') as file:
     file.write("One-sided test\n")
-#median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
 result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= no_op_imputer, verbose=1,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("NoOp: " + str(result) + '\n')

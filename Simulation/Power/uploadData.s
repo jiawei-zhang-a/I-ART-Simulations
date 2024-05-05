@@ -1,9 +1,9 @@
 #!/bin/bash
 
-tar -czvf ResultComplete.tar.gz ResultComplete
+tar -czvf Result.tar.gz Result
 
 # Add the archive to git staging
-git add ResultComplete.tar.gz
+git add Result.tar.gz
 
 # Commit the change with a message
 git commit -m "Data" 

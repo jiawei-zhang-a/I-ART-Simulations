@@ -1,1 +1,1 @@
-tar xvzf ResultMultiple.tar.gz
+tar xvzf Result.tar.gz

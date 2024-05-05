@@ -68,8 +68,7 @@ def plot2(range,range_small, path,path_small,complete_path,complete_path_small,t
         row_power = [coef]
         for directory in [path + "/%f" % (coef)]:
             results = read_npz_files_main(directory,small_size=False, multiple = multiple)
-            complete = read_npz_files_complete(complete_path + "/%f" % (coef),small_size=False, multiple = multiple,type = 'complete')
-            row_power.extend([results['median_power'], results['lr_power'], results['lightgbm_power'],results['oracle_power'],  complete['complete_power']])
+            row_power.extend([results['median_power'], results['lr_power'], results['lightgbm_power'],results['oracle_power'],  results['complete_power']])
         Power_data.append(row_power)
     print(Power_data)
     plot_results(Power_data, title, range)
@@ -78,8 +77,7 @@ def plot2(range,range_small, path,path_small,complete_path,complete_path_small,t
         row_power_small = [coef]
         for directory in [path_small + "/%f" % (coef)]:
             results = read_npz_files_main(directory,small_size=True, multiple = multiple)
-            complete = read_npz_files_complete(complete_path_small + "/%f" % (coef),small_size=True, multiple = multiple,type = 'complete')
-            row_power_small.extend([results['median_power'], results['lr_power'], results['xgboost_power'],results['oracle_power'],complete['complete_power'] ])
+            row_power_small.extend([results['median_power'], results['lr_power'], results['xgboost_power'],results['oracle_power'],results['complete_power'] ])
         Power_data_small.append(row_power_small)
     print(Power_data_small)
     plot_results(Power_data_small, title_small, range_small)

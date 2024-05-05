@@ -169,13 +169,13 @@ def getT(y, z, lenY, M):
         
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
-        t_missing = tt(z_missing.reshape(-1,), y_missing.reshape(-1,))
-        t_non_missing = tt(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
+        #t_missing = tt(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        #t_non_missing = tt(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
-        t_combined =  t_missing + t_non_missing
+        #t_combined =  t_missing + t_non_missing
 
-        #t_combined = tt(z.reshape(-1,), y[:,i].reshape(-1,))
+        t_combined = tt(z.reshape(-1,), y[:,i].reshape(-1,))
         t.append(t_combined)
 
     return np.array(t)

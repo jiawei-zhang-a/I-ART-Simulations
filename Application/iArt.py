@@ -114,21 +114,31 @@ def T(z,y):
     Calculate the Wilcoxon rank sum test statistics
     """
 
-    #the Wilcoxon rank sum test
     Y_rank = rankdata(y)
     t = np.sum(Y_rank[z == 1])
 
-    #t = np.sum(y[z == 1])
-
     return t
 
+
+def T3(z, y):
+    # Convert z to a numpy array if it's not
+    
+    # Generate a ranking for y
+    Y_rank = list(range(len(y)))  
+    
+    # Shuffle the rankings
+    np.random.shuffle(Y_rank)
+    
+    # Sum over selected indices where z == 1.0
+    t = np.sum([Y_rank[i] for i, value in enumerate(z) if value == 1.0])
+    
+    return t
     
 def T2(z,y,y_non_missing):
+
     """
     Calculate the Wilcoxon rank sum test statistics
     """
-
-    #the Wilcoxon rank sum test
     
     Y_rank = []
     sorted_X = sorted(y_non_missing)
@@ -136,7 +146,7 @@ def T2(z,y,y_non_missing):
         Y_rank.append(sorted_X.index(Y) + 1)
     
     Y_rank = np.array(Y_rank)
-    #t = np.sum(Y_rank[z == 1])
+    t = np.sum(Y_rank[z == 1])
 
     return t
 
@@ -169,8 +179,8 @@ def getT(y, z, lenY, M):
         
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
-        t_missing = tt(z_missing.reshape(-1,), y_missing.reshape(-1,))
-        t_non_missing = tt(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
+        t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
         t_combined =  t_missing + t_non_missing

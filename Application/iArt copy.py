@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 from statsmodels.stats.multitest import multipletests
+from scipy import stats
 from sklearn.base import clone
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -11,9 +12,10 @@ from sklearn import linear_model
 import lightgbm as lgb
 import xgboost as xgb
 from sklearn.impute import SimpleImputer
-from scipy.stats import rankdata
 import time
 import warnings
+from scipy.stats import rankdata
+
 
 def holm_bonferroni(p_values, alpha = 0.05):
     """
@@ -51,7 +53,7 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
     # suppress the warnings
     warnings.filterwarnings('ignore', category=ConvergenceWarning)
 
-    if covariate_adjustment == 'linear':
+    if covariate_adjustment == 1:
         warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use linear regression to adjust the predicted Y values based on X
         Y_head_adjusted = np.zeros_like(Y_head)
@@ -69,7 +71,7 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
 
         return Y_head_adjusted
     
-    if covariate_adjustment == 'xgboost':
+    if covariate_adjustment == 2:
         warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use xgboost to adjust the predicted Y values based on X
         Y_head_adjusted = np.zeros_like(Y_head)
@@ -84,7 +86,7 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
 
         return Y_head_adjusted
     
-    if covariate_adjustment == 'lightgbm':
+    if covariate_adjustment == 3:
         warnings.filterwarnings(action='ignore', category=DataConversionWarning)
         # use lightgbm to adjust the predicted Y values based on X
         Y_head_adjusted = np.zeros_like(Y_head)
@@ -99,12 +101,51 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         
         return Y_head_adjusted
 
+def tt(z,y):
+    # t-test
+    if len(y) == 0:
+        return 0
+
+    t, _ = stats.ttest_ind(y[z == 1], y[z == 0])
+    return t
+
 def T(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
     """
 
     Y_rank = rankdata(y)
+    t = np.sum(Y_rank[z == 1])
+
+    return t
+
+
+def T3(z, y):
+    # Convert z to a numpy array if it's not
+    
+    # Generate a ranking for y
+    Y_rank = list(range(len(y)))  
+    
+    # Shuffle the rankings
+    np.random.shuffle(Y_rank)
+    
+    # Sum over selected indices where z == 1.0
+    t = np.sum([Y_rank[i] for i, value in enumerate(z) if value == 1.0])
+    
+    return t
+    
+def T2(z,y,y_non_missing):
+
+    """
+    Calculate the Wilcoxon rank sum test statistics
+    """
+    
+    Y_rank = []
+    sorted_X = sorted(y_non_missing)
+    for Y in y:
+        Y_rank.append(sorted_X.index(Y) + 1)
+    
+    Y_rank = np.array(Y_rank)
     t = np.sum(Y_rank[z == 1])
 
     return t
@@ -132,21 +173,19 @@ def getT(y, z, lenY, M):
     """
 
     t = []
-    for i in range(lenY):   
-        t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
-        t.append(t_combined)
-
-    return np.array(t)
     for i in range(lenY):
         # Split the data into missing and non-missing parts using the split function
-        y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
+        #y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
         
         # Calculate T for missing and non-missing parts
-        t_missing = T(z_missing, y_missing.reshape(-1,))
-        t_non_missing = T(z_non_missing, y_non_missing.reshape(-1,))
+        #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
+        #t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        #t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
-        t_combined = t_missing + t_non_missing
+        #t_combined =  t_missing + t_non_missing
+
+        t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
         t.append(t_combined)
 
     return np.array(t)
@@ -162,9 +201,9 @@ def getZsimTemplates(Z_sorted, S):
     for stratum in unique_strata:
         strata_indices = np.where(S == stratum)[0]
         strata_Z = Z_sorted[strata_indices]
-        p = np.mean(strata_Z)
+        n = int(np.sum(strata_Z))
         strata_size = len(strata_indices)
-        Z_sim_template = [0.0] * int(strata_size * (1 - p)) + [1.0] * int(strata_size * p)
+        Z_sim_template = [0.0] * (strata_size - n) + [1.0] * n
         Z_sim_templates.append(Z_sim_template)
     return Z_sim_templates
 
@@ -186,18 +225,18 @@ def preprocess(Z, X, Y, S):
     Preprocess the input variables, including reshaping, concatenating, sorting, and extracting
     """
 
-    # Reshape Z, X, Y, S, M to (-1, 1) if they're not already in that shape
+    if S is None:
+        S = np.ones(Z.shape).reshape(-1, 1)
+        M = np.isnan(Y).reshape(-1, Y.shape[1])
+        return Z, X, Y, S, M
+    
+    """# Reshape Z, X, Y, S, M to (-1, 1) if they're not already in that shape
     Z = np.array(Z)
     X = np.array(X)
     Y = np.array(Y)
     X = X.reshape(-1, X.shape[1])
     Z = Z.reshape(-1, 1)
 
-    if S is None:
-        S = np.ones(Z.shape).reshape(-1, 1)
-        M = np.isnan(Y).reshape(-1, Y.shape[1])
-        return Z, X, Y, S, M
-    
     S = np.array(S)
     S = S.reshape(-1, 1)
 
@@ -211,13 +250,14 @@ def preprocess(Z, X, Y, S):
     Z = df.iloc[:, :Z.shape[1]].values.reshape(-1, 1)
     X = df.iloc[:, Z.shape[1]:Z.shape[1] + X.shape[1]].values.reshape(-1, X.shape[1])
     Y = df.iloc[:, Z.shape[1] + X.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1]].values.reshape(-1, Y.shape[1])
-    S = df.iloc[:, Z.shape[1] + X.shape[1] + Y.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1] + S.shape[1]].values.reshape(-1, 1)
+    S = df.iloc[:, Z.shape[1] + X.shape[1] + Y.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1] + S.shape[1]].values.reshape(-1, 1) """
+
     M = np.isnan(Y).reshape(-1, Y.shape[1])
-    
+
     return Z, X, Y, S, M
 
 
-def check_param(*,Z, X, Y, S, G, L,randomization_design,threshold_covariate_median_imputation, verbose, covariate_adjustment,alpha,alternative,random_state):
+def check_param(*,Z, X, Y, S, G, L,randomization_design, verbose, covariate_adjustment,alpha,alternative,random_state):
     """
     Check the validity of the input parameters
     """
@@ -254,13 +294,9 @@ def check_param(*,Z, X, Y, S, G, L,randomization_design,threshold_covariate_medi
     if G is None:
         raise ValueError("G cannot be None")
     
-    # Check threshold_covariate_imputation: must be a float between 0 and 1
-    if not (0 <= threshold_covariate_median_imputation <= 1):
-        raise ValueError("threshold_covariate_median_imputation must be a float between 0 and 1")
-    
     # Check covariate_adjustment: must be True or False
-    if covariate_adjustment not in [0, 'linear', 'lightgbm', 'xgboost']:
-        raise ValueError("covariate_adjustment must be 0, linear, lightgbm, or xgboost")
+    if covariate_adjustment not in [0, 1, 2, 3]:
+        raise ValueError("covariate_adjustment must be one of 0, 1, 2, 3")
 
     # Check alternative: must be one of "greater", "less" or "two-sided" 
     if alternative not in ["greater", "less", "two-sided"]:
@@ -272,7 +308,7 @@ def check_param(*,Z, X, Y, S, G, L,randomization_design,threshold_covariate_medi
     
     # Check randomization_design: must be one of "strata" or "cluster"
     if randomization_design not in ["strata", "cluster"]:
-        raise ValueError("randomization_design must be one of strata or cluster")
+        raise ValueError("randomization design must be one of strata or cluster")
     
     
 def choosemodel(G):
@@ -345,7 +381,7 @@ def transformX(X, threshold=0.1, verbose=True):
     
     return X
 
-def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_median_imputation = 0.1, randomization_design = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
+def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshold_covariate_median_imputation = 0.2, randomization_design = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
     """Imputation-Assisted Randomization Tests (iArt) for testing 
     the null hypothesis that the treatment has no effect on the outcome.
 
@@ -361,9 +397,9 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
         S is the array of observed strata indicators
         
     threshold_covariate_median_imputation : float, default: 0.1
-        The threshhold for missing covariate to be imputed with median in advance for performance improvement
+        The threshhold for missing outcome to be imputed in advance in covariate X
 
-    G : str or function, default: 'iterative+linear'
+    G : str or function, default: 'linear'
         A string for the eight available choice or a function that takes 
         (Z, M, Y_k) as input and returns the imputed complete values 
 
@@ -371,16 +407,17 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
         The number of Monte Carlo simulations 
 
     randomization_design : {'strata','cluster'}, default: 'strata'
-        A string indicating the randomization design
+        A string indicating the randomization 
+        
 
     verbose : bool, default: False
         A boolean indicating whether to print training start and end 
 
     covarite_adjustment : int, default: 0
         if 0, covariate adjustment is not used
-        if linear, linear covariate adjustment is used
-        if xgboost, xgboost covariate adjustment is used
-        if lightgbm, lightgbm covariate adjustment is used
+        if 1, ridge covariate adjustment is used
+        if 2, xgboost covariate adjustment is used
+        if 3, lightgbm covariate adjustment is used
 
     random_state : {None, int, `numpy.random.Generator`,`numpy.random.RandomState`}, default: None
         If `seed` is None (or `np.random`), the `numpy.random.RandomState`
@@ -411,7 +448,7 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
     X = transformX(X,threshold_covariate_median_imputation,verbose)
 
     # Check the validity of the input parameters
-    check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L,threshold_covariate_median_imputation = threshold_covariate_median_imputation, randomization_design=randomization_design, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
+    check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L, randomization_design=randomization_design, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
     
     # Set random seed
     np.random.seed(random_state)

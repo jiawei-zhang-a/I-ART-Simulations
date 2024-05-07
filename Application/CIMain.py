@@ -3,6 +3,7 @@ import numpy as np
 import os
 import iArt
 import lightgbm as lgb
+import xgboost as xgb
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
@@ -13,7 +14,7 @@ from sklearn import linear_model
 L = 10000
 verbose = 0
 random_state = 0
-threshholdForX = 0.0
+threshold_covariate_median_imputation = 0.0
 
 # Define β values range 
 beta_values = np.linspace(-0.5, 0.5, 1001)  
@@ -40,7 +41,7 @@ Y_adjusted = Y.copy()
 Y_adjusted[(M == 0) & (Z == 0)] += beta
 
 # Define the folder name
-folder_name = "Result"
+folder_name = "ConfidenceSets"
 
 # Check if the folder does not exist
 if not os.path.exists(folder_name):
@@ -53,42 +54,59 @@ else:
 
 # Save the result for median imputer
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state, covariate_adjustment=1)
-result_path = f"Result/test_medianLR_{beta}.npy"
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=threshold_covariate_median_imputation, random_state=random_state, covariate_adjustment='linear')
+result_path = f"{folder_name}/test_medianLR_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for median imputer
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state, covariate_adjustment=3)
-result_path = f"Result/test_medianGBM_{beta}.npy"
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=threshold_covariate_median_imputation, random_state=random_state, covariate_adjustment='lightgbm')
+result_path = f"{folder_name}/test_medianlightGBM_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
-"""# Save the result for median imputer
+# Save the result for median imputer
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
-result_path = f"Result/test_median_{beta}.npy"
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=threshold_covariate_median_imputation, random_state=random_state, covariate_adjustment='xgboost')
+result_path = f"{folder_name}/test_medianXGBoost_{beta}.npy"
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
+
+# Save the result for median imputer
+median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result_path = f"{folder_name}/test_median_{beta}.npy"
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
+
+# Save the result for xgboost
+XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(), max_iter=3)
+reject,p_values = iArt.test(G=XGBoost,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result_path = f"{folder_name}/test_xgboost_{beta}.npy"
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
+
+# Save the result for xgboost with covariate adjustment
+reject,p_values = iArt.test(G=XGBoost,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, covariate_adjustment='xgboost', random_state=random_state)
+result_path = f"{folder_name}/test_xgboostcovariateadjustment_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 
-RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=3)
 # Save the result for ridge regression
-reject,p_values = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
-result_path = f"Result/test_ridge_{beta}.npy"
+RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=3)
+reject,p_values = iArt.test(G=RidgeRegression, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result_path = f"{folder_name}/test_ridge_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for ridge regression with covariate adjustment
-reject,p_values = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=1, random_state=random_state)
-result_path = f"Result/test_ridgecovariateadjustment_{beta}.npy"
+reject,p_values = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, covariate_adjustment='linear', random_state=random_state)
+result_path = f"{folder_name}/test_ridgecovariateadjustment_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=3)
 # Save the result for LightGBM
-reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, random_state=random_state)
-result_path = f"Result/test_lightgbm_{beta}.npy"
+reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result_path = f"{folder_name}/test_lightgbm_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for LightGBM with covariate adjustment
-reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, mode='cluster', threshholdForX=threshholdForX, covariate_adjustment=3, random_state=random_state)
-result_path = f"Result/test_lightgbmcovariateadjustment_{beta}.npy"
-np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure"""
+reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, covariate_adjustment='lightgbm', random_state=random_state)
+result_path = f"{folder_name}/test_lightgbmcovariateadjustment_{beta}.npy"
+np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 

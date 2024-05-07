@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --job-name=RealTest
+#SBATCH --job-name=RealTest1
 #SBATCH --nodes=1
 #SBATCH --time=25:29:00
 #SBATCH --mem=2GB

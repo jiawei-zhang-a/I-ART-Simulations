@@ -20,7 +20,7 @@ S = arrays['S']
 # Run the iArt test
 file_path = "p_values_.txt"
 L = 10000
-verbose = 0
+verbose = 1
 random_state = 0
 
 """with open(file_path, 'a') as file:
@@ -50,12 +50,23 @@ result = iArt.test(G=XGBoost,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomiza
 with open(file_path, 'a') as file:
     file.write("XGBoost: " + str(result) + '\n'))"""
 
+RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(), initial_strategy='median', max_iter=3)
+result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+with open(file_path, 'a') as file:
+    file.write("RidgeRegression3: " + str(result) + '\n')
+
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), initial_strategy='median', max_iter=3)
+result = iArt.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+with open(file_path, 'a') as file:
+    file.write("LightGBM3: " + str(result) + '\n')
+
 RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(), initial_strategy='median')
 result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
-    file.write("RidgeRegression: " + str(result) + '\n')
+    file.write("RidgeRegression10: " + str(result) + '\n')
 
 LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), initial_strategy='median')
 result = iArt.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
-    file.write("LightGBM: " + str(result) + '\n')
+    file.write("LightGBM10: " + str(result) + '\n')
+

@@ -62,15 +62,10 @@ result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, r
 with open(file_path, 'a') as file:
     file.write("RidgeRegression5: " + str(result) + '\n')
 
-LinearRegression = IterativeImputer(estimator=linear_model.LinearRegression(), max_iter=5)
+LinearRegression = IterativeImputer(estimator=linear_model.LinearRegression(), max_iter=3)
 result = iArt.test(G=LinearRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
-    file.write("LinearRegression5: " + str(result) + '\n')
-
-LinearRegression = IterativeImputer(estimator=linear_model.LinearRegression())
-result = iArt.test(G=LinearRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
-with open(file_path, 'a') as file:
-    file.write("LinearRegression10: " + str(result) + '\n')
+    file.write("LinearRegression3: " + str(result) + '\n')
 
 RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge())
 result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)

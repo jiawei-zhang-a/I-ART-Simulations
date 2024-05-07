@@ -29,11 +29,15 @@ X = sorted_combined[:, 1:8]    # X has 7 columns
 Y = sorted_combined[:, 8:9]    # Y has 1 column
 S = sorted_combined[:, 9:10]   # S has 1 column
 
+# Read the job number from the arguments
+import sys
+job_number = int(sys.argv[1])
+
 # Run the iArt test
-file_path = "p_values.txt"
+file_path = "Result/p_values_" + str(job_number) + ".txt"
 L = 10000
 verbose = 0
-random_state = 0
+random_state = job_number
 threshholdForX = 0.0
 
 with open(file_path, 'a') as file:

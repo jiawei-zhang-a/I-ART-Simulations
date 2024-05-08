@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --time=25:29:00
 #SBATCH --mem=2GB
-#SBATCH --cpus-per-task=28
+#SBATCH --cpus-per-task=1
 
 
 module purge

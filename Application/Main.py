@@ -51,10 +51,7 @@ with open(file_path, 'a') as file:
     file.write("XGBoost: " + str(result) + '\n'))"""
 
 
-RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(),tol=0.0001)
-result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
-with open(file_path, 'a') as file:
-    file.write("RidgeRegression10: " + str(result) + '\n')
+
 
 RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(),tol=0.00001)
 result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)

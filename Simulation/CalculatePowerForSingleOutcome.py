@@ -51,7 +51,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     Missing_lambda = None
 
     if beta_coef == 0:
-        Iter = 10000
+        Iter = 5000
     else:
         Iter = L    
     
@@ -79,6 +79,10 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose)
     values_median = [ *p_values, reject ]
+
+    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose, covariate_adjustment=1)
+    values_medianLR = [ *p_values, reject ]
 
     """#LR imputer
     print("LR")
@@ -124,6 +128,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
 
         # Save numpy arrays to files
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
+        np.save('%s/%f/p_values_medianadjusted_%d.npy' % (filepath, beta_coef, task_id), values_medianLR)
 
         """np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)

@@ -22,7 +22,7 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-L = 50
+L = 2000
 
 # For Compelete Analysis
 class NoOpImputer(BaseEstimator, TransformerMixin):
@@ -51,7 +51,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     Missing_lambda = None
 
     if beta_coef == 0:
-        Iter = L
+        Iter = 10000
     else:
         Iter = L    
     
@@ -63,13 +63,13 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     #Oracale imputer
     """NoOp = NoOpImputer()
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=NoOp,L=Iter, verbose=verbose)
-    values_oracle1 = [ *p_values, reject]"""
+    values_oracle1 = [ *p_values, reject]
 
     Framework = RandomizationTest.RandomizationTest(N = Nsize)
     reject, p_values= Framework.test(Z, X, M, Y,strata_size = strata_size, L=Iter, G = None,verbose=verbose)
     # Append p-values to corresponding lists
     values_oracle = [ *p_values, reject]
-    
+    """
     #mask Y with M
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
@@ -80,7 +80,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose)
     values_median = [ *p_values, reject ]
 
-    #LR imputer
+    """#LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=BayesianRidge,L=Iter, verbose=verbose )
@@ -106,8 +106,6 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     # Drop the missing values only based on outcomes Y
     combined_data = combined_data.dropna(subset=['Y'])
 
-
-
     X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
     Z = combined_data['Z'].values.reshape(-1, 1)
     Y = combined_data['Y'].values.reshape(-1, 1)
@@ -116,7 +114,7 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
     G = NoOpImputer()
 
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
-    values_complete = [ *p_values, reject ]
+    values_complete = [ *p_values, reject ]"""
 
     #Save the file in numpy format
     if(save_file):
@@ -125,16 +123,15 @@ def run(Nsize, filepath, adjust, Missing_lambda, strata_size = 10,model = 0, ver
             os.makedirs("%s/%f"%(filepath,beta_coef))
 
         # Save numpy arrays to files
-        np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
+
+        """np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
         np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
         if small_size == True:
             np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
         if small_size == False:
             np.save('%s/%f/p_values_lightgbm_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
-        np.save('%s/%f/p_values_complete_%d.npy' % (filepath, beta_coef, task_id), values_complete)
-        
- 
+        np.save('%s/%f/p_values_complete_%d.npy' % (filepath, beta_coef, task_id), values_complete)"""
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:

@@ -101,14 +101,6 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         
         return Y_head_adjusted
 
-def tt(z,y):
-    # t-test
-    if len(y) == 0:
-        return 0
-
-    t, _ = stats.ttest_ind(y[z == 1], y[z == 0])
-    return t
-
 def T(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
@@ -117,26 +109,6 @@ def T(z,y):
     #the Wilcoxon rank sum test
     Y_rank = rankdata(y)
     t = np.sum(Y_rank[z == 1])
-
-    #t = np.sum(y[z == 1])
-
-    return t
-
-    
-def T2(z,y,y_non_missing):
-    """
-    Calculate the Wilcoxon rank sum test statistics
-    """
-
-    #the Wilcoxon rank sum test
-    
-    Y_rank = []
-    sorted_X = sorted(y_non_missing)
-    for Y in y:
-        Y_rank.append(sorted_X.index(Y) + 1)
-    
-    Y_rank = np.array(Y_rank)
-    #t = np.sum(Y_rank[z == 1])
 
     return t
 
@@ -169,13 +141,13 @@ def getT(y, z, lenY, M):
         
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
-        #t_missing = tt(z_missing.reshape(-1,), y_missing.reshape(-1,))
-        #t_non_missing = tt(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
+        t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
-        #t_combined =  t_missing + t_non_missing
+        t_combined =  t_missing + t_non_missing
 
-        t_combined = tt(z.reshape(-1,), y[:,i].reshape(-1,))
+        #t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
         t.append(t_combined)
 
     return np.array(t)

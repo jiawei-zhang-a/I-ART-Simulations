@@ -58,14 +58,14 @@ result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, r
 with open(file_path, 'a') as file:
     file.write("RidgeRegression10: " + str(result) + '\n')
 
-
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), initial_strategy='median', max_iter=3)
-result = iArt.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
-with open(file_path, 'a') as file:
-    file.write("LightGBM3: " + str(result) + '\n')
-
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), initial_strategy='median')
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor())
 result = iArt.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM10: " + str(result) + '\n')
 
+
+
+LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), max_iter=5)
+result = iArt.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+with open(file_path, 'a') as file:
+    file.write("LightGBM5: " + str(result) + '\n')

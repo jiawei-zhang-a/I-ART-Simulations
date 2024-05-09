@@ -54,7 +54,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     if beta_coef == 0:
         Iter = 5000
     else:
-        Iter = L        
+        Iter = L  
     # Simulate data
     if multiple == False:
         DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
@@ -123,14 +123,14 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
     values_complete = [ *p_values, reject ]"""
 
-    #Save the file in numpy format
-    if not os.path.exists("%s/%f"%(filepath,beta_coef)):
-        # If the folder does not exist, create it
-        os.makedirs("%s/%f"%(filepath,beta_coef))
+
+    os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)
+    
+    os.makedirs("%s_adjusted_Median/%f"%(filepath,beta_coef), exist_ok=True)
 
     # Save numpy arrays to files
     np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
-    np.save('%s/%f/p_values_medianadjusted_%d.npy' % (filepath, beta_coef, task_id), values_medianLR)
+    np.save('%s_adjusted_Median/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_medianLR)
 
     """np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
     np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)

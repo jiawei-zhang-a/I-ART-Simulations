@@ -5,13 +5,13 @@ import os
 from ReadData import read_npz_files_main,read_npz_files,read_npz_files_complete
 
 def plot_results(data, title, xsticks):
-    columns = ['beta', 'Imputer_Median', 'Imputer_PREP-RidgeReg',  'Imputer_PREP-GBM', 'Imputer_Oracle', 'Imputer_Complete']
+    columns = ['beta', 'Imputer_Median', 'Imputer_PREP-RidgeReg',  'Imputer_PREP-GBM', 'Imputer_Oracle']
 
     df = pd.DataFrame(data, columns=columns)
 
     plt.figure(figsize=(10, 6))
 
-    colors = {'Median': 'blue', 'PREP-RidgeReg': 'red', 'PREP-GBM': 'green', 'Oracle':'purple', 'Complete':'black'}
+    colors = {'Median': 'blue', 'PREP-RidgeReg': 'red', 'PREP-GBM': 'green', 'Oracle':'purple'}
     linestyles = {'Imputer': '-'}
 
     for col in columns[1:]:
@@ -85,15 +85,16 @@ def plot2(range,range_small, path,path_small,complete_path,complete_path_small,t
 
 
 def main_pic_generator():
-    plot2(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Data/Result/HPC_power_1000_model1", "../Data/Result/HPC_power_50_model1", "../Data/ResultComplete/HPC_power_1000_model1", "../Data/ResultComplete/HPC_power_50_model1","Size1000_Model1", "Size50_Model1")
-    plot2(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Data/Result/HPC_power_1000_model2", "../Data/Result/HPC_power_50_model2", "../Data/ResultComplete/HPC_power_1000_model2", "../Data/ResultComplete/HPC_power_50_model2", "Size1000_Model2", "Size50_Model2")
-    plot2(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Data/Result/HPC_power_1000_model3", "../Data/Result/HPC_power_50_model3", "../Data/ResultComplete/HPC_power_1000_model3", "../Data/ResultComplete/HPC_power_50_model3", "Size1000_Model3", "Size50_Model3")
-    plot2(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Data/Result/HPC_power_1000_model4", "../Data/Result/HPC_power_50_model4", "../Data/ResultComplete/HPC_power_1000_model4", "../Data/ResultComplete/HPC_power_50_model4", "Size1000_Model4", "Size50_Model4") 
+    """plot2(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Data/Result/HPC_power_1000_model1", "../Data/Result/HPC_power_50_model1", "../Data/Result/HPC_power_1000_model1", "../Data/Result/HPC_power_50_model1","Size1000_Model1", "Size50_Model1")
+    plot2(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Data/Result/HPC_power_1000_model2", "../Data/Result/HPC_power_50_model2", "../Data/Result/HPC_power_1000_model2", "../Data/Result/HPC_power_50_model2", "Size1000_Model2", "Size50_Model2")
+    plot2(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Data/Result/HPC_power_1000_model3", "../Data/Result/HPC_power_50_model3", "../Data/Result/HPC_power_1000_model3", "../Data/ResultComplete/HPC_power_50_model3", "Size1000_Model3", "Size50_Model3")
+    plot2(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Data/Result/HPC_power_1000_model4", "../Data/Result/HPC_power_50_model4", "../Data/Result/HPC_power_1000_model4", "../Data/ResultComplete/HPC_power_50_model4", "Size1000_Model4", "Size50_Model4") 
   
-    """ plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Data/Result/HPC_power_1000_model1", "../Data/Result/HPC_power_50_model1", "Size1000_Model1", "Size50_Model1")
+    """ 
+    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Data/Result/HPC_power_1000_model1", "../Data/Result/HPC_power_50_model1", "Size1000_Model1", "Size50_Model1")
     plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Data/Result/HPC_power_1000_model2", "../Data/Result/HPC_power_50_model2", "Size1000_Model2", "Size50_Model2")
     plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Data/Result/HPC_power_1000_model3", "../Data/Result/HPC_power_50_model3", "Size1000_Model3", "Size50_Model3")
     plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Data/Result/HPC_power_1000_model4", "../Data/Result/HPC_power_50_model4", "Size1000_Model4", "Size50_Model4") 
-    plot(np.arange(0.0, 0.4, 0.05), np.arange(0.0, 2.5, 0.5), "../Data/ResultMultiple/HPC_power_1000_Model5", "../Data/ResultMultiple/HPC_power_50_Model5", "Size1000_Model5", "Size50_Model5", multiple=True)"""
+    plot(np.arange(0.0, 0.4, 0.05), np.arange(0.0, 2.5, 0.5), "../Data/Result/HPC_power_1000_Model5", "../Data/Result/HPC_power_50_Model5", "Size1000_Model5", "Size50_Model5", multiple=True)
 
 main_pic_generator()

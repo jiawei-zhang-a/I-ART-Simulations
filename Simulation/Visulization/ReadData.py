@@ -133,7 +133,6 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
         summed_p_values_lightgbm = 0
         summed_p_values_xgboost = 0
         summed_p_values_oracle = 0
-        summed_p_values_complete = 0
 
         for filename in os.listdir(directory):
             if filename.endswith(".npy"):
@@ -141,18 +140,16 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                 p_values = np.load(filepath)
                 reject = holm_bonferroni_correction(p_values[0:3], alpha=0.05)
                 reject = any(reject)
-                if "p_values_median" in filename:
+                if "p_values_median" in filename and 'p_values_medianadjusted' not in filename:
                     summed_p_values_median += reject
                 elif "p_values_LR" in filename:
                     summed_p_values_LR += reject
-                elif "p_values_lightgbm" in filename:
+                elif "p_values_lightGBM" in filename:
                     summed_p_values_lightgbm += reject
                 elif "p_values_xgboost" in filename:
                     summed_p_values_xgboost += reject
                 elif "p_values_oracle" in filename:
                     summed_p_values_oracle += reject
-                elif "p_values_complete" in filename:
-                    summed_p_values_complete += reject
 
         if small_size:
             results = {
@@ -160,7 +157,6 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                 'lr_power': summed_p_values_LR / N,
                 'xgboost_power': summed_p_values_xgboost / N,
                 'oracle_power': summed_p_values_oracle / N,
-                'complete_power': summed_p_values_complete / N,
             }
         else:
             results = {
@@ -168,7 +164,6 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                 'lr_power': summed_p_values_LR / N,
                 'lightgbm': summed_p_values_lightgbm / N,
                 'oracle_power': summed_p_values_oracle / N,
-                'complete_power': summed_p_values_complete / N,
             }
         return results    
     else:
@@ -177,7 +172,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                 filepath = os.path.join(directory, filename)
                 p_values = np.load(filepath)
 
-                if "p_values_median" in filename:
+                if "p_values_median" in filename and 'p_values_medianadjusted' not in filename:
                     if summed_p_values_median is None:
                         summed_p_values_median = (p_values<= 0.05).astype(int)
                     else:
@@ -187,7 +182,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                         summed_p_values_LR = (p_values<= 0.05).astype(int)
                     else:
                         summed_p_values_LR += (p_values<= 0.05).astype(int)
-                elif "p_values_lightgbm" in filename:
+                elif "p_values_lightGBM" in filename:
                     if summed_p_values_lightgbm is None:
                         summed_p_values_lightgbm = (p_values<= 0.05).astype(int)
                     else:
@@ -202,11 +197,6 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                         summed_p_values_oracle = (p_values<= 0.05).astype(int)
                     else:
                         summed_p_values_oracle += (p_values<= 0.05).astype(int)
-                elif "p_values_complete" in filename:
-                    if summed_p_values_complete is None:
-                        summed_p_values_complete = (p_values<= 0.05).astype(int)
-                    else:
-                        summed_p_values_complete += (p_values<= 0.05).astype(int)
 
         if small_size:
             results = {
@@ -214,7 +204,6 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                 'lr_power': summed_p_values_LR[0] / N,
                 'xgboost_power': summed_p_values_xgboost[0] / N,
                 'oracle_power': summed_p_values_oracle[0] / N,
-                'complete_power': summed_p_values_complete[0] / N,
 
             }
         else:
@@ -223,7 +212,6 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
                 'lr_power': summed_p_values_LR[0] / N,
                 'lightgbm_power': summed_p_values_lightgbm[0] / N,
                 'oracle_power': summed_p_values_oracle[0] / N,
-                'complete_power': summed_p_values_complete[0] / N,
             }
 
         return results

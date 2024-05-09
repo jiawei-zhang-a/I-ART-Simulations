@@ -261,11 +261,11 @@ if __name__ == '__main__':
     # 1000 size coef loop
     for coef in np.arange(0.0, 0.4, 0.05): 
         beta_coef = coef
-        run(1000, filepath="ResultMultiple/HPC_power_1000_model5",adjust =0,  Missing_lambda=lambda_values[1000].get(coef, None),model = 5, small_size=False, multiple = True)
+        run(1000, filepath="Result/HPC_power_1000_model5",adjust =0,  Missing_lambda=lambda_values[1000].get(coef, None),model = 5, small_size=False, multiple = True)
     # 50 size coef loop
     for coef in np.arange(0.0, 2.5, 0.5): 
         beta_coef = coef
-        run(50, filepath="ResultMultiple/HPC_power_50_model5",adjust =0, Missing_lambda=lambda_values[50].get(coef, None),model = 5, small_size=True, multiple = True)
+        run(50, filepath="Result/HPC_power_50_model5",adjust =0, Missing_lambda=lambda_values[50].get(coef, None),model = 5, small_size=True, multiple = True)
     
     beta_to_lambda = {0.0: 15.52272711345184, 0.1: 15.686703500976, 0.2: 15.686402633876, 0.3: 15.787598335083226, 0.4: 15.753018503387455, 0.5: 15.73965750718643}
     for coef in np.arange(0.0,0.6 ,0.1):

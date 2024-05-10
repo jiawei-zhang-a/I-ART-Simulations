@@ -52,9 +52,9 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     Missing_lambda = None
 
     if beta_coef == 0:
-        Iter = 5000
+        Iter = 10000
     else:
-        Iter = L  
+        return
     # Simulate data
     if multiple == False:
         DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)

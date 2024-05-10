@@ -51,7 +51,7 @@ def read_npz_files(directory,small_size=False,type="original"):
                     summed_p_values_LR = (p_values<= 0.05).astype(int)
                 else:
                     summed_p_values_LR += (p_values<= 0.05).astype(int)
-            elif "p_values_lightgbm" in filename:
+            elif "p_values_lightGBM" in filename:
                 if summed_p_values_lightgbm is None:
                     summed_p_values_lightgbm = (p_values<= 0.05).astype(int)
                 else:
@@ -61,7 +61,7 @@ def read_npz_files(directory,small_size=False,type="original"):
                     summed_p_values_xgboost = (p_values<= 0.05).astype(int)
                 else:
                     summed_p_values_xgboost += (p_values<= 0.05).astype(int)
-            elif "p_values_oracle1" in filename:
+            elif "p_values_oracle" in filename:
                 if summed_p_values_oracle is None:
                     summed_p_values_oracle = (p_values<= 0.05).astype(int)
                 else:
@@ -123,9 +123,8 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
     summed_p_values_lightgbm = None
     summed_p_values_xgboost = None
     summed_p_values_oracle = None
-    summed_p_values_complete = None
 
-    N = int(len(os.listdir(directory)) / 5)
+    N = int(len(os.listdir(directory)) / 4)
 
     if multiple:
         summed_p_values_median = 0
@@ -162,7 +161,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False):
             results = {
                 'median_power': summed_p_values_median / N,
                 'lr_power': summed_p_values_LR / N,
-                'lightgbm': summed_p_values_lightgbm / N,
+                'lightgbm_power': summed_p_values_lightgbm / N,
                 'oracle_power': summed_p_values_oracle / N,
             }
         return results    

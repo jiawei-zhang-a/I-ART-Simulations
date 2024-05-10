@@ -8,7 +8,8 @@ def plot_results(data, title, xsticks):
     plt.clf()
 
     columns = ['beta', 'Imputer_PREP-GBM',
-               "Imputer_PREP-RidgeReg", "Imputer_GBM-adjusted",  "Imputer_LR-adjusted"]
+               "Imputer_PREP-RidgeReg", "Imputer_Median",
+                 "Imputer_GBM-adjusted",  "Imputer_LR-adjusted", "Imputer_Median-adjusted"]
 
     df = pd.DataFrame(data, columns=columns)
 
@@ -18,14 +19,18 @@ def plot_results(data, title, xsticks):
         'Imputer_PREP-GBM': 'green', 
         "Imputer_PREP-RidgeReg": "red",
         "Imputer_GBM-adjusted": 'green', 
-        "Imputer_LR-adjusted": 'red'
+        "Imputer_LR-adjusted": 'red',
+        "Imputer_Median": 'blue',
+        "Imputer_Median-adjusted": 'blue'
     }
 
     linestyles = {
         'Imputer_PREP-GBM': '-', 
         "Imputer_PREP-RidgeReg": '-', 
         "Imputer_GBM-adjusted": '--', 
-        "Imputer_LR-adjusted": '--'
+        "Imputer_LR-adjusted": '--',
+        "Imputer_Median": '-',
+        "Imputer_Median-adjusted": '--'
     }
 
     for col in columns[1:]:
@@ -53,13 +58,21 @@ def plot(range,range_small, path,path_small, title, title_small):
         row_power = [coef]
         for directory in [path + "/%f" % (coef)]:
             results = read_npz_files(directory,small_size=False)
-            row_power.extend([ results['lightGBM_power'], results['lr_power']])
+            row_power.extend([ results['lightgbm_power'], results['lr_power'], results['median_power']])
+        print(row_power)
         for directory in [path + "_adjusted_LightGBM/%f" % (coef)]:
             results = read_npz_files(directory,small_size=False, type='adjusted')
-            row_power.extend([ results['lightGBM_power'] ])
+            row_power.extend([ results['lightgbm_power'] ])
+        print(row_power)
         for directory in [path + "_adjusted_LR/%f" % (coef)]:
             results = read_npz_files(directory,small_size=False, type='adjusted')
             row_power.extend([ results['lr_power'] ])
+        print(row_power)
+        for directory in [path + "_adjusted_Median/%f" % (coef)]:
+            results = read_npz_files(directory,small_size=False, type='adjusted')
+            row_power.extend([ results['median_power'] ])
+        print(row_power)
+
         Power_data.append(row_power)
     print(Power_data)
     plot_results(Power_data, title, range)
@@ -68,13 +81,16 @@ def plot(range,range_small, path,path_small, title, title_small):
         row_power_small = [coef]
         for directory in [path_small + "/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True)
-            row_power_small.extend([results['xgboost_power'], results['lr_power']])
+            row_power_small.extend([results['xgboost_power'], results['lr_power'], results['median_power']])
         for directory in [path_small + "_adjusted_Xgboost/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['xgboost_power']])
         for directory in [path_small + "_adjusted_LR/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['lr_power']])
+        for directory in [path_small + "_adjusted_Median/%f" % (coef)]:
+            results = read_npz_files(directory,small_size=True, type='adjusted')
+            row_power_small.extend([results['median_power']])
         Power_data_small.append(row_power_small)
     print(Power_data_small)
     plot_results(Power_data_small, title_small, range_small)

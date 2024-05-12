@@ -16,7 +16,6 @@ import time
 import warnings
 from scipy.stats import rankdata
 
-
 def holm_bonferroni(p_values, alpha = 0.05):
     """
     Perform the Holm-Bonferroni correction on the p-values
@@ -101,15 +100,48 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         
         return Y_head_adjusted
 
-def T(z,y):
+def T2(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
     """
 
     #the Wilcoxon rank sum test
     Y_rank = rankdata(y)
+    print(Y_rank)
     t = np.sum(Y_rank[z == 1])
 
+    return t
+def T(z,y):
+    """
+    Calculate the Wilcoxon rank sum test statistics
+    """
+    
+    #the Wilcoxon rank sum test
+    n = len(z)
+    t = 0
+    my_list = []
+    for i in range(n):
+        my_list.append((z[i],y[i]))
+    sorted_list = sorted(my_list, key=lambda x: x[1])
+    for i in range(n):
+        t += sorted_list[i][0] * (i + 1)
+
+    return t
+
+def T3(z, y):
+    # Convert z to a numpy array if it's not
+    
+    # Generate a ranking for y
+    Y_rank = list(range(len(y)))  
+    
+    # Shuffle the rankings
+    np.random.shuffle(Y_rank)
+    
+    # Sum over selected indices where z == 1.0
+    t = 0
+    for i in range(len(z)):
+        t += z[i] * Y_rank[i]   
+         
     return t
 
 def split(y, z, M):
@@ -141,8 +173,10 @@ def getT(y, z, lenY, M):
         
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
-        t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        t_missing = T3(z_missing.reshape(-1,), y_missing.reshape(-1,))
         t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
+
+        #t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
 
         # Sum the T values for both parts
         t_combined =  t_missing + t_non_missing

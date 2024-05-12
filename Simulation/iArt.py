@@ -107,7 +107,7 @@ def T2(z,y):
 
     #the Wilcoxon rank sum test
     Y_rank = rankdata(y)
-    print(Y_rank)
+    #print(Y_rank)
     t = np.sum(Y_rank[z == 1])
 
     return t
@@ -179,9 +179,9 @@ def getT(y, z, lenY, M):
         #t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
 
         # Sum the T values for both parts
-        t_combined =  t_missing + t_non_missing
+        #t_combined =  t_missing + t_non_missing
 
-        #t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
+        t_combined = T2(z.reshape(-1,), y[:,i].reshape(-1,))
         t.append(t_combined)
 
     return np.array(t)

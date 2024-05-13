@@ -2,7 +2,6 @@ import numpy as np
 import os
 from statsmodels.stats.multitest import multipletests
 
-
 def bonferroni_correction(p_values, alpha=0.05):
     n = len(p_values)
     adjusted_p_values = [min(p * n, 1.0) for p in p_values]
@@ -22,7 +21,7 @@ def holm_bonferroni_correction(p_values, alpha=0.05):
             break  # No need to continue once a test fails
     return significant
 
-def read_npz_files_main(directory,small_size=False, multiple=False, type="original"):
+def read_npz_files(directory,small_size=False, multiple=False, type="original"):
     summed_p_values_median = None
     summed_p_values_LR = None
     summed_p_values_lightgbm = None
@@ -56,7 +55,7 @@ def read_npz_files_main(directory,small_size=False, multiple=False, type="origin
             elif "p_values_LR" in filename:
                 N_p_values_LR += 1
                 summed_p_values_LR += reject
-            elif "p_values_lightGBM" in filename:
+            elif ("p_values_lightGBM"  in filename) or ("p_values_lightgbm" in filename):
                 N_p_values_lightgbm += 1
                 summed_p_values_lightgbm += reject
             elif "p_values_xgboost" in filename:

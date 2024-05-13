@@ -128,15 +128,16 @@ def T(z,y):
 
     return t
 
+
+
 def T3(z, y):
     # Convert z to a numpy array if it's not
-    
     # Generate a ranking for y
     Y_rank = list(range(len(y)))  
-    
+
     # Shuffle the rankings
     np.random.shuffle(Y_rank)
-    
+    print(Y_rank)
     # Sum over selected indices where z == 1.0
     t = 0
     for i in range(len(z)):
@@ -169,12 +170,12 @@ def getT(y, z, lenY, M):
     t = []
     for i in range(lenY):
         # Split the data into missing and non-missing parts using the split function
-        y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
+        #y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
         
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
-        t_missing = T3(z_missing.reshape(-1,), y_missing.reshape(-1,))
-        t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
+        #t_missing = T3(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        #t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
 
         #t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
 

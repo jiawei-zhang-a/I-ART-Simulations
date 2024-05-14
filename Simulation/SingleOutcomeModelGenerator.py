@@ -42,7 +42,7 @@ class DataGenerator:
   def GenerateU(self):
       # generate U
       mean = 0
-      std = np.sqrt(0.2)
+      std = np.sqrt(0.5)
       U = np.random.normal(mean, std, self.N)
       U = U.reshape(-1, 1)
       return U

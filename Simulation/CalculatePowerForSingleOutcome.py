@@ -54,6 +54,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         Iter = 10000
     else:
         Iter = 1000
+    Iter = 50
 
     # Simulate data
     if multiple == False:
@@ -229,6 +230,7 @@ if __name__ == '__main__':
             run(50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+    exit()
         # Lambda values dictionary
     lambda_values = {
         50: {

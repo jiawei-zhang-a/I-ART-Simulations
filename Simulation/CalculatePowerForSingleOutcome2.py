@@ -53,7 +53,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         Iter = 10000
     else:
         Iter = 1000
-    Iter = 1
+    Iter = 50
 
     # Simulate data
     if multiple == False:

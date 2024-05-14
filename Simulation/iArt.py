@@ -106,9 +106,9 @@ def T2(z,y):
     """
 
     #the Wilcoxon rank sum test
-    #Y_rank = rankdata(y)
-    #t = np.sum(Y_rank[z == 1])
-    t = np.sum(y[z == 1])
+    Y_rank = rankdata(y)
+    t = np.sum(Y_rank[z == 1])
+    #t = np.sum(y[z == 1])
 
     return t
 def T(z,y):

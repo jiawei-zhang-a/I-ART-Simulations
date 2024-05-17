@@ -176,11 +176,6 @@ def getT(y, z, lenY, M):
     for i in range(lenY):
         # Split the data into missing and non-missing parts using the split function
         y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
-        #get the variance of the non-missing part
-        var_non_missing = np.var(y_non_missing)
-        # Add this variance of noise to the missing part
-        y_missing = y_missing + np.random.normal(0, np.sqrt(var_non_missing), len(y_missing))
-        
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
         t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))

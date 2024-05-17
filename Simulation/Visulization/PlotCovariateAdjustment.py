@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from ReadData import read_npz_files_main
+from ReadData import read_npz_files
 
 def plot_results(data, title, xsticks):
     plt.clf()
@@ -57,16 +57,16 @@ def plot(range,range_small, path,path_small, title, title_small):
     for coef in range:
         row_power = [coef]
         for directory in [path + "/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=False)
+            results = read_npz_files(directory,small_size=False)
             row_power.extend([ results['lightgbm_power'], results['lr_power'], results['median_power']])
         for directory in [path + "_adjusted_LightGBM/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=False, type='adjusted')
+            results = read_npz_files(directory,small_size=False, type='adjusted')
             row_power.extend([ results['lightgbm_power'] ])
         for directory in [path + "_adjusted_LR/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=False, type='adjusted')
+            results = read_npz_files(directory,small_size=False, type='adjusted')
             row_power.extend([ results['lr_power'] ])
         for directory in [path + "_adjusted_Median/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=False, type='adjusted')
+            results = read_npz_files(directory,small_size=False, type='adjusted')
             row_power.extend([ results['median_power'] ])
 
         Power_data.append(row_power)
@@ -76,16 +76,16 @@ def plot(range,range_small, path,path_small, title, title_small):
     for coef in range_small:
         row_power_small = [coef]
         for directory in [path_small + "/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=True)
+            results = read_npz_files(directory,small_size=True)
             row_power_small.extend([results['xgboost_power'], results['lr_power'], results['median_power']])
         for directory in [path_small + "_adjusted_Xgboost/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=True, type='adjusted')
+            results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['xgboost_power']])
         for directory in [path_small + "_adjusted_LR/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=True, type='adjusted')
+            results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['lr_power']])
         for directory in [path_small + "_adjusted_Median/%f" % (coef)]:
-            results = read_npz_files_main(directory,small_size=True, type='adjusted')
+            results = read_npz_files(directory,small_size=True, type='adjusted')
             row_power_small.extend([results['median_power']])
         Power_data_small.append(row_power_small)
     print(Power_data_small)

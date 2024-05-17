@@ -6,7 +6,7 @@ from sklearn.impute import SimpleImputer
 import xgboost as xgb
 from sklearn import linear_model
 from sklearn.base import BaseEstimator, TransformerMixin
-import iArt
+import Application.iArt2 as iArt2
 
 # Load the arrays from the .npz file
 arrays = np.load('Data/arrays.npz')
@@ -58,27 +58,27 @@ with open(file_path, 'a') as file:
     file.write("XGBoost: " + str(result) + '\n')"""
 
 RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=5)
-result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result = iArt2.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("RidgeRegression5: " + str(result) + '\n')
 
 LinearRegression = IterativeImputer(estimator=linear_model.LinearRegression(), max_iter=3)
-result = iArt.test(G=LinearRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result = iArt2.test(G=LinearRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LinearRegression3: " + str(result) + '\n')
 
 RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge())
-result = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result = iArt2.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("RidgeRegression10: " + str(result) + '\n')
 
 LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), max_iter=5)
-result = iArt.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result = iArt2.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM5: " + str(result) + '\n')
 
 LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), max_iter=10)
-result = iArt.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result = iArt2.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM10: " + str(result) + '\n')
 
@@ -86,7 +86,7 @@ with open(file_path, 'a') as file:
 
 
 LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor())
-result = iArt.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result = iArt2.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("LightGBM: " + str(result) + '\n')
 

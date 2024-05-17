@@ -5,7 +5,7 @@ from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
 from sklearn import linear_model
 from sklearn.base import BaseEstimator, TransformerMixin
-import iArt
+import Application.iArt2 as iArt2
 import pandas as pd
 
 # Load the arrays from the .npz file
@@ -70,7 +70,7 @@ print(S.shape)
 no_op_imputer = NoOpImputer()
 with open(file_path, 'a') as file:
     file.write("One-sided test\n")
-result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= no_op_imputer, verbose=1,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state)
+result = iArt2.test(Z=Z, X=X, Y=Y, S=S,L=L,G= no_op_imputer, verbose=1,threshholdForX = threshholdForX,mode = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
     file.write("NoOp: " + str(result) + '\n')
 

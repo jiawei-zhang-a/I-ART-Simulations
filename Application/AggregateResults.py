@@ -42,22 +42,21 @@ for imputer_type, results in results_by_imputer.items():
     plt.title('p-values over beta values')
     plt.legend()
     plt.show()"""
-    # Calculate the middle index
-    middle_index = len(beta_values) // 2
-    start_index = middle_index - 20
-    end_index = middle_index + 20
 
-    # Slice to get only the middle 100 values
-    middle_beta_values = beta_values[start_index:end_index]
-    middle_p_values = p_values[start_index:end_index]
+    # Create the plot smoother
+    # Add the metric to the X axis    plt.scatter(beta_values, p_values, label=imputer_type,s=1) 
 
-    # Create the plot with only the middle 100 points
-    plt.scatter(middle_beta_values, middle_p_values, label=imputer_type)
+    # Assuming beta_values and p_values are already defined, along with imputer_type
+    plt.scatter(beta_values, p_values, label=imputer_type, s=1)
+
+    # Add a vertical line at beta = 0.125
+    plt.axvline(x=0.125, color='r', linestyle='--', label='Metric 0.125')
+
     plt.xlabel('Beta')
     plt.ylabel('p-value')
     plt.title('p-values over beta values')
     plt.legend()
-    plt.show()
+    #plt.show()
 
 
     # Assuming the last element in the result is the p-value

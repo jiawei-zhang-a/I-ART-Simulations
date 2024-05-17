@@ -16,6 +16,7 @@ import time
 import warnings
 from scipy.stats import rankdata
 
+
 def holm_bonferroni(p_values, alpha = 0.05):
     """
     Perform the Holm-Bonferroni correction on the p-values
@@ -100,19 +101,23 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         
         return Y_head_adjusted
 
-def T2(z,y):
+def tt(z,y):
+    # t-test
+    if len(y) == 0:
+        return 0
+
+    t, _ = stats.ttest_ind(y[z == 1], y[z == 0])
+    return t
+
+def T(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
     """
 
-    #the Wilcoxon rank sum test
     Y_rank = rankdata(y)
     t = np.sum(Y_rank[z == 1])
-    #t = np.sum(y[z == 1])
 
     return t
-
-
 
 def split(y, z, M):
     """
@@ -139,19 +144,21 @@ def getT(y, z, lenY, M):
     t = []
     for i in range(lenY):
         # Split the data into missing and non-missing parts using the split function
-        #y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
+        y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
+        #get the variance of the non-missing part
+        var_non_missing = np.var(y_non_missing)
+        # Add this variance of noise to the missing part
+        y_missing = y_missing + np.random.normal(0, np.sqrt(var_non_missing), len(y_missing))
         
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
-        #t_missing = T3(z_missing.reshape(-1,), y_missing.reshape(-1,))
-        #t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
-
-        #t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
+        t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
 
         # Sum the T values for both parts
-        #t_combined =  t_missing + t_non_missing
+        t_combined =  t_missing + t_non_missing
 
-        t_combined = T2(z.reshape(-1,), y[:,i].reshape(-1,))
+        #t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
         t.append(t_combined)
 
     return np.array(t)
@@ -223,7 +230,7 @@ def preprocess(Z, X, Y, S):
     return Z, X, Y, S, M
 
 
-def check_param(*,Z, X, Y, S, G, L,mode, verbose, covariate_adjustment,alpha,alternative,random_state):
+def check_param(*,Z, X, Y, S, G, L,randomization_design, verbose, covariate_adjustment,alpha,alternative,random_state):
     """
     Check the validity of the input parameters
     """
@@ -272,9 +279,9 @@ def check_param(*,Z, X, Y, S, G, L,mode, verbose, covariate_adjustment,alpha,alt
     if random_state != None and (not isinstance(random_state, int) or random_state < 0):
         raise ValueError("random_state must be an integer >= 0 or None")
     
-    # Check mode: must be one of "strata" or "cluster"
-    if mode not in ["strata", "cluster"]:
-        raise ValueError("mode must be one of strata or cluster")
+    # Check randomization_design: must be one of "strata" or "cluster"
+    if randomization_design not in ["strata", "cluster"]:
+        raise ValueError("randomization design must be one of strata or cluster")
     
     
 def choosemodel(G):
@@ -347,7 +354,7 @@ def transformX(X, threshold=0.1, verbose=True):
     
     return X
 
-def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshholdForX = 0.2, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
+def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshold_covariate_median_imputation = 0.2, randomization_design = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
     """Imputation-Assisted Randomization Tests (iArt) for testing 
     the null hypothesis that the treatment has no effect on the outcome.
 
@@ -362,7 +369,7 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshholdForX = 0.2, mode = 's
     S : array_like, default: None
         S is the array of observed strata indicators
         
-    threshholdForX : float, default: 0.1
+    threshold_covariate_median_imputation : float, default: 0.1
         The threshhold for missing outcome to be imputed in advance in covariate X
 
     G : str or function, default: 'linear'
@@ -372,8 +379,9 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshholdForX = 0.2, mode = 's
     L : int, default: 10000
         The number of Monte Carlo simulations 
 
-    mode : {'strata','cluster'}, default: 'strata'
-        A string indicating the randomization mode
+    randomization_design : {'strata','cluster'}, default: 'strata'
+        A string indicating the randomization 
+        
 
     verbose : bool, default: False
         A boolean indicating whether to print training start and end 
@@ -410,10 +418,10 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshholdForX = 0.2, mode = 's
 
     # preprocess the variable
     Z, X, Y, S, M = preprocess(Z, X, Y, S)
-    X = transformX(X,threshholdForX,verbose)
+    X = transformX(X,threshold_covariate_median_imputation,verbose)
 
     # Check the validity of the input parameters
-    check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L, mode=mode, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
+    check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L, randomization_design=randomization_design, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
     
     # Set random seed
     np.random.seed(random_state)
@@ -441,7 +449,7 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshholdForX = 0.2, mode = 's
 
     # re-impute the missing values and calculate the observed test statistics in part 2
     t_sim = [ [] for _ in range(L)]
-    if mode == 'strata':
+    if randomization_design == 'strata':
         Z_sim_templates = getZsimTemplates(Z, S)
     else:
         p = 0.5
@@ -452,7 +460,7 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshholdForX = 0.2, mode = 's
     for l in range(L):
         
         # simulate treatment indicators
-        if mode == 'strata':
+        if randomization_design == 'strata':
             Z_sim = getZsim(Z_sim_templates)
         else:
             cluster_sim = cluster_sim_template.copy()

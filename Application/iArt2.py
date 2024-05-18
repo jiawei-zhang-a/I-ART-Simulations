@@ -182,6 +182,9 @@ def getT(y, z, lenY, M):
         # Add this variance of noise to the missing part
         y_missing = y_missing + np.random.normal(0, np.sqrt(var_non_missing), len(y_missing))
         
+
+        print("y_missing_var", np.var(y_missing))
+        print("y_non_missing_var", np.var(y_non_missing))
         # Calculate T for missing and non-missing parts
         #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
         t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))

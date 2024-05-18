@@ -6,7 +6,7 @@ from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
 from sklearn import linear_model
 from sklearn.base import BaseEstimator, TransformerMixin
-import Application.iArt2 as iArt2
+import iArt2
 
 # Load the arrays from the .npz file
 arrays = np.load('Data/arrays.npz')

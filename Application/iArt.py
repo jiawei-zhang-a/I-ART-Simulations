@@ -140,7 +140,6 @@ def getT(y, z, lenY, M):
         y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
         
         # Calculate T for missing and non-missing parts
-        #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
         t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))
         t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
 

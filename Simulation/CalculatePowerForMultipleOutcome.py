@@ -30,7 +30,6 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
 
     Iter = 10000
 
-
     DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.25, verbose=verbose,Missing_lambda = Missing_lambda)
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
@@ -40,7 +39,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
 
     values_oracle = [ *p_values, reject]
     #mask Y with M
-    Y = np.ma.masked_array(Y, mask=M)
+    """Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
 
     #Median imputer
@@ -67,22 +66,22 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         print("LightGBM")
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
         reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
-        values_lightgbm = [ *p_values, reject ]
+        values_lightgbm = [ *p_values, reject ]"""
 
 
 
     os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)
 
     # Save numpy arrays to files
-    np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
+    #np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
 
     np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
-    np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
+    """np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
     if small_size == True:
         np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
     else:
         np.save('%s/%f/p_values_lightgbm_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
-
+"""
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         task_id = int(sys.argv[1])

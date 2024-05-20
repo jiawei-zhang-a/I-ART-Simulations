@@ -30,7 +30,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=0, small
 
     Iter = 100
 
-    DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.3, verbose=verbose,Missing_lambda = Missing_lambda)
+    DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.1, verbose=verbose,Missing_lambda = Missing_lambda)
     X, Z, U, Y, M, S = DataGen.GenerateData()
 
     Framework = RandomizationTest.RandomizationTest(N = Nsize)

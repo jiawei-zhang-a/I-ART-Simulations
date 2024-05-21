@@ -68,8 +68,6 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=0, small
         reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
         values_lightgbm = [ *p_values, reject ]
 
-
-
     os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)
 
 

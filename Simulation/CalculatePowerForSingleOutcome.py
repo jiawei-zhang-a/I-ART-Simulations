@@ -9,6 +9,7 @@ import MultipleOutcomeModelGenerator as GeneratorMutiple
 import RandomizationTest as RandomizationTest
 import os
 import iArt
+import iArt2
 import lightgbm as lgb
 import xgboost as xgb
 import iArt
@@ -50,20 +51,24 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     
     Missing_lambda = None
 
-    Iter = 10000
+    if beta_coef == 0:
+        Iter = 10000
+    else:
+        Iter = 1000
+    
 
     # Simulate data
     if multiple == False:
-        DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
+        DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef,model = model, MaskRate=0.25, verbose=verbose,Missing_lambda = Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
     else:
-        DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
+        DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.25, verbose=verbose,Missing_lambda = Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
-
-    """Framework = RandomizationTest.RandomizationTest(N = Nsize)
+    Framework = RandomizationTest.RandomizationTest(N = Nsize)
     reject, p_values= Framework.test(Z, X, M, Y,strata_size = 10, L=Iter, G = None,verbose=verbose)
     # Append p-values to corresponding lists
-    values_oracle = [ *p_values, reject]"""
+
+    values_oracle = [ *p_values, reject]
     #mask Y with M
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
@@ -71,14 +76,10 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     #Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose)
+    reject, p_values = iArt2.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose)
     values_median = [ *p_values, reject ]
 
-    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose, covariate_adjustment=1)
-    values_medianLR = [ *p_values, reject ]
-
-    """#LR imputer
+    #LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=BayesianRidge,L=Iter, verbose=verbose )
@@ -98,35 +99,18 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
         values_lightgbm = [ *p_values, reject ]
 
-    # Combine the data into DataFrame
-
-    # Drop the missing values only based on outcomes Y
-    combined_data = combined_data.dropna(subset=['Y'])
-
-    X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
-    Z = combined_data['Z'].values.reshape(-1, 1)
-    Y = combined_data['Y'].values.reshape(-1, 1)
-    S = combined_data['S'].values.reshape(-1, 1)
-
-    G = NoOpImputer()
-
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
-    values_complete = [ *p_values, reject ]"""
-
-
     os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)
-    os.makedirs("%s_adjusted_Median/%f"%(filepath,beta_coef), exist_ok=True)
 
-    # Save numpy arrays to files
-    np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
-    np.save('%s_adjusted_Median/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_medianLR)
 
-    """np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
+    np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
     np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
     if small_size == True:
         np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
     else:
-        np.save('%s/%f/p_values_lightgbm_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)"""
+        np.save('%s/%f/p_values_lightgbm_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
+
+
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
@@ -226,7 +210,7 @@ if __name__ == '__main__':
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
         # Lambda values dictionary
-    lambda_values = {
+    """lambda_values = {
         50: {
             0.0: [5.46301136050662, 1.7687104800990539, 3.6986401066938748],
             0.12: [5.507071138438006, 1.8832179319883895, 3.8250507348009557],
@@ -274,4 +258,4 @@ if __name__ == '__main__':
             lambda_value = beta_to_lambda[beta_coef_rounded]
             run(Nsize = 50, filepath = "Result/HPC_power_50_model6",adjust =0,  model = 6, Missing_lambda = lambda_value, small_size=True)
         else:
-            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}") """

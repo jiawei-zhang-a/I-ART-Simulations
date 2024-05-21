@@ -13,6 +13,7 @@ import lightgbm as lgb
 import xgboost as xgb
 from sklearn.impute import SimpleImputer
 import time
+from sklearn import linear_model
 import warnings
 from scipy.stats import rankdata
 
@@ -100,7 +101,7 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
             Y_head_adjusted[:, i] = Y_current - Y_current_adjusted
         
         return Y_head_adjusted
-
+    
 def T(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
@@ -110,7 +111,7 @@ def T(z,y):
     t = np.sum(Y_rank[z == 1])
 
     return t
-    
+
 
 def split(y, z, M):
     """
@@ -136,8 +137,32 @@ def getT(y, z, lenY, M):
 
     t = []
     for i in range(lenY):
+        # Split the data into missing and non-missing parts using the split function
+        y_missing, y_non_missing, z_missing, z_non_missing = split(y[:,i], z, M[:,i])
 
-        t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
+
+        #get the variance of the non-missing part
+        var_non_missing = np.var(y_non_missing)
+        # Add this variance of noise to the missing part
+        y_missing = y_missing + np.random.normal(0, np.sqrt(var_non_missing), len(y_missing))
+
+        y_missing = y_missing.reshape(-1,)
+        y_non_missing = y_non_missing.reshape(-1,)
+
+
+        # Calculate T for missing and non-missing parts
+        #t_missing = T2(z_missing, y_missing.reshape(-1,), y_non_missing.reshape(-1,))
+        #t_missing = T(z_missing.reshape(-1,), y_missing.reshape(-1,))
+        #t_non_missing = T(z_non_missing.reshape(-1,), y_non_missing.reshape(-1,))
+
+        # Sum the T values for both parts
+        #t_combined =  t_missing + t_non_missing
+        y_combined = np.concatenate((y_missing, y_non_missing)).reshape(-1, )
+        z_combined = np.concatenate((z_missing, z_non_missing)).reshape(-1, )
+        t_combined = T(z_combined,y_combined)
+        # Combine the Y and the Z
+
+        #t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
         t.append(t_combined)
 
     return np.array(t)

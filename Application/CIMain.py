@@ -1,7 +1,6 @@
 import sys
 import numpy as np
 import os
-import iArt2
 import iArt
 import lightgbm as lgb
 import xgboost as xgb
@@ -61,7 +60,7 @@ np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actu
 
 # Save the result for median imputer
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-reject,p_values = iArt2.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
 result_path = f"{folder_name}/test_median_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 

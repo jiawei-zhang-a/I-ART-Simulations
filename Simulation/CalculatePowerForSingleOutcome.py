@@ -50,11 +50,7 @@ class NoOpImputer(BaseEstimator, TransformerMixin):
 def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small_size = True, multiple = False):
     
     Missing_lambda = None
-
-    if beta_coef == 0:
-        Iter = 10000
-    else:
-        Iter = 1000
+    Iter = 1000
     
 
     # Simulate data
@@ -100,8 +96,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         values_lightgbm = [ *p_values, reject ]
 
     os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)
-
-
+    np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
     np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
     np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
     if small_size == True:

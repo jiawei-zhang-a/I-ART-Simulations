@@ -50,7 +50,10 @@ class NoOpImputer(BaseEstimator, TransformerMixin):
 def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small_size = True, multiple = False):
     
     Missing_lambda = None
-    Iter = 1000
+    if beta_coef == 0:
+        Iter = 10000
+    else:
+        return
     
 
     # Simulate data

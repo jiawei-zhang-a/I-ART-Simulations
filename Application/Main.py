@@ -23,7 +23,7 @@ S = arrays['S']
 
 # Run the iArt test
 file_path = "p_values_testnoiseinG.txt"
-L = 10000
+L = 1
 verbose = 1
 random_state = 0
 

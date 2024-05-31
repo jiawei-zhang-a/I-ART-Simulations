@@ -2,7 +2,6 @@
 import pandas as pd
 import numpy as np
 from statsmodels.stats.multitest import multipletests
-from scipy import stats
 from sklearn.base import clone
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -14,8 +13,6 @@ import xgboost as xgb
 from sklearn.impute import SimpleImputer
 import time
 import warnings
-from scipy.stats import rankdata
-
 
 def holm_bonferroni(p_values, alpha = 0.05):
     """
@@ -106,37 +103,25 @@ def T(z,y):
     Calculate the Wilcoxon rank sum test statistics
     """
 
-    Y_rank = rankdata(y)
-    t = np.sum(Y_rank[z == 1])
+    #the Wilcoxon rank sum test
+    n = len(z)
+    t = 0
+    my_list = []
+    for i in range(n):
+        my_list.append((z[i],y[i]))
+    sorted_list = sorted(my_list, key=lambda x: x[1])
+    for i in range(n):
+        t += sorted_list[i][0] * (i + 1)
 
     return t
-    
-
-def split(y, z, M):
-    """
-    Split the data into missing and non-missing parts
-    """
-    
-    missing_indices = M[:].astype(bool)
-    non_missing_indices = ~missing_indices
-
-    y_missing = y[missing_indices].reshape(-1,)
-    y_non_missing = y[non_missing_indices].reshape(-1,)
-
-    z_missing = z[missing_indices].reshape(-1,)
-    z_non_missing = z[non_missing_indices].reshape(-1,)
-
-    return y_missing, y_non_missing, z_missing, z_non_missing
 
 def getT(y, z, lenY, M):
     """
-    Separately calculate T for missing and non-missing parts of each outcome using Wilcoxon rank sum test
-    Return the sum of T values for all outcomes
+    Calculate the Wilcoxon rank sum test statistics for each outcome
     """
 
     t = []
     for i in range(lenY):
-
         t_combined = T(z.reshape(-1,), y[:,i].reshape(-1,))
         t.append(t_combined)
 
@@ -177,18 +162,18 @@ def preprocess(Z, X, Y, S):
     Preprocess the input variables, including reshaping, concatenating, sorting, and extracting
     """
 
-    if S is None:
-        S = np.ones(Z.shape).reshape(-1, 1)
-        M = np.isnan(Y).reshape(-1, Y.shape[1])
-        return Z, X, Y, S, M
-    
-    """# Reshape Z, X, Y, S, M to (-1, 1) if they're not already in that shape
+    # Reshape Z, X, Y, S, M to (-1, 1) if they're not already in that shape
     Z = np.array(Z)
     X = np.array(X)
     Y = np.array(Y)
     X = X.reshape(-1, X.shape[1])
     Z = Z.reshape(-1, 1)
 
+    if S is None:
+        S = np.ones(Z.shape).reshape(-1, 1)
+        M = np.isnan(Y).reshape(-1, Y.shape[1])
+        return Z, X, Y, S, M
+    
     S = np.array(S)
     S = S.reshape(-1, 1)
 
@@ -202,14 +187,13 @@ def preprocess(Z, X, Y, S):
     Z = df.iloc[:, :Z.shape[1]].values.reshape(-1, 1)
     X = df.iloc[:, Z.shape[1]:Z.shape[1] + X.shape[1]].values.reshape(-1, X.shape[1])
     Y = df.iloc[:, Z.shape[1] + X.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1]].values.reshape(-1, Y.shape[1])
-    S = df.iloc[:, Z.shape[1] + X.shape[1] + Y.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1] + S.shape[1]].values.reshape(-1, 1) """
+    S = df.iloc[:, Z.shape[1] + X.shape[1] + Y.shape[1]:Z.shape[1] + X.shape[1] + Y.shape[1] + S.shape[1]].values.reshape(-1, 1)
 
     M = np.isnan(Y).reshape(-1, Y.shape[1])
-
     return Z, X, Y, S, M
 
 
-def check_param(*,Z, X, Y, S, G, L,randomization_design, verbose, covariate_adjustment,alpha,alternative,random_state):
+def check_param(*,Z, X, Y, S, G, L,mode, verbose, covariate_adjustment,alpha,alternative,random_state):
     """
     Check the validity of the input parameters
     """
@@ -258,9 +242,9 @@ def check_param(*,Z, X, Y, S, G, L,randomization_design, verbose, covariate_adju
     if random_state != None and (not isinstance(random_state, int) or random_state < 0):
         raise ValueError("random_state must be an integer >= 0 or None")
     
-    # Check randomization_design: must be one of "strata" or "cluster"
-    if randomization_design not in ["strata", "cluster"]:
-        raise ValueError("randomization design must be one of strata or cluster")
+    # Check mode: must be one of "strata" or "cluster"
+    if mode not in ["strata", "cluster"]:
+        raise ValueError("mode must be one of strata or cluster")
     
     
 def choosemodel(G):
@@ -333,7 +317,7 @@ def transformX(X, threshold=0.1, verbose=True):
     
     return X
 
-def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshold_covariate_median_imputation = 0.2, randomization_design = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
+def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshholdForX = 0.2, mode = 'strata',verbose = False, covariate_adjustment = 0, random_state=None, alternative = "greater", alpha = 0.05):
     """Imputation-Assisted Randomization Tests (iArt) for testing 
     the null hypothesis that the treatment has no effect on the outcome.
 
@@ -348,7 +332,7 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshold_covariate_median_impu
     S : array_like, default: None
         S is the array of observed strata indicators
         
-    threshold_covariate_median_imputation : float, default: 0.1
+    threshholdForX : float, default: 0.1
         The threshhold for missing outcome to be imputed in advance in covariate X
 
     G : str or function, default: 'linear'
@@ -358,9 +342,8 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshold_covariate_median_impu
     L : int, default: 10000
         The number of Monte Carlo simulations 
 
-    randomization_design : {'strata','cluster'}, default: 'strata'
-        A string indicating the randomization 
-        
+    mode : {'strata','cluster'}, default: 'strata'
+        A string indicating the randomization mode
 
     verbose : bool, default: False
         A boolean indicating whether to print training start and end 
@@ -397,10 +380,10 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshold_covariate_median_impu
 
     # preprocess the variable
     Z, X, Y, S, M = preprocess(Z, X, Y, S)
-    X = transformX(X,threshold_covariate_median_imputation,verbose)
+    X = transformX(X,threshholdForX,verbose)
 
     # Check the validity of the input parameters
-    check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L, randomization_design=randomization_design, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
+    check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L, mode=mode, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
     
     # Set random seed
     np.random.seed(random_state)
@@ -428,7 +411,7 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshold_covariate_median_impu
 
     # re-impute the missing values and calculate the observed test statistics in part 2
     t_sim = [ [] for _ in range(L)]
-    if randomization_design == 'strata':
+    if mode == 'strata':
         Z_sim_templates = getZsimTemplates(Z, S)
     else:
         p = 0.5
@@ -439,7 +422,7 @@ def test(*,Z, X, Y, G='linear', S=None,L = 10000,threshold_covariate_median_impu
     for l in range(L):
         
         # simulate treatment indicators
-        if randomization_design == 'strata':
+        if mode == 'strata':
             Z_sim = getZsim(Z_sim_templates)
         else:
             cluster_sim = cluster_sim_template.copy()

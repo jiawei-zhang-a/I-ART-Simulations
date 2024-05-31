@@ -11,7 +11,7 @@ import pandas as pd
 from sklearn import linear_model
 
 # Parameter for the iArt.test function
-L = 10000
+L = 1
 verbose = 0
 random_state = 0
 threshold_covariate_median_imputation = 0.0
@@ -54,35 +54,35 @@ else:
 
 # Save the result for median imputer
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=threshold_covariate_median_imputation, random_state=random_state, covariate_adjustment=1)
-result_path = f"{folder_name}/test_medianWithCovariateAdjustment_{beta}.npy"
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+result_path = f"{folder_name}/test_MedianImputation_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
-# Save the result for median imputer
+# Save the result for median imputer with covariate adjustment
 median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
-result_path = f"{folder_name}/test_median_{beta}.npy"
+reject,p_values = iArt.test(G=median_imputer,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state, covariate_adjustment='linear')
+result_path = f"{folder_name}/test_MedianImputationwithCovariateAdjustment_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for ridge regression
 RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=3)
 reject,p_values = iArt.test(G=RidgeRegression, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
-result_path = f"{folder_name}/test_linear_{beta}.npy"
+result_path = f"{folder_name}/test_AlgoILinear_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for ridge regression with covariate adjustment
-reject,p_values = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, covariate_adjustment=1, random_state=random_state)
-result_path = f"{folder_name}/test_linearWithCovariateAdjustment_{beta}.npy"
+reject,p_values = iArt.test(G=RidgeRegression,Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, covariate_adjustment='linear', random_state=random_state)
+result_path = f"{folder_name}/test_AlgoIILinear_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=3)
 # Save the result for LightGBM
 reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
-result_path = f"{folder_name}/test_boosting_{beta}.npy"
+result_path = f"{folder_name}/test_AlgoIBoosting_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 
 # Save the result for LightGBM with covariate adjustment
-reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, covariate_adjustment=3, random_state=random_state)
-result_path = f"{folder_name}/test_boostingWithCovariateAdjustment_{beta}.npy"
+reject,p_values = iArt.test(G=LightGBM, Z=Z, X=X, Y=Y_adjusted, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, covariate_adjustment='lightgbm', random_state=random_state)
+result_path = f"{folder_name}/test_AlgoIIBoosting_{beta}.npy"
 np.save(result_path, np.array([beta, reject,*p_values]))  # Adjust based on actual result structure
 

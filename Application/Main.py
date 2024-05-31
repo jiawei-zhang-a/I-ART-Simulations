@@ -1,16 +1,11 @@
+# We will run the iArt test on the cleaned dataset using different imputation methods
 import numpy as np
 import lightgbm as lgb
-import xgboost as xgb
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.impute import SimpleImputer
 from sklearn import linear_model
-from sklearn.base import BaseEstimator, TransformerMixin
-import iArtrandom as iArt1
-import iArtrandom2 as iArt2
-import iArtrandom3 as iArt3
-
-
+import iArt
 
 # Load the arrays from the .npz file
 arrays = np.load('Data/arrays.npz')
@@ -22,24 +17,34 @@ Y = arrays['Y']
 S = arrays['S']
 
 # Run the iArt test
-file_path = "p_values_testnoiseinG.txt"
+file_path = "_p_values.txt"
 L = 1
 verbose = 1
 random_state = 0
 
-median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-result = iArt3.test(G=median_imputer,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+# Write the results with one-sided test
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= 'median', verbose=verbose,threshold_covariate_median_imputation = 0.0,randomization_design = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
-    file.write("Median: " + str(result) + '\n')
-exit()
+    file.write("Median Imputation: " + str(result) + '\n')
 
-RidgeRegression = IterativeImputer(estimator=linear_model.BayesianRidge(),max_iter=3)
-result = iArt1.test(G=RidgeRegression,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+Algo1_Linear = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=3)
+result = iArt.test(G=Algo1_Linear,Z=Z, X=X, Y=Y, S=S,L=L, verbose = verbose,randomization_design = 'cluster',threshold_covariate_median_imputation = 0.0,random_state=random_state)
 with open(file_path, 'a') as file:
-    file.write("RidgeRegression: " + str(result) + '\n')
+    file.write("Algo 1 - Linear: " + str(result) + '\n')
 
-LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(), max_iter=3)
-result = iArt2.test(G=LightGBM,Z=Z, X=X, Y=Y, S=S, L=L, verbose=verbose, randomization_design='cluster', threshold_covariate_median_imputation=0.0, random_state=random_state)
+Algo1_Boosting = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=3)
+result = iArt.test(G=Algo1_Boosting,Z=Z, X=X, Y=Y,S=S,L=L,threshold_covariate_median_imputation = 0.0, verbose=verbose,randomization_design = 'cluster',random_state=random_state)
 with open(file_path, 'a') as file:
-    file.write("LightGBM: " + str(result) + '\n')
+    file.write("Algo 1 - Boosting: " + str(result) + '\n')
 
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L,G= 'median', verbose=verbose,threshold_covariate_median_imputation = 0.0,randomization_design = 'cluster', covariate_adjustment='linear',random_state=random_state)
+with open(file_path, 'a') as file:
+    file.write("Median Imputation with Covariate Adjustment: " + str(result) + '\n')
+
+result = iArt.test(Z=Z, X=X, Y=Y, S=S,L=L, verbose=verbose,randomization_design = 'cluster', threshold_covariate_median_imputation = 0.0,covariate_adjustment='linear',random_state=random_state)
+with open(file_path, 'a') as file:
+    file.write("Algo 2 - Linear: " + str(result) + '\n')
+
+result = iArt.test(G=Algo1_Boosting,Z=Z, X=X, Y=Y,S=S,L=L,threshold_covariate_median_imputation = 0.0, verbose=verbose,randomization_design = 'cluster', covariate_adjustment='lightgbm',random_state=random_state)
+with open(file_path, 'a') as file:
+    file.write("Algo 2 - Boosting: " + str(result) + '\n')

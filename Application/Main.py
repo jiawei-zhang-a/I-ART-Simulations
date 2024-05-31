@@ -18,7 +18,7 @@ S = arrays['S']
 
 # Run the iArt test
 file_path = "_p_values.txt"
-L = 1
+L = 10000
 verbose = 1
 random_state = 0
 

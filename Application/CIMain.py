@@ -11,7 +11,7 @@ import pandas as pd
 from sklearn import linear_model
 
 # Parameter for the iArt.test function
-L = 1
+L = 10000
 verbose = 0
 random_state = 0
 threshold_covariate_median_imputation = 0.0

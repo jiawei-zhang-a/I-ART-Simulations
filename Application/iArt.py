@@ -13,6 +13,8 @@ import xgboost as xgb
 from sklearn.impute import SimpleImputer
 import time
 import warnings
+from scipy.stats import rankdata
+
 
 def holm_bonferroni(p_values, alpha = 0.05):
     """
@@ -103,15 +105,8 @@ def T(z,y):
     Calculate the Wilcoxon rank sum test statistics
     """
 
-    #the Wilcoxon rank sum test
-    n = len(z)
-    t = 0
-    my_list = []
-    for i in range(n):
-        my_list.append((z[i],y[i]))
-    sorted_list = sorted(my_list, key=lambda x: x[1])
-    for i in range(n):
-        t += sorted_list[i][0] * (i + 1)
+    Y_rank = rankdata(y)
+    t = np.sum(Y_rank[z == 1])
 
     return t
 

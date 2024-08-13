@@ -65,3 +65,11 @@ If you use I-ART in your research, please consider citing it:
       primaryClass={stat.ME}
 }
 ```
+
+For a more formal tone in the README, you could write:
+
+## Acknowledgments
+
+We would like to extend our sincere gratitude to Angel Wu for her invaluable contributions to the development of this software. Her assistance has been instrumental in our progress.
+
+

@@ -66,7 +66,7 @@ If you use I-ART in your research, please consider citing it:
 }
 ```
 
-For a more formal tone in the README, you could write:
+
 
 ## Acknowledgments
 

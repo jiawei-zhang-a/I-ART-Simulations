@@ -7,7 +7,7 @@ import SingleOutcomeModelGenerator as Generator
 import os
 import lightgbm as lgb
 import xgboost as xgb
-import iArt
+import Simulation.iArtModelBased as iArtModelBased
 
 # Do not change this parameter
 beta_coef = None
@@ -39,7 +39,7 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
     if adjust == 0 or adjust == 1:
         print("LR")
         BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=BayesianRidge,L=Iter, covariate_adjustment=adjust)
+        reject, p_values = iArtModelBased.test(Z=Z, X=X, Y=Y,G=BayesianRidge,L=Iter, covariate_adjustment=adjust)
         values_LR = [ *p_values, reject ]
 
         # If the folder does not exist, create it
@@ -51,14 +51,14 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
         if small_size == True:
             print("Xgboost")
             XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(), max_iter=max_iter)
-            reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=XGBoost,L=Iter, covariate_adjustment=adjust)
+            reject, p_values = iArtModelBased.test(Z=Z, X=X, Y=Y,G=XGBoost,L=Iter, covariate_adjustment=adjust)
             values_xgboost = [ *p_values, reject ]
 
         #LightGBM
         if small_size == False:
             print("LightGBM")
             LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(verbosity=-1), max_iter=max_iter)
-            reject, p_values = iArt.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter, covariate_adjustment=adjust)
+            reject, p_values = iArtModelBased.test(Z=Z, X=X, Y=Y,G=LightGBM,L=Iter, covariate_adjustment=adjust)
             values_lightgbm = [ *p_values, reject ]
 
     #Save the file in numpy format

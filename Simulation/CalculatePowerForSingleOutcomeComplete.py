@@ -8,7 +8,7 @@ import MultipleOutcomeModelGenerator as MultipleGenerator
 import os
 import lightgbm as lgb
 import xgboost as xgb
-import iArt
+import Simulation.iArtModelBased as iArtModelBased
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 import RandomizationTest as RandomizationTest
@@ -74,7 +74,7 @@ def runMultiple(Nsize, filepath, Missing_lambda, strata_size = 10,small_size = T
     G = NoOpImputer()
     #G = SimpleImputer(missing_values=np.nan, strategy='median')
 
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=G,L=L)
+    reject, p_values = iArtModelBased.test(Z=Z, X=X, Y=Y,S=S,G=G,L=L)
     values_complete = [ *p_values, reject ]
 
 
@@ -119,7 +119,7 @@ def run(*,Nsize, filepath, adjust, Missing_lambda, strata_size = 10,small_size =
 
     G = NoOpImputer()
 
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
+    reject, p_values = iArtModelBased.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
     values_complete = [ *p_values, reject ]
 
     # If the folder does not exist, create it

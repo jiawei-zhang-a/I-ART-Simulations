@@ -4,6 +4,7 @@ import numpy as np
 from statsmodels.stats.multitest import multipletests
 from sklearn.base import clone
 from scipy.stats import rankdata
+import time
 
 
 class RandomizationTest:
@@ -111,6 +112,8 @@ class RandomizationTest:
 
     def test(self, Z, X, M, Y, G, strata_size, L=10000, verbose = False):
 
+        start_time = time.time()
+        
         df_Z = pd.DataFrame(np.concatenate((Z, X, Y), axis=1))
 
         Y_copy = np.ma.masked_array(Y, mask=M)
@@ -163,13 +166,7 @@ class RandomizationTest:
             print("t_sims_mean:"+str(np.mean(t_sim)))
             print("\n")
 
-        # perform Holm-Bonferroni correction
-        p_values = []
-        for i in range(lenY):
-            p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
-        reject = self.holm_bonferroni(p_values)
-
-        return reject,p_values
+        return time.time() - start_time, t_obs, t_sim
 
     def test_imputed(self, Z, X, M, Y, G,  strata_size, L=10000, verbose = False):
         """
@@ -190,6 +187,8 @@ class RandomizationTest:
         corr: a 1D array of correlations between the imputed and observed values for lenY outcomes
 
         """
+        start_time = time.time()
+
         # mask Y
         Y = np.ma.masked_array(Y, mask=M)
         Y = Y.filled(np.nan)
@@ -245,10 +244,4 @@ class RandomizationTest:
             print("t_sims_mean:"+str(np.mean(t_sim)))
             print("\n")
 
-        # perform Holm-Bonferroni correction
-        p_values = []
-        for i in range(lenY):
-            p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
-        reject = self.holm_bonferroni(p_values,alpha = 0.05)
-
-        return reject,p_values
+        return time.time() - start_time, t_obs, t_sim

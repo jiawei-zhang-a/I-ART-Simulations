@@ -465,9 +465,6 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
                 Z_sim.append(cluster_sim[int(s) - 1])
             Z_sim = np.array(Z_sim).reshape(-1, 1)
 
-        # impute the missing values and get the predicted Y values        
-        Y_pred = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
-        
         # get the test statistics 
         t_sim[l] = getT(Y_pred, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
 
@@ -481,7 +478,20 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
     # convert t_sim to numpy array
     t_sim = np.array(t_sim)
 
+    # perform Holm-Bonferroni correction
+    p_values = []
+    for i in range(Y.shape[1]):
+        if alternative == "greater":
+            p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
+        elif alternative == "less":
+            p_values.append(np.mean(t_sim[:,i] <= t_obs[i], axis=0))
+        else:
+            p_values.append(np.mean(np.abs(t_sim[:,i] - np.mean(t_sim[:,i])) >= np.abs(t_obs[i] - np.mean(t_sim[:,i])), axis=0))
+
+    # perform Holm-Bonferroni correction
+    reject = holm_bonferroni(p_values,alpha = alpha)
+
     if verbose:
         print("\nthe time used for the prediction and re-prediction framework:"+str(time.time() - start_time) + " seconds\n")
     
-    return time.time() - start_time, t_obs, t_sim
+    return reject, p_values

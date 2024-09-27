@@ -8,11 +8,26 @@ import SingleOutcomeModelGenerator2 as Generator
 import MultipleOutcomeModelGenerator as GeneratorMutiple
 import RandomizationTest as RandomizationTest
 import os
+from statsmodels.stats.multitest import multipletests
 import lightgbm as lgb
 import xgboost as xgb
-import iArt as iArt
+import iArt
 from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
+
+
+def holm_bonferroni(p_values, alpha = 0.05):
+    """
+    Perform the Holm-Bonferroni correction on the p-values
+    """
+
+    # Perform the Holm-Bonferroni correction
+    reject, corrected_p_values, _, _ = multipletests(p_values, alpha=alpha, method='holm')
+
+    # Check if any null hypothesis can be rejected
+    any_rejected = any(reject)
+
+    return any_rejected
 
 
 # Do not change this parameter
@@ -21,7 +36,6 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-L = 10000
 
 # For Compelete Analysis
 class NoOpImputer(BaseEstimator, TransformerMixin):
@@ -45,91 +59,121 @@ class NoOpImputer(BaseEstimator, TransformerMixin):
         return self.fit(X, y).transform(X)
 
 
-def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=0, small_size = True, multiple = False):
-    
+def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_size=True, multiple=False):
     Missing_lambda = None
 
     if beta_coef == 0:
         Iter = 10000
     else:
-        return
-
+        Iter = 1000
+        
     # Simulate data
-    if multiple == False:
-        DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
+    if not multiple:
+        DataGen = Generator.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, model=model, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
     else:
-        DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
+        DataGen = GeneratorMutiple.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    Framework = RandomizationTest.RandomizationTest(N = Nsize)
-    reject, p_values= Framework.test(Z, X, M, Y,strata_size = 10, L=Iter, G = None,verbose=verbose)
-    # Append p-values to corresponding lists
-    values_oracle = [ *p_values, reject]
-    #mask Y with M
+    Framework = RandomizationTest.RandomizationTest(N=Nsize)
+
+    # Oracle method
+    elapsed_time, t_obs, t_sim = Framework.test(Z, X, M, Y, strata_size=10, L=Iter, G=None, verbose=verbose)
+
+    # Compute p-values and rejection decisions
+    p_values = np.mean(t_sim >= t_obs, axis=0)
+    reject = holm_bonferroni(p_values, alpha=0.05)
+
+    # Create a dictionary to store all results
+    results_oracle = {
+        'elapsed_time': elapsed_time,
+        't_obs': t_obs,
+        't_sim': t_sim,
+        'p_values': p_values,
+        'reject': reject
+    }
+
+    # Mask Y with M
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
 
-    #Median imputer
+    # Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose)
-    values_median = [ *p_values, reject ]
+    elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=median_imputer, L=Iter, verbose=verbose)
 
-    """median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose, covariate_adjustment=1)
-    values_medianLR = [ *p_values, reject ]"""
+    p_values = np.mean(t_sim >= t_obs, axis=0)
+    reject = holm_bonferroni(p_values, alpha=0.05)
 
-    #LR imputer
+    results_median = {
+        'elapsed_time': elapsed_time,
+        't_obs': t_obs,
+        't_sim': t_sim,
+        'p_values': p_values,
+        'reject': reject
+    }
+    print(t_sim)
+
+    # Linear Regression imputer
     print("LR")
-    BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=BayesianRidge,L=Iter, verbose=verbose )
-    values_LR = [ *p_values, reject ]
+    BayesianRidge = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=max_iter)
+    elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=BayesianRidge, L=Iter, verbose=verbose)
 
-    #XGBoost
-    if small_size == True:
-        print("Xgboost")
+    p_values = np.mean(t_sim >= t_obs, axis=0)
+    reject = holm_bonferroni(p_values, alpha=0.05)
+
+    results_LR = {
+        'elapsed_time': elapsed_time,
+        't_obs': t_obs,
+        't_sim': t_sim,
+        'p_values': p_values,
+        'reject': reject
+    }
+
+    # XGBoost
+    if small_size:
+        print("XGBoost")
         XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
-        values_xgboost = [ *p_values, reject ]
+        elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=XGBoost, L=Iter, verbose=verbose)
 
-    #LightGBM
-    if small_size == False:
-        print("LightGBM")
-        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
-        values_lightgbm = [ *p_values, reject ]
+        p_values = np.mean(t_sim >= t_obs, axis=0)
+        reject = holm_bonferroni(p_values, alpha=0.05)
 
-    """# Combine the data into DataFrame
+        results_xgboost = {
+            'elapsed_time': elapsed_time,
+            't_obs': t_obs,
+            't_sim': t_sim,
+            'p_values': p_values,
+            'reject': reject
+        }
 
-    # Drop the missing values only based on outcomes Y
-    combined_data = combined_data.dropna(subset=['Y'])
-
-    X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
-    Z = combined_data['Z'].values.reshape(-1, 1)
-    Y = combined_data['Y'].values.reshape(-1, 1)
-    S = combined_data['S'].values.reshape(-1, 1)
-
-    G = NoOpImputer()
-
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
-    values_complete = [ *p_values, reject ]"""
-
-
-    os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)
-    
-    #os.makedirs("%s_adjusted_Median/%f"%(filepath,beta_coef), exist_ok=True)
-
-    # Save numpy arrays to files
-    np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
-    #np.save('%s_adjusted_Median/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_medianLR)
-
-    np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
-    np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
-    if small_size == True:
-        np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
+    # LightGBM
     else:
-        np.save('%s/%f/p_values_lightgbm_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
+        print("LightGBM")
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1, verbosity=-1), max_iter=max_iter)
+        elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=LightGBM, L=Iter, verbose=verbose)
+
+        p_values = np.mean(t_sim >= t_obs, axis=0)
+        reject = holm_bonferroni(p_values, alpha=0.05)
+
+        results_lightgbm = {
+            'elapsed_time': elapsed_time,
+            't_obs': t_obs,
+            't_sim': t_sim,
+            'p_values': p_values,
+            'reject': reject
+        }
+
+    os.makedirs(f"{filepath}/{beta_coef}", exist_ok=True)
+
+    # Save the results dictionaries to files
+    np.save(f'{filepath}/{beta_coef}/results_oracle_{task_id}.npy', results_oracle)
+    np.save(f'{filepath}/{beta_coef}/results_median_{task_id}.npy', results_median)
+    np.save(f'{filepath}/{beta_coef}/results_LR_{task_id}.npy', results_LR)
+    if small_size:
+        np.save(f'{filepath}/{beta_coef}/results_xgboost_{task_id}.npy', results_xgboost)
+    else:
+        np.save(f'{filepath}/{beta_coef}/results_lightgbm_{task_id}.npy', results_lightgbm)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:

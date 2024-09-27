@@ -8,11 +8,11 @@ import SingleOutcomeModelGenerator as Generator
 import MultipleOutcomeModelGenerator as GeneratorMutiple
 import RandomizationTest as RandomizationTest
 import os
-import iArt
+import Simulation.iArtModelBased as iArtModelBased
 import iArt2
 import lightgbm as lgb
 import xgboost as xgb
-import iArt
+import Simulation.iArtModelBased as iArtModelBased
 from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
 
@@ -51,21 +51,21 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=0, small
     #LR imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=BayesianRidge,L=Iter, verbose=verbose )
+    reject, p_values = iArtModelBased.test(Z=Z, X=X, Y=Y,S=S,G=BayesianRidge,L=Iter, verbose=verbose )
     values_LR = [ *p_values, reject ]
 
     #XGBoost
     if small_size == True:
         print("Xgboost")
         XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
+        reject, p_values = iArtModelBased.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
         values_xgboost = [ *p_values, reject ]
 
     #LightGBM
     if small_size == False:
         print("LightGBM")
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
+        reject, p_values = iArtModelBased.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
         values_lightgbm = [ *p_values, reject ]
 
     os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)

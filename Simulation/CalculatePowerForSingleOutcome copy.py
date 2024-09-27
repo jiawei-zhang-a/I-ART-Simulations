@@ -6,7 +6,7 @@ from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 import SingleOutcomeModelGenerator2 as Generator
 import MultipleOutcomeModelGenerator as GeneratorMutiple
-import RandomizationTest as RandomizationTest
+import Simulation.RandomizationTestModelBased as RandomizationTestModelBased
 import os
 from statsmodels.stats.multitest import multipletests
 import lightgbm as lgb
@@ -76,7 +76,7 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
         DataGen = GeneratorMutiple.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    Framework = RandomizationTest.RandomizationTest(N=Nsize)
+    Framework = RandomizationTestModelBased.RandomizationTest(N=Nsize)
 
     # Oracle method
     elapsed_time, t_obs, t_sim = Framework.test(Z, X, M, Y, strata_size=10, L=Iter, G=None, verbose=verbose)

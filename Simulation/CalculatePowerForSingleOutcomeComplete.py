@@ -11,7 +11,7 @@ import xgboost as xgb
 import Simulation.iArtModelBased as iArtModelBased
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
-import RandomizationTest as RandomizationTest
+import Simulation.RandomizationTestModelBased as RandomizationTestModelBased
 from sklearn.impute import SimpleImputer
 
 

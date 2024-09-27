@@ -6,7 +6,7 @@ from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 import SingleOutcomeModelGenerator as Generator
 import MultipleOutcomeModelGenerator as GeneratorMutiple
-import RandomizationTest as RandomizationTest
+import RandomizationTestModelBased as RandomizationTest
 import os
 import lightgbm as lgb
 import xgboost as xgb

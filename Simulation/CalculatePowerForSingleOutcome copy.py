@@ -4,15 +4,30 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import SimpleImputer
 from sklearn.impute import IterativeImputer
 from sklearn import linear_model
-import SingleOutcomeModelGenerator as Generator
+import SingleOutcomeModelGenerator2 as Generator
 import MultipleOutcomeModelGenerator as GeneratorMutiple
 import RandomizationTest as RandomizationTest
 import os
+from statsmodels.stats.multitest import multipletests
 import lightgbm as lgb
 import xgboost as xgb
-import iArtModelBased as iArt
+import iArt
 from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
+
+
+def holm_bonferroni(p_values, alpha = 0.05):
+    """
+    Perform the Holm-Bonferroni correction on the p-values
+    """
+
+    # Perform the Holm-Bonferroni correction
+    reject, corrected_p_values, _, _ = multipletests(p_values, alpha=alpha, method='holm')
+
+    # Check if any null hypothesis can be rejected
+    any_rejected = any(reject)
+
+    return any_rejected
 
 
 # Do not change this parameter
@@ -21,7 +36,6 @@ task_id = 1
 
 # Set the default values
 max_iter = 3
-L = 2000
 
 # For Compelete Analysis
 class NoOpImputer(BaseEstimator, TransformerMixin):
@@ -45,91 +59,122 @@ class NoOpImputer(BaseEstimator, TransformerMixin):
         return self.fit(X, y).transform(X)
 
 
-def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small_size = True, multiple = False):
-    
+def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_size=True, multiple=False):
     Missing_lambda = None
 
     if beta_coef == 0:
         Iter = 10000
     else:
-        Iter = 10000
-
+        Iter = 1000
+    Iter = 1000
+        
     # Simulate data
-    if multiple == False:
-        DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
+    if not multiple:
+        DataGen = Generator.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, model=model, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
     else:
-        DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
+        DataGen = GeneratorMutiple.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
 
-    Framework = RandomizationTest.RandomizationTest(N = Nsize)
-    reject, p_values= Framework.test(Z, X, M, Y,strata_size = 10, L=Iter, G = None,verbose=verbose)
-    # Append p-values to corresponding lists
-    values_oracle = [ *p_values, reject]
-    #mask Y with M
+    Framework = RandomizationTest.RandomizationTest(N=Nsize)
+
+    # Oracle method
+    elapsed_time, t_obs, t_sim = Framework.test(Z, X, M, Y, strata_size=10, L=Iter, G=None, verbose=verbose)
+
+    # Compute p-values and rejection decisions
+    p_values = np.mean(t_sim >= t_obs, axis=0)
+    reject = holm_bonferroni(p_values, alpha=0.05)
+
+    # Create a dictionary to store all results
+    results_oracle = {
+        'elapsed_time': elapsed_time,
+        't_obs': t_obs,
+        't_sim': t_sim,
+        'p_values': p_values,
+        'reject': reject
+    }
+
+    # Mask Y with M
     Y = np.ma.masked_array(Y, mask=M)
     Y = Y.filled(np.nan)
 
-    #Median imputer
+    # Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose)
-    values_median = [ *p_values, reject ]
+    elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=median_imputer, L=Iter, verbose=verbose)
 
-    """median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose, covariate_adjustment=1)
-    values_medianLR = [ *p_values, reject ]"""
+    p_values = np.mean(t_sim >= t_obs, axis=0)
+    reject = holm_bonferroni(p_values, alpha=0.05)
 
-    #LR imputer
+    results_median = {
+        'elapsed_time': elapsed_time,
+        't_obs': t_obs,
+        't_sim': t_sim,
+        'p_values': p_values,
+        'reject': reject
+    }
+    print(t_sim)
+
+    # Linear Regression imputer
     print("LR")
-    BayesianRidge = IterativeImputer(estimator = linear_model.BayesianRidge(),max_iter=max_iter)
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=BayesianRidge,L=Iter, verbose=verbose )
-    values_LR = [ *p_values, reject ]
+    BayesianRidge = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=max_iter)
+    elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=BayesianRidge, L=Iter, verbose=verbose)
 
-    #XGBoost
-    if small_size == True:
-        print("Xgboost")
+    p_values = np.mean(t_sim >= t_obs, axis=0)
+    reject = holm_bonferroni(p_values, alpha=0.05)
+
+    results_LR = {
+        'elapsed_time': elapsed_time,
+        't_obs': t_obs,
+        't_sim': t_sim,
+        'p_values': p_values,
+        'reject': reject
+    }
+
+    # XGBoost
+    if small_size:
+        print("XGBoost")
         XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
-        values_xgboost = [ *p_values, reject ]
+        elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=XGBoost, L=Iter, verbose=verbose)
 
-    #LightGBM
-    if small_size == False:
-        print("LightGBM")
-        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
-        values_lightgbm = [ *p_values, reject ]
+        p_values = np.mean(t_sim >= t_obs, axis=0)
+        reject = holm_bonferroni(p_values, alpha=0.05)
 
-    """# Combine the data into DataFrame
+        results_xgboost = {
+            'elapsed_time': elapsed_time,
+            't_obs': t_obs,
+            't_sim': t_sim,
+            'p_values': p_values,
+            'reject': reject
+        }
 
-    # Drop the missing values only based on outcomes Y
-    combined_data = combined_data.dropna(subset=['Y'])
-
-    X = combined_data[['X1', 'X2', 'X3', 'X4', 'X5']].values
-    Z = combined_data['Z'].values.reshape(-1, 1)
-    Y = combined_data['Y'].values.reshape(-1, 1)
-    S = combined_data['S'].values.reshape(-1, 1)
-
-    G = NoOpImputer()
-
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S =S,G=G,L=L, covariate_adjustment=adjust)
-    values_complete = [ *p_values, reject ]"""
-
-
-    os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)
-    
-    #os.makedirs("%s_adjusted_Median/%f"%(filepath,beta_coef), exist_ok=True)
-
-    # Save numpy arrays to files
-    np.save('%s/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_median)
-    #np.save('%s_adjusted_Median/%f/p_values_median_%d.npy' % (filepath, beta_coef, task_id), values_medianLR)
-
-    np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
-    np.save('%s/%f/p_values_LR_%d.npy' % (filepath, beta_coef, task_id), values_LR)
-    if small_size == True:
-        np.save('%s/%f/p_values_xgboost_%d.npy' % (filepath, beta_coef, task_id), values_xgboost)
+    # LightGBM
     else:
-        np.save('%s/%f/p_values_lightgbm_%d.npy' % (filepath, beta_coef, task_id), values_lightgbm)
+        print("LightGBM")
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1, verbosity=-1), max_iter=max_iter)
+        elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=LightGBM, L=Iter, verbose=verbose)
+
+        p_values = np.mean(t_sim >= t_obs, axis=0)
+        reject = holm_bonferroni(p_values, alpha=0.05)
+
+        results_lightgbm = {
+            'elapsed_time': elapsed_time,
+            't_obs': t_obs,
+            't_sim': t_sim,
+            'p_values': p_values,
+            'reject': reject
+        }
+
+    os.makedirs(f"{filepath}/{beta_coef}", exist_ok=True)
+
+    # Save the results dictionaries to files
+    np.save(f'{filepath}/{beta_coef}/results_oracle_{task_id}.npy', results_oracle)
+    np.save(f'{filepath}/{beta_coef}/results_median_{task_id}.npy', results_median)
+    np.save(f'{filepath}/{beta_coef}/results_LR_{task_id}.npy', results_LR)
+    if small_size:
+        np.save(f'{filepath}/{beta_coef}/results_xgboost_{task_id}.npy', results_xgboost)
+    else:
+        np.save(f'{filepath}/{beta_coef}/results_lightgbm_{task_id}.npy', results_lightgbm)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
@@ -145,7 +190,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result2/HPC_power_1000_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=False)
+            run(1000, filepath = "Result/HPC_power_1000_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -156,7 +201,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result2/HPC_power_50_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=True)
+            run(50, filepath = "Result/HPC_power_50_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -168,7 +213,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result2/HPC_power_1000_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=False)
+            run(1000, filepath = "Result/HPC_power_1000_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -179,7 +224,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result2/HPC_power_50_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=True)
+            run(50, filepath = "Result/HPC_power_50_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
           
@@ -191,7 +236,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result2/HPC_power_1000_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=False)
+            run(1000, filepath = "Result/HPC_power_1000_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -202,7 +247,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result2/HPC_power_50_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=True)
+            run(50, filepath = "Result/HPC_power_50_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
     
@@ -214,7 +259,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result2/HPC_power_1000_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=False)
+            run(1000, filepath = "Result/HPC_power_1000_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -225,39 +270,10 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result2/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
+            run(50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
-    exit()
-        # Lambda values dictionary
-    lambda_values = {
-        50: {
-            0.0: [5.46301136050662, 1.7687104800990539, 3.6986401066938748],
-            0.12: [5.507071138438006, 1.8832179319883895, 3.8250507348009557],
-            0.24: [5.629938938721568, 1.9080170719416063, 3.870429428753654],
-            0.36: [5.709076777442875, 1.9590050193610664, 4.018691917409632],
-            0.48: [5.831068183224691, 1.9638039860442473, 4.032046646076915],
-            0.6: [5.890152740793354, 2.0340630188325295, 4.188578787477003]
-        },
-        1000: {
-            0.0: [5.445126353777186, 1.7944628138115826, 3.6890049854144222],
-            0.03: [5.448889434968681, 1.799820386146107, 3.69899976186121],
-            0.06: [5.481108645836731, 1.808888277601773, 3.7215141167626897],
-            0.09: [5.518540969761793, 1.8313022068804186, 3.7592034824941227],
-            0.12: [5.509295189307611, 1.824491093343858, 3.7653155995566836],
-            0.15: [5.5323113856789075, 1.829439262086321, 3.7932522695382818]
-        }
-    }
 
-    # 1000 size coef loop
-    for coef in np.arange(0.0, 0.4, 0.05): 
-        beta_coef = coef
-        run(1000, filepath="Result/HPC_power_1000_model5",adjust =0,  Missing_lambda=lambda_values[1000].get(coef, None),model = 5, small_size=False, multiple = True)
-    # 50 size coef loop
-    for coef in np.arange(0.0, 2.5, 0.5): 
-        beta_coef = coef
-        run(50, filepath="Result/HPC_power_50_model5",adjust =0, Missing_lambda=lambda_values[50].get(coef, None),model = 5, small_size=True, multiple = True)
-    
     beta_to_lambda = {0.0: 15.52272711345184, 0.1: 15.686703500976, 0.2: 15.686402633876, 0.3: 15.787598335083226, 0.4: 15.753018503387455, 0.5: 15.73965750718643}
     for coef in np.arange(0.0,0.6 ,0.1):
         beta_coef = coef

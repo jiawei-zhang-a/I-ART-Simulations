@@ -465,6 +465,9 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
                 Z_sim.append(cluster_sim[int(s) - 1])
             Z_sim = np.array(Z_sim).reshape(-1, 1)
 
+        # impute the missing values and get the predicted Y values        
+        #Y_pred = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
+        
         # get the test statistics 
         t_sim[l] = getT(Y_pred, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
 

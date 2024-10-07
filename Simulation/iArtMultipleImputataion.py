@@ -426,15 +426,24 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
 
     # impuate the missing values to get the observed test statistics in part 1
     Y_pred1 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
-    t_obs1 = getT(Y_pred, Z, Y.shape[1], M, rankAdjust = rankAdjust)
+    t_obs1 = getT(Y_pred1, Z, Y.shape[1], M, rankAdjust = rankAdjust)
 
     # impute the missing values to get the observed test statistics in part 2
     Y_pred2 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
-    t_obs2 = getT(Y_pred, Z, Y.shape[1], M, rankAdjust = rankAdjust)
+    t_obs2 = getT(Y_pred2,Z, Y.shape[1], M, rankAdjust = rankAdjust)
 
     # impuate the missing values to get the observed test statistics in part 3
     Y_pred3 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
-    t_obs3 = getT(Y_pred, Z, Y.shape[1], M, rankAdjust = rankAdjust)
+    t_obs3 = getT(Y_pred3, Z, Y.shape[1], M, rankAdjust = rankAdjust)
+
+    pd.DataFrame(Y_pred1).to_csv("Y_pred1.csv")
+    pd.DataFrame(Y_pred2).to_csv("Y_pred2.csv")
+    pd.DataFrame(Y_pred3).to_csv("Y_pred3.csv")
+
+    print("t_obs1",t_obs1)
+    print("t_obs2",t_obs2)
+    print("t_obs3",t_obs3)
+    exit()
 
     # calculate the observed test statistics
     t_obs = t_obs1 + t_obs2 + t_obs3

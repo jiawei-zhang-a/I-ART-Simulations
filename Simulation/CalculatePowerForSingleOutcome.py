@@ -25,7 +25,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     
     Missing_lambda = None
 
-    Iter = 1000
+    Iter = 100
     if small_size == True:
         Iter = 1
 

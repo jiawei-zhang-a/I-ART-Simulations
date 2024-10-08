@@ -239,7 +239,8 @@ class DataGenerator:
           M_lamda[i][0] = sum1 + sum2  + XInter[i] + U[i]
 
       if self.Missing_lambda == None:
-        lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
+
+        lambda1 = np.percentile(M_lamda, 0.8)
       else:
         lambda1 = self.Missing_lambda
 

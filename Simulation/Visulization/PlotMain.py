@@ -62,7 +62,7 @@ def plot(range,range_small, path,path_small, title, title_small, multiple = Fals
 
 def main_pic_generator():
 
-    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/Result/HPC_power_1000_model7", "../Power/Result/HPC_power_50_model7", "Size1000_Model4", "Size50_Model4")  
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/Result/HPC_power_1000_model7", "../Power/Result/HPC_power_50_model7", "Size1000_Model7", "Size50_Model7")  
     #plot(np.arange(0.2, 0.3, 0.05), np.arange(1.5, 2.5, 0.5), "../Data/Result/HPC_power_1000_Model5", "../Data/Result/HPC_power_50_Model5", "Size1000_Model5", "Size50_Model5", multiple=True)
 
 

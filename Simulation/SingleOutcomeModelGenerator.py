@@ -236,7 +236,7 @@ class DataGenerator:
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
         if self.model == 7:
-          M_lamda[i][4] = sum1 + sum2  + XInter[i] + U[i]
+          M_lamda[i][0] = sum1 + sum2  + XInter[i] + U[i]
 
       if self.Missing_lambda == None:
 

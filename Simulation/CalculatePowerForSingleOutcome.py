@@ -28,8 +28,6 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     Iter = 100
     if small_size == True:
         Iter = 1
-    if beta_coef != 0:
-        return
 
     # Simulate data
     if multiple == False:

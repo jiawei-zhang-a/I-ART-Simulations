@@ -236,11 +236,11 @@ class DataGenerator:
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
         if self.model == 7:
-          M_lamda[i][0] = sum1 + sum2  + XInter[i] + U[i]
+          M_lamda[i][4] = sum1 + sum2  + XInter[i] + U[i]
 
       if self.Missing_lambda == None:
 
-        lambda1 = np.percentile(M_lamda, 0.8)
+        lambda1 = np.percentile(M_lamda, 0.5)
       else:
         lambda1 = self.Missing_lambda
 
@@ -257,7 +257,7 @@ class DataGenerator:
 
         if self.model == 7:
           if sum1 + sum2  + XInter[i]  + U[i] > lambda1:
-            M_X[i][0] = 1
+            M_X[i][4] = 1
            
       return M_X
   

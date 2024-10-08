@@ -240,7 +240,7 @@ class DataGenerator:
 
       if self.Missing_lambda == None:
 
-        lambda1 = np.percentile(M_lamda, 0.5)
+        lambda1 = np.percentile(M_lamda, 0.7)
       else:
         lambda1 = self.Missing_lambda
 

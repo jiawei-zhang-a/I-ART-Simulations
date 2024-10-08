@@ -11,7 +11,7 @@ import os
 from statsmodels.stats.multitest import multipletests
 import lightgbm as lgb
 import xgboost as xgb
-import iArt
+import Simulation.iArtMain as iArtMain
 from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
 
@@ -101,7 +101,7 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
     # Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=median_imputer, L=Iter, verbose=verbose)
+    elapsed_time, t_obs, t_sim = iArtMain.test(Z=Z, X=X, Y=Y, S=S, G=median_imputer, L=Iter, verbose=verbose)
 
     p_values = np.mean(t_sim >= t_obs, axis=0)
     reject = holm_bonferroni(p_values, alpha=0.05)
@@ -118,7 +118,7 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
     # Linear Regression imputer
     print("LR")
     BayesianRidge = IterativeImputer(estimator=linear_model.BayesianRidge(), max_iter=max_iter)
-    elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=BayesianRidge, L=Iter, verbose=verbose)
+    elapsed_time, t_obs, t_sim = iArtMain.test(Z=Z, X=X, Y=Y, S=S, G=BayesianRidge, L=Iter, verbose=verbose)
 
     p_values = np.mean(t_sim >= t_obs, axis=0)
     reject = holm_bonferroni(p_values, alpha=0.05)
@@ -135,7 +135,7 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
     if small_size:
         print("XGBoost")
         XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
-        elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=XGBoost, L=Iter, verbose=verbose)
+        elapsed_time, t_obs, t_sim = iArtMain.test(Z=Z, X=X, Y=Y, S=S, G=XGBoost, L=Iter, verbose=verbose)
 
         p_values = np.mean(t_sim >= t_obs, axis=0)
         reject = holm_bonferroni(p_values, alpha=0.05)
@@ -152,7 +152,7 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
     else:
         print("LightGBM")
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1, verbosity=-1), max_iter=max_iter)
-        elapsed_time, t_obs, t_sim = iArt.test(Z=Z, X=X, Y=Y, S=S, G=LightGBM, L=Iter, verbose=verbose)
+        elapsed_time, t_obs, t_sim = iArtMain.test(Z=Z, X=X, Y=Y, S=S, G=LightGBM, L=Iter, verbose=verbose)
 
         p_values = np.mean(t_sim >= t_obs, axis=0)
         reject = holm_bonferroni(p_values, alpha=0.05)

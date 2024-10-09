@@ -141,7 +141,7 @@ class DataGenerator:
     if self.model == 6:
       Y = self.beta * Z * X[:,0] ** 2 + sum3 + U +  StrataEps+ IndividualEps
     if self.model == 7:
-      Y = self.beta * Z * X[:,0] ** 2 + sum3 + U +  StrataEps+ IndividualEps    
+      Y = self.beta * Z +  self.beta * Z * X[:,0 ] + self.beta * Z * sum4 + sum1 + sum2 + U +  StrataEps+ IndividualEps
 
     Y = Y.reshape(-1, 1)
 

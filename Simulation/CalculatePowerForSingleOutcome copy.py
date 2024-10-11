@@ -65,16 +65,12 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
     if beta_coef == 0:
         Iter = 10000
     else:
-        Iter = 1000
-    Iter = 1000
-        
+        Iter = 100
+    Iter = 1
+
     # Simulate data
-    if not multiple:
-        DataGen = Generator.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, model=model, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)
-        X, Z, U, Y, M, S = DataGen.GenerateData()
-    else:
-        DataGen = GeneratorMutiple.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)
-        X, Z, U, Y, M, S = DataGen.GenerateData()
+    DataGen = Generator.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, model=model, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)
+    X, Z, U, Y, M, S = DataGen.GenerateData()
 
     Framework = RandomizationTestModelBased.RandomizationTest(N=Nsize)
 
@@ -94,14 +90,10 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
         'reject': reject
     }
 
-    # Mask Y with M
-    Y = np.ma.masked_array(Y, mask=M)
-    Y = Y.filled(np.nan)
-
     # Median imputer
     print("Median")
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    elapsed_time, t_obs, t_sim = iArtMain.test(Z=Z, X=X, Y=Y, S=S, G=median_imputer, L=Iter, verbose=verbose)
+    elapsed_time, t_obs, t_sim = Framework.test_imputed(Z=Z, X=X, Y=Y,M=M, G=median_imputer,L=Iter, verbose=verbose)
 
     p_values = np.mean(t_sim >= t_obs, axis=0)
     reject = holm_bonferroni(p_values, alpha=0.05)
@@ -114,6 +106,11 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
         'reject': reject
     }
     print(t_sim)
+
+
+    # Mask Y with M
+    Y = np.ma.masked_array(Y, mask=M)
+    Y = Y.filled(np.nan)
 
     # Linear Regression imputer
     print("LR")

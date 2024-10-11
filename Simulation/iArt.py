@@ -104,10 +104,19 @@ def T(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
     """
+    #the Wilcoxon rank sum test
+    n = len(z)
+    t = 0
 
-    Y_rank = rankdata(y)
-    t = np.sum(Y_rank[z == 1])
+    #O(N*Log(N)) version
+    my_list = []
+    for i in range(n):
+        my_list.append((z[i],y[i]))
+    sorted_list = sorted(my_list, key=lambda x: x[1])
 
+    #Calculate
+    for i in range(n):
+        t += sorted_list[i][0] * (i + 1)
     return t
 
 def split(y, z, M):
@@ -413,10 +422,10 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
 
     # preprocess the variable
     Z, X, Y, S, M = preprocess(Z, X, Y, S)
-    #X = transformX(X,threshold_covariate_median_imputation,verbose)
+    X = transformX(X,threshold_covariate_median_imputation,verbose)
 
     # Check the validity of the input parameters
-    #check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L,threshold_covariate_median_imputation = threshold_covariate_median_imputation, randomization_design=randomization_design, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
+    check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L,threshold_covariate_median_imputation = threshold_covariate_median_imputation, randomization_design=randomization_design, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
     
     # Set random seed
     np.random.seed(random_state)
@@ -425,29 +434,8 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
     G_model = choosemodel(G)
 
     # impuate the missing values to get the observed test statistics in part 1
-    Y_pred1 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
-    t_obs1 = getT(Y_pred1, Z, Y.shape[1], M, rankAdjust = rankAdjust)
-
-    # impute the missing values to get the observed test statistics in part 2
-    Y_pred2 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
-    t_obs2 = getT(Y_pred2,Z, Y.shape[1], M, rankAdjust = rankAdjust)
-
-    # impuate the missing values to get the observed test statistics in part 3
-    Y_pred3 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
-    t_obs3 = getT(Y_pred3, Z, Y.shape[1], M, rankAdjust = rankAdjust)
-
-    pd.DataFrame(Y_pred1).to_csv("Y_pred1.csv")
-    pd.DataFrame(Y_pred2).to_csv("Y_pred2.csv")
-    pd.DataFrame(Y_pred3).to_csv("Y_pred3.csv")
-
-    print("t_obs1",t_obs1)
-    print("t_obs2",t_obs2)
-    print("t_obs3",t_obs3)
-    exit()
-
-    # calculate the observed test statistics
-    t_obs = t_obs1 + t_obs2 + t_obs3
-
+    Y_pred = getY(clone(G_model), Z, X, Y, covariate_adjustment)
+    t_obs = getT(Y_pred, Z, Y.shape[1], M, rankAdjust = rankAdjust)
     
     if verbose:
         if isinstance(G, str):
@@ -487,15 +475,10 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
             Z_sim = np.array(Z_sim).reshape(-1, 1)
 
         # impute the missing values and get the predicted Y values        
-        Y_pred1 = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
-        Y_pred2 = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
-        Y_pred3 = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
+        Y_pred = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
         
         # get the test statistics 
-        t_sim[l] += getT(Y_pred1, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
-        t_sim[l] += getT(Y_pred2, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
-        t_sim[l] += getT(Y_pred3, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
-
+        t_sim[l] = getT(Y_pred, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
 
         if verbose:
             print(f"re-prediction iteration {l+1}/{L} completed. Test statistics[{l}]: {t_sim[l]}")
@@ -507,20 +490,7 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
     # convert t_sim to numpy array
     t_sim = np.array(t_sim)
 
-    # perform Holm-Bonferroni correction
-    p_values = []
-    for i in range(Y.shape[1]):
-        if alternative == "greater":
-            p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
-        elif alternative == "less":
-            p_values.append(np.mean(t_sim[:,i] <= t_obs[i], axis=0))
-        else:
-            p_values.append(np.mean(np.abs(t_sim[:,i] - np.mean(t_sim[:,i])) >= np.abs(t_obs[i] - np.mean(t_sim[:,i])), axis=0))
-
-    # perform Holm-Bonferroni correction
-    reject = holm_bonferroni(p_values,alpha = alpha)
-
     if verbose:
         print("\nthe time used for the prediction and re-prediction framework:"+str(time.time() - start_time) + " seconds\n")
     
-    return reject, p_values
+    return time.time() - start_time, t_obs, t_sim

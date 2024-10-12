@@ -5,7 +5,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 import SingleOutcomeModelGenerator as Generator
-import MultipleOutcomeModelGenerator as GeneratorMutiple
 import RandomizationTest as RandomizationTest
 import os
 from statsmodels.stats.multitest import multipletests

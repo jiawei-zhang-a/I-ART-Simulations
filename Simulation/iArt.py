@@ -14,6 +14,8 @@ from sklearn.impute import SimpleImputer
 import time
 import warnings
 from scipy.stats import rankdata
+from sklearn.linear_model import BayesianRidge
+
 
 
 def holm_bonferroni(p_values, alpha = 0.05):
@@ -423,30 +425,29 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
 
     # choose the imputation model
     G_model = choosemodel(G)
+    estimator = BayesianRidge()
+    G_model1 = IterativeImputer(estimator=estimator, sample_posterior=True, random_state=1)
+    G_model2 = IterativeImputer(estimator=estimator, sample_posterior=True, random_state=2)
+    G_model3 = IterativeImputer(estimator=estimator, sample_posterior=True, random_state=3)
+
 
     # impuate the missing values to get the observed test statistics in part 1
-    Y_pred1 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
+    Y_pred1 = getY(clone(G_model1), Z, X, Y, covariate_adjustment)
     t_obs1 = getT(Y_pred1, Z, Y.shape[1], M, rankAdjust = rankAdjust)
 
     # impute the missing values to get the observed test statistics in part 2
-    Y_pred2 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
+    Y_pred2 = getY(clone(G_model2), Z, X, Y, covariate_adjustment)
     t_obs2 = getT(Y_pred2,Z, Y.shape[1], M, rankAdjust = rankAdjust)
 
     # impuate the missing values to get the observed test statistics in part 3
-    Y_pred3 = getY(clone(G_model), Z, X, Y, covariate_adjustment)
+    Y_pred3 = getY(clone(G_model3), Z, X, Y, covariate_adjustment)
     t_obs3 = getT(Y_pred3, Z, Y.shape[1], M, rankAdjust = rankAdjust)
 
-    pd.DataFrame(Y_pred1).to_csv("Y_pred1.csv")
-    pd.DataFrame(Y_pred2).to_csv("Y_pred2.csv")
-    pd.DataFrame(Y_pred3).to_csv("Y_pred3.csv")
-
-    print("t_obs1",t_obs1)
-    print("t_obs2",t_obs2)
-    print("t_obs3",t_obs3)
-    exit()
 
     # calculate the observed test statistics
     t_obs = t_obs1 + t_obs2 + t_obs3
+
+
 
     
     if verbose:
@@ -464,7 +465,7 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
         print("=========================================================")
 
     # re-impute the missing values and calculate the observed test statistics in part 2
-    t_sim = [ [] for _ in range(L)]
+    t_sim = [ [0] for _ in range(L)]
     if randomization_design == 'strata':
         Z_sim_templates = getZsimTemplates(Z, S)
     else:
@@ -487,14 +488,14 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
             Z_sim = np.array(Z_sim).reshape(-1, 1)
 
         # impute the missing values and get the predicted Y values        
-        Y_pred1 = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
-        Y_pred2 = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
-        Y_pred3 = getY(clone(G_model), Z_sim, X, Y, covariate_adjustment)
+        Y_pred1 = getY(clone(G_model1), Z_sim, X, Y, covariate_adjustment)
+        Y_pred2 = getY(clone(G_model2), Z_sim, X, Y, covariate_adjustment)
+        Y_pred3 = getY(clone(G_model3), Z_sim, X, Y, covariate_adjustment)
         
         # get the test statistics 
-        t_sim[l] += getT(Y_pred1, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
-        t_sim[l] += getT(Y_pred2, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
-        t_sim[l] += getT(Y_pred3, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
+        t_sim[l] += getT(Y_pred1, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
+        t_sim[l] += getT(Y_pred2, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
+        t_sim[l] += getT(Y_pred3, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
 
 
         if verbose:

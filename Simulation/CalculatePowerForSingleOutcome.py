@@ -53,7 +53,6 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         Iter = 10000
     else:
         return
-    Iter = 1
 
     # Simulate data
     if multiple == False:
@@ -75,10 +74,11 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     Y = Y.filled(np.nan)
     #LR imputer
     print("LR")
-    IterBayesianRidge = IterativeImputer(estimator = BayesianRidge(random_state=None),max_iter=max_iter)
+    IterBayesianRidge = IterativeImputer(estimator = BayesianRidge(),max_iter=max_iter)
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=IterBayesianRidge,L=Iter, verbose=verbose )
     values_LR = [ *p_values, reject ]
 
+    Iter  = 1
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose, covariate_adjustment=1)
     values_medianLR = [ *p_values, reject ]

@@ -117,7 +117,7 @@ def read_npz_files_time(directory, small_size=False, multiple=False, type="origi
 def read_npz_files_L(directory, small_size=False, multiple=False, type="original"):
     results = {}
     for filename in os.listdir(directory):
-        if filename.endswith("1.npy"):
+        if filename.endswith("1000.npy"):
             filepath = os.path.join(directory, filename)
             # Load the dictionary from the .npy file
             data = np.load(filepath, allow_pickle=True).item()

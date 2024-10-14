@@ -6,11 +6,15 @@ from ReadData import  read_npz_files_L
 
 import os
 
-def plot_convergence(t_obs, t_sim, title, output_dir="convergence_plots"):
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+def plot_convergence(t_obs, t_sim, title, output_dir="convergence_plots", log_version=True):
     n_simulations = len(t_sim)
     p_values = np.zeros(n_simulations)
 
-    # Compute running p-values
+    # Compute running p-values for each simulation
     for i in range(1, n_simulations + 1):
         p_values[i-1] = np.mean(t_sim[:i] >= t_obs)
 
@@ -18,7 +22,7 @@ def plot_convergence(t_obs, t_sim, title, output_dir="convergence_plots"):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # Create the plot
+    # Standard plot
     plt.figure(figsize=(10,6))
     plt.plot(np.arange(1, n_simulations + 1), p_values, label="P-value")
     plt.axhline(np.mean(t_sim >= t_obs), color='r', linestyle='--', label="Final P-value")
@@ -27,12 +31,33 @@ def plot_convergence(t_obs, t_sim, title, output_dir="convergence_plots"):
     plt.title(title)
     plt.legend()
 
-    # Save the plot to the specified folder
+    # Save the standard plot
     output_filepath = os.path.join(output_dir, f"{title.replace(' ', '_').replace('/', '-')}.png")
     plt.savefig(output_filepath)
-
-    # Close the plot to avoid showing it
     plt.close()
+
+    # Logarithmic version plot (if requested)
+    if log_version:
+        # Create a log-spaced version of the simulations
+        log_simulation_steps = np.logspace(0, np.log10(n_simulations), num=50, dtype=int)  # 50 points, adjust if needed
+        log_simulation_steps = np.unique(log_simulation_steps)  # Ensure unique steps
+        
+        p_values_log = p_values[log_simulation_steps - 1]  # Subset the p-values to match log steps
+        
+        # Plot the log version
+        plt.figure(figsize=(10,6))
+        plt.plot(log_simulation_steps, p_values_log, label="P-value (log scale)")
+        plt.axhline(np.mean(t_sim >= t_obs), color='r', linestyle='--', label="Final P-value")
+        plt.xscale('log')  # Set the x-axis to be logarithmic
+        plt.xlabel('Number of Simulations (Log Scale)')
+        plt.ylabel('P-value')
+        plt.title(f"{title} (Log Version)")
+        plt.legend()
+
+        # Save the log version plot
+        output_filepath_log = os.path.join(output_dir, f"{title.replace(' ', '_').replace('/', '-')}_log.png")
+        plt.savefig(output_filepath_log)
+        plt.close()
 
 
 def plot(range, range_small, path, path_small, title, title_small, multiple=False):

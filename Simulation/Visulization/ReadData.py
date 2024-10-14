@@ -28,21 +28,20 @@ def read_npz_files(directory, small_size=False, multiple=False, type="original")
             # Extract the p-values from the dictionary
             reject = data.get('reject', False)
 
-
             # Tally the rejections for each model type
-            if "p_values_median" in filename:
+            if "results_median" in filename:
                 counts['median'] += 1
                 total_rejections['median'] += reject
-            elif "p_values_LR" in filename:
+            elif "results_LR" in filename:
                 counts['LR'] += 1
                 total_rejections['LR'] += reject
-            elif "p_values_lightgbm" in filename:
+            elif "results_lightgbm" in filename:
                 counts['lightgbm'] += 1
                 total_rejections['lightgbm'] += reject
-            elif "p_values_xgboost" in filename:
+            elif "results_xgboost" in filename:
                 counts['xgboost'] += 1
                 total_rejections['xgboost'] += reject
-            elif "p_values_oracle" in filename:
+            elif "results_oracle" in filename:
                 counts['oracle'] += 1
                 total_rejections['oracle'] += reject
 

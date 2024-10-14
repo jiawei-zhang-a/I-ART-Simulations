@@ -45,7 +45,7 @@ def run(Nsize, filepath, Missing_lambda, adjust=0, model=0, verbose=0, small_siz
         Iter = 10000
     else:
         Iter = 100
-    Iter = 1
+    Iter = 2
 
     # Simulate data
     DataGen = Generator.DataGenerator(N=Nsize, strata_size=10, beta=beta_coef, model=model, MaskRate=0.5, verbose=verbose, Missing_lambda=Missing_lambda)

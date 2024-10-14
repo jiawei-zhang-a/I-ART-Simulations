@@ -49,7 +49,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     Missing_lambda = None
 
     if beta_coef == 0:
-        Iter = 1000
+        Iter = 10000
     else:
         return
 
@@ -76,24 +76,20 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=IterBayesianRidge,L=Iter, verbose=verbose )
     values_LR = [ *p_values, reject ]
 
+    values_oracle = [ 1, 1 ]
+
     Iter  = 1
-    median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose, covariate_adjustment=1)
-    values_medianLR = [ *p_values, reject ]
+    values_median = [ 1, 1 ]
 
     #XGBoost
     if small_size == True:
         print("Xgboost")
-        XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
-        values_xgboost = [ *p_values, reject ]
+        values_xgboost = [ 1, 1 ]
 
     #LightGBM
     if small_size == False:
         print("LightGBM")
-        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
-        values_lightgbm = [ *p_values, reject ]
+        values_lightgbm = [ 1, 1 ]
 
 
     os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)

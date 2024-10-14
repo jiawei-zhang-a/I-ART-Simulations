@@ -100,13 +100,18 @@ def getY(G, Z, X,Y, covariate_adjustment = 0):
         
         return Y_head_adjusted
 
-def T(z,y):
+def T(z, y):
     """
-    Calculate the Wilcoxon rank sum test statistics
+    Calculate the Prentice-Wilcoxon test statistics
     """
-
+    # Rank the data
     Y_rank = rankdata(y)
-    t = np.sum(Y_rank[z == 1])
+    
+    # Calculate weights: square of the ranks (Prentice-Wilcoxon weighting)
+    weights = Y_rank ** 2
+    
+    # Sum the weighted ranks for the treatment group (where z == 1)
+    t = np.sum(weights[z == 1])
 
     return t
 

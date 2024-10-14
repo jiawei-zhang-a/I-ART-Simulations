@@ -38,13 +38,15 @@ def run_simulations_for_model(model, lambda_mapping, Nsize=-1,  small_size=False
         for config in configs:
             run_simulation(Nsize=Nsize, filepath = config['filepath'], beta_coef = coef, Missing_lambda = Missing_lambda, small_size = small_size, model = model, multiple=multiple)
     
-def run_simulation(*,Nsize, filepath,beta_coef,  Missing_lambda, model = 0,  small_size = True, multiple = False, verbose = False, adjust = True):
+def run_simulation(*,Nsize, filepath,beta_coef,  Missing_lambda, model = 0,  small_size = True, multiple = False, verbose = 1, adjust = True):
 
 
     if beta_coef == 0:
         Iter = 10000
     else:
         Iter = 1000
+
+    Iter = 50
 
     Missing_lambda = None
 

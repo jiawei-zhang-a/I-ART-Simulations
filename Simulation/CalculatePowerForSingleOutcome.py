@@ -5,7 +5,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.impute import IterativeImputer
 from sklearn import linear_model
 import SingleOutcomeModelGenerator as Generator
-import MultipleOutcomeModelGenerator as GeneratorMutiple
 import RandomizationTestModelBased as RandomizationTest
 import os
 from sklearn.linear_model import BayesianRidge
@@ -50,7 +49,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     Missing_lambda = None
 
     if beta_coef == 0:
-        Iter = 10000
+        Iter = 1000
     else:
         return
 
@@ -59,8 +58,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         DataGen = Generator.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef,model = model, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
     else:
-        DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
-        X, Z, U, Y, M, S = DataGen.GenerateData()
+        return
 
     """ Framework = RandomizationTest.RandomizationTest(N = Nsize)
     reject, p_values= Framework.test(Z, X, M, Y,strata_size = 10, L=Iter, G = None,verbose=verbose)

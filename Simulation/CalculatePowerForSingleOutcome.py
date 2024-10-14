@@ -22,28 +22,6 @@ task_id = 1
 # Set the default values
 max_iter = 1
 
-# For Compelete Analysis
-class NoOpImputer(BaseEstimator, TransformerMixin):
-    def __init__(self):
-        # Initialization code can include parameters if needed
-        pass
-
-    def fit(self, X, y=None):
-        # Nothing to do here, return self to allow chaining
-        return self
-
-    def transform(self, X):
-        # Check if X is a numpy array, if not, convert it to avoid potential issues
-        if not isinstance(X, np.ndarray):
-            X = np.array(X)
-        # Return the data unchanged
-        return X
-
-    def fit_transform(self, X, y=None):
-        # This method can often be optimized but here we'll just use fit and transform sequentially
-        return self.fit(X, y).transform(X)
-
-
 def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small_size = True, multiple = False):
     
     Missing_lambda = None

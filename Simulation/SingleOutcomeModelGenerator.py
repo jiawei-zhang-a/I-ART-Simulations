@@ -227,38 +227,38 @@ class DataGenerator:
       for i in range(n):
         sum1 = 0
         for p in range(1,6):
-            sum1 += p * X[i,p-1] 
+            sum1 += X[i,p-1] 
         sum1 = (1.0  / np.sqrt(5)) * sum1
 
         sum2 = 0
         for p in range(1,6):
-          sum2 += p * np.cos(X[i,p-1])
+          sum2 += X[i,p-1]**2
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
         if self.model == 7:
-          M_lamda[i][0] = sum1 + sum2  + XInter[i] + U[i]
+          M_lamda[i][0] = sum1 + sum2  + logistic.cdf(U[i])
 
       if self.Missing_lambda == None:
-
-        lambda1 = np.percentile(M_lamda, 0.7)
+        lambda1 = np.percentile(M_lamda, 100 * (1-0.3))
       else:
         lambda1 = self.Missing_lambda
 
       for i in range(n):
         sum1 = 0
         for p in range(1,6):
-            sum1 += p * X[i,p-1] 
+            sum1 += X[i,p-1] 
         sum1 = (1.0  / np.sqrt(5)) * sum1
 
         sum2 = 0
         for p in range(1,6):
-          sum2 += p * np.cos(X[i,p-1])
+          sum2 += X[i,p-1]**2
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
         if self.model == 7:
-          if sum1 + sum2  + XInter[i]  + U[i] > lambda1:
-            M_X[i][4] = 1
-           
+            condition_value = sum1 + sum2 + logistic.cdf(U[i])
+            if condition_value > lambda1:
+                M_X[i][0] = 1
+
       return M_X
   
   def GenerateData(self):
@@ -275,6 +275,7 @@ class DataGenerator:
     M_X = self.GenerateM_X(X, U, Y, XInter, YInter)
     X = np.ma.masked_array(X, mask=M_X)
     X = X.filled(np.nan)
+
     return X, Z, U, Y, M, S
 
   

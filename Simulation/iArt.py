@@ -104,10 +104,19 @@ def T(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
     """
+    #the Wilcoxon rank sum test
+    n = len(z)
+    t = 0
 
-    Y_rank = rankdata(y)
-    t = np.sum(Y_rank[z == 1])
+    #O(N*Log(N)) version
+    my_list = []
+    for i in range(n):
+        my_list.append((z[i],y[i]))
+    sorted_list = sorted(my_list, key=lambda x: x[1])
 
+    #Calculate
+    for i in range(n):
+        t += sorted_list[i][0] * (i + 1)
     return t
 
 def split(y, z, M):

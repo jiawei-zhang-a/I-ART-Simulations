@@ -28,7 +28,6 @@ def read_npz_files(directory, small_size=False, multiple=False, type="original")
             # Extract the p-values from the dictionary
             reject = data.get('reject', False)
 
-
             # Tally the rejections for each model type
             if "results_median" in filename:
                 counts['median'] += 1
@@ -117,7 +116,7 @@ def read_npz_files_time(directory, small_size=False, multiple=False, type="origi
 def read_npz_files_L(directory, small_size=False, multiple=False, type="original"):
     results = {}
     for filename in os.listdir(directory):
-        if filename.endswith("1000.npy"):
+        if filename.endswith("1005.npy"):
             filepath = os.path.join(directory, filename)
             # Load the dictionary from the .npy file
             data = np.load(filepath, allow_pickle=True).item()

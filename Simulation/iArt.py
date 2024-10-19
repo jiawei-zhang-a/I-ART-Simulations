@@ -486,17 +486,11 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
             for s in S.flatten():
                 Z_sim.append(cluster_sim[int(s) - 1])
             Z_sim = np.array(Z_sim).reshape(-1, 1)
-
-        # impute the missing values and get the predicted Y values        
-        Y_pred1 = getY(clone(G_model1), Z_sim, X, Y, covariate_adjustment)
-        Y_pred2 = getY(clone(G_model2), Z_sim, X, Y, covariate_adjustment)
-        Y_pred3 = getY(clone(G_model3), Z_sim, X, Y, covariate_adjustment)
         
         # get the test statistics 
         t_sim[l] += getT(Y_pred1, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
         t_sim[l] += getT(Y_pred2, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
         t_sim[l] += getT(Y_pred3, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
-
 
         if verbose:
             print(f"re-prediction iteration {l+1}/{L} completed. Test statistics[{l}]: {t_sim[l]}")

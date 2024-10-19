@@ -43,6 +43,8 @@ def plot(range,range_small, path,path_small, title, title_small, multiple = Fals
     Power_data_small = []
 
     for coef in range:
+        if coef != 0.0:
+            continue
         row_power = [coef]
         for directory in [path + "/%f" % (coef)]:
             results = read_npz_files(directory,small_size=False, multiple = multiple)
@@ -52,6 +54,8 @@ def plot(range,range_small, path,path_small, title, title_small, multiple = Fals
     plot_results(Power_data, title, range)
 
     for coef in range_small:
+        if coef != 0.0:
+            continue
         row_power_small = [coef]
         for directory in [path_small + "/%f" % (coef)]:
             results = read_npz_files(directory,small_size=True, multiple = multiple)

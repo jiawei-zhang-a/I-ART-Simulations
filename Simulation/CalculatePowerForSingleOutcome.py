@@ -91,8 +91,8 @@ if __name__ == '__main__':
         print("Please add the job number like this\nEx.python Power.py 1")
         exit()
 
-    for i in range(2):
-        task_id = i * 1000 + task_id_origin
+    for i in range(1):
+        task_id = i * 2000 + task_id_origin
         # Model 1
         beta_to_lambda = {0.0: 2.159275141001102, 0.07: 2.165387531267955, 0.14: 2.285935405246937, 0.21: 2.258923945496463, 0.28: 2.2980720651301794, 0.35: 2.3679216299985613}
         for coef in np.arange(0.0,0.42,0.07):

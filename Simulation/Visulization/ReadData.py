@@ -87,7 +87,7 @@ def read_npz_files(directory,small_size=False, multiple=False, type="original"):
         rejection_rate_oracle = -1
 
     results = {
-        'median_power': 0,
+        'median_power': rejection_rate_median,
         'lr_power': rejection_rate_LR,
         'xgboost_power':    rejection_rate_xgboost,
         'oracle_power': rejection_rate_oracle,

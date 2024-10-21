@@ -415,39 +415,24 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
 
     # preprocess the variable
     Z, X, Y, S, M = preprocess(Z, X, Y, S)
-    #X = transformX(X,threshold_covariate_median_imputation,verbose)
-
-    # Check the validity of the input parameters
-    #check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L,threshold_covariate_median_imputation = threshold_covariate_median_imputation, randomization_design=randomization_design, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
-    
-    # Set random seed
-    np.random.seed(random_state)
 
     # choose the imputation model
-    G_model = choosemodel(G)
     estimator = BayesianRidge()
-    G_model1 = IterativeImputer(estimator=estimator, sample_posterior=True, random_state=1)
-    G_model2 = IterativeImputer(estimator=estimator, sample_posterior=True, random_state=2)
-    G_model3 = IterativeImputer(estimator=estimator, sample_posterior=True, random_state=3)
 
+    # Define imputation models with different seeds
+    G_models = [
+        IterativeImputer(estimator=estimator, sample_posterior=True, random_state=seed)
+        for seed in range(20)
+    ]
 
-    # impuate the missing values to get the observed test statistics in part 1
-    Y_pred1 = getY(clone(G_model1), Z, X, Y, covariate_adjustment)
-    t_obs1 = getT(Y_pred1, Z, Y.shape[1], M, rankAdjust = rankAdjust)
+    # Precompute all imputations only once for each model
+    Y_preds = [
+        getY(clone(G_model), Z, X, Y, covariate_adjustment)
+        for G_model in G_models
+    ]
 
-    # impute the missing values to get the observed test statistics in part 2
-    Y_pred2 = getY(clone(G_model2), Z, X, Y, covariate_adjustment)
-    t_obs2 = getT(Y_pred2,Z, Y.shape[1], M, rankAdjust = rankAdjust)
-
-    # impuate the missing values to get the observed test statistics in part 3
-    Y_pred3 = getY(clone(G_model3), Z, X, Y, covariate_adjustment)
-    t_obs3 = getT(Y_pred3, Z, Y.shape[1], M, rankAdjust = rankAdjust)
-
-
-    # calculate the observed test statistics
-    t_obs = t_obs1 + t_obs2 + t_obs3
-
-
+    # Compute observed test statistics for each precomputed imputation
+    t_obs = sum(getT(Y_pred, Z, Y.shape[1], M, rankAdjust=rankAdjust) for Y_pred in Y_preds)
 
     
     if verbose:
@@ -487,10 +472,9 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
                 Z_sim.append(cluster_sim[int(s) - 1])
             Z_sim = np.array(Z_sim).reshape(-1, 1)
         
-        # get the test statistics 
-        t_sim[l] += getT(Y_pred1, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
-        t_sim[l] += getT(Y_pred2, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
-        t_sim[l] += getT(Y_pred3, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
+        # Compute test statistics once for each precomputed imputation and accumulate
+        for Y_pred in Y_preds:
+            t_sim[l] += getT(Y_pred, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
 
         if verbose:
             print(f"re-prediction iteration {l+1}/{L} completed. Test statistics[{l}]: {t_sim[l]}")

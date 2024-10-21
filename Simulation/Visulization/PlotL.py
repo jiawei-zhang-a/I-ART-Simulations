@@ -60,20 +60,33 @@ def plot_convergence(t_obs_lr, t_sim_lr, t_obs_xgb, t_sim_xgb, title, output_dir
 
         # Plot the absolute difference from the target value
         plt.figure(figsize=(10, 6))
-        plt.plot(log_simulation_steps, np.abs(p_values_log_lr - target_value_lr), label="|(Algo 1 - Linear) P-value - Target|", color="red")
-        plt.plot(log_simulation_steps, np.abs(p_values_log_xgb - target_value_xgb), label="|(Algo 1 - Boosting) P-value - Target|", color="green")
+
+        X = np.log10(log_simulation_steps)
+        y = np.log(np.abs(p_values_log_lr - target_value_lr))
+        y2 = np.log(np.abs(p_values_log_xgb - target_value_xgb))
+
+        # get the slope of this line
+        m = np.polyfit(X, y, 1)[0]
+        print(f"Slope of the linear regression line: {m}")
+
+        m = np.polyfit(X, y2, 1)[0]
+        print(f"Slope of the xgb line: {m}")
+
+        plt.plot(np.log10(log_simulation_steps), np.log(np.abs(p_values_log_lr - target_value_lr)), label="|(Algo 1 - Linear) P-value - Target|", color="red")
+        plt.plot(np.log10(log_simulation_steps), np.log(np.abs(p_values_log_xgb - target_value_xgb)), label="|(Algo 1 - Boosting) P-value - Target|", color="green")
         plt.axhline(0, color='r', linestyle='--', label="Convergence to (Algo 1 - Linear) Target")
         plt.axhline(0, color='green', linestyle='--', label="Convergence to GBM Target")
-        plt.xscale('log')
-        plt.yscale('log')
         plt.xlabel('Number of Simulations (Log Scale)')
         plt.ylabel('|P-value - Target| (Log Scale)')
         plt.title(f"{title} (Log Convergence)")
-        plt.legend()
+        plt.legend() 
 
         # Add a reference line for convergence rate (-1/2 slope)
         x_ref = np.logspace(np.log10(1000), np.log10(n_simulations), num=50)
         y_ref = 1 / np.sqrt(x_ref)
+
+        x_ref = np.log10(x_ref)
+        y_ref = np.log10(y_ref)
         plt.plot(x_ref, y_ref, 'k--', linewidth=2, label='Convergence Rate (slope = -1/2)')
 
         # Annotate the reference line with LaTeX-style math notation

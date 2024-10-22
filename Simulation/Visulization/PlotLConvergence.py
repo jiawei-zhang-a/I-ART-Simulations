@@ -15,25 +15,21 @@ def find_least_L(t_obs, t_sim, p_values, error_threshold=0.01):
     Returns:
     - L: Least L where p-values converge within the error threshold
     """
-    cumulative_p_values = []
-    current_p_value = None
+    # Initialize L to the maximum number of simulations
+    L = len(t_sim)
+    p_values = np.zeros(L)
+    final_p_value = np.mean(t_sim >= t_obs)
+    
+    # Compute running p-values for the model
+    for i in range(1, L + 1):
+        p_values[i-1] = np.mean(t_sim[:i] >= t_obs)
+        
+        # Check for convergence
+        if np.abs(p_values[i-1] - final_p_value) < error_threshold:
+            L = i
+            break
 
-    for i, t in enumerate(t_sim):
-        # Calculate p-value for the current simulation
-        p_value = np.mean(t_obs >= t)
-        cumulative_p_values.append(p_value)
-        
-        # Calculate cumulative p-value estimate
-        p_value_estimation = np.mean(cumulative_p_values)
-        
-        # Check for convergence within the error threshold
-        if current_p_value is not None and abs(p_value_estimation - current_p_value) < error_threshold:
-            return i + 1  # L is the current index + 1
-        
-        current_p_value = p_value_estimation
-
-    # If no convergence found, return the total number of simulations
-    return len(t_sim)
+    return L
 
 def read_npz_files_L(directory, error_threshold=0.01):
     """

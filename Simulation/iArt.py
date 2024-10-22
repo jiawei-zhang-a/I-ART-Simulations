@@ -421,8 +421,8 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
 
     # Define imputation models with different seeds
     G_models = [
-        IterativeImputer(estimator=estimator, sample_posterior=True, random_state=seed)
-        for seed in range(500)
+        IterativeImputer(estimator=estimator, sample_posterior=True)
+        for i in range(100)
     ]
 
     # Precompute all imputations only once for each model
@@ -430,6 +430,8 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
         getY(clone(G_model), Z, X, Y, covariate_adjustment)
         for G_model in G_models
     ]
+    # print two predicted Y values
+
 
     # Compute observed test statistics for each precomputed imputation
     t_obs = sum(getT(Y_pred, Z, Y.shape[1], M, rankAdjust=rankAdjust) for Y_pred in Y_preds)

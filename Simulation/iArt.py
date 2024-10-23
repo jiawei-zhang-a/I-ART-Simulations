@@ -422,7 +422,7 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
     # Define imputation models with different seeds
     G_models = [
         IterativeImputer(estimator=estimator, sample_posterior=True)
-        for i in range(100)
+        for i in range(3)
     ]
 
     # Precompute all imputations only once for each model

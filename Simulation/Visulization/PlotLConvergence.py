@@ -2,7 +2,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-def find_least_L(t_obs, t_sim, p_values, error_threshold=0.01):
+def find_least_L(t_obs, t_sim, p_values, error_threshold=0.01, stable=False):
     """
     Find the least L for convergence to p-values within the given error threshold.
     
@@ -15,23 +15,38 @@ def find_least_L(t_obs, t_sim, p_values, error_threshold=0.01):
     Returns:
     - L: Least L where p-values converge within the error threshold
     """
-    # Initialize L to the maximum number of simulations
-    L = len(t_sim)
-    p_values = np.zeros(L)
-    final_p_value = np.mean(t_sim >= t_obs)
-    
-    # Compute running p-values for the model
-    for i in range(1, L + 1):
-        p_values[i-1] = np.mean(t_sim[:i] >= t_obs)
+    if stable == False:
+        # Initialize L to the maximum number of simulations
+        L = len(t_sim)
+        p_values = np.zeros(L)
+        final_p_value = np.mean(t_sim >= t_obs)
         
-        # Check for convergence
-        if np.abs(p_values[i-1] - final_p_value) < error_threshold:
-            L = i
-            break
+        # Compute running p-values for the model
+        for i in range(1, L + 1):
+            p_values[i-1] = np.mean(t_sim[:i] >= t_obs)
+            
+            # Check for convergence
+            if np.abs(p_values[i-1] - final_p_value) < error_threshold:
+                L = i
+                break
 
-    return L
+        return L
+    else:
+        L = len(t_sim)
+        cumulative_count = np.cumsum(t_sim >= t_obs)
+        running_p_values = cumulative_count / np.arange(1, L + 1)
+        
+        final_p_value = running_p_values[-1]
+        
+        # Iterate over possible L values and check if all future p-values are stable
+        for i in range(L):
+            # Check if all p-values from current i to the end are within the threshold
+            if np.all(np.abs(running_p_values[i:] - final_p_value) < error_threshold):
+                return i + 1  # Return the least L (1-based index)
+        
+        return L  # If no stabilization, return max L
 
-def read_npz_files_L(directory, error_threshold=0.01):
+def read_npz_files_L(directory, error_threshold=0.01, stable=False):
     """
     Process .npz files in the directory to calculate the least L for each model type.
     
@@ -60,32 +75,27 @@ def read_npz_files_L(directory, error_threshold=0.01):
 
         if t_obs is not False and t_sim is not False and p_values is not False:
             # Determine the model type based on the file name
-            if "results_median" in filename:
-                least_Ls['median'].append(find_least_L(t_obs, t_sim, p_values, error_threshold))
-            elif "results_LR" in filename:
-                least_Ls['LR'].append(find_least_L(t_obs, t_sim, p_values, error_threshold))
+            if "results_LR" in filename:
+                least_Ls['LR'].append(find_least_L(t_obs, t_sim, p_values, error_threshold, stable))
             elif "results_lightgbm" in filename:
-                least_Ls['lightgbm'].append(find_least_L(t_obs, t_sim, p_values, error_threshold))
+                least_Ls['lightgbm'].append(find_least_L(t_obs, t_sim, p_values, error_threshold, stable))
             elif "results_xgboost" in filename:
-                least_Ls['xgboost'].append(find_least_L(t_obs, t_sim, p_values, error_threshold))
-            elif "results_oracle" in filename:
-                least_Ls['oracle'].append(find_least_L(t_obs, t_sim, p_values, error_threshold))
+                least_Ls['xgboost'].append(find_least_L(t_obs, t_sim, p_values, error_threshold, stable))
 
     # Compute the average of least Ls for each model
     average_least_Ls = {model: np.mean(Ls) for model, Ls in least_Ls.items() if Ls}
 
     # Return both the dictionary of least Ls and the dictionary of their averages
-    return least_Ls, average_least_Ls
+    return average_least_Ls#least_Ls, average_least_Ls
 
 
-def plot(range, range_small, path, path_small, title, title_small, multiple=False):
+def plot(range, range_small, path, path_small, thereshold=0.01, stable=False):
     # Convergence plots for larger size
     for coef in range:
         if coef != 0.0:
             continue
         for directory in [f'{path}/{coef}']:
-            results = read_npz_files_L(directory)
-
+            results = read_npz_files_L(directory, error_threshold=thereshold, stable=stable)
             print(results)
 
     # Convergence plots for smaller size
@@ -93,15 +103,37 @@ def plot(range, range_small, path, path_small, title, title_small, multiple=Fals
         if coef != 0.0:
             continue
         for directory in [f'{path_small}/{coef}']:
-            results = read_npz_files_L(directory)
-
+            results = read_npz_files_L(directory, error_threshold=thereshold, stable=stable)
             print(results)
+    
+
             
 
 def main_pic_generator():
-    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Power/timeL/HPC_power_1000_model1", "../Power/timeL/HPC_power_50_model1", "Size1000_Model1", "Size50_Model1")
-    plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Power/timeL/HPC_power_1000_model2", "../Power/timeL/HPC_power_50_model2", "Size1000_Model2", "Size50_Model2")
-    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model3", "../Power/timeL/HPC_power_50_model3", "Size1000_Model3", "Size50_Model3")
-    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model4", "../Power/timeL/HPC_power_50_model4", "Size1000_Model4", "Size50_Model4")
+    print("Unstable")
+    print("threshold=0.01")
+    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Power/timeL/HPC_power_1000_model1", "../Power/timeL/HPC_power_50_model1")
+    plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Power/timeL/HPC_power_1000_model2", "../Power/timeL/HPC_power_50_model2")
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model3", "../Power/timeL/HPC_power_50_model3")
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model4", "../Power/timeL/HPC_power_50_model4")
+
+    print("threshold=0.005")
+    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Power/timeL/HPC_power_1000_model1", "../Power/timeL/HPC_power_50_model1", thereshold=0.005)
+    plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Power/timeL/HPC_power_1000_model2", "../Power/timeL/HPC_power_50_model2", thereshold=0.005)
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model3", "../Power/timeL/HPC_power_50_model3", thereshold=0.005)
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model4", "../Power/timeL/HPC_power_50_model4", thereshold=0.005)
+
+    print("Stable")
+    print("threshold=0.01")
+    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Power/timeL/HPC_power_1000_model1", "../Power/timeL/HPC_power_50_model1", stable=True)
+    plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Power/timeL/HPC_power_1000_model2", "../Power/timeL/HPC_power_50_model2", stable=True)
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model3", "../Power/timeL/HPC_power_50_model3", stable=True)
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model4", "../Power/timeL/HPC_power_50_model4", stable=True)
+
+    print("threshold=0.005")
+    plot(np.arange(0.0,0.42,0.07), np.arange(0,1.5,0.25), "../Power/timeL/HPC_power_1000_model1", "../Power/timeL/HPC_power_50_model1", thereshold=0.005, stable=True)
+    plot(np.arange(0.0,0.96,0.16), np.arange(0.0,4.8,0.8), "../Power/timeL/HPC_power_1000_model2", "../Power/timeL/HPC_power_50_model2", thereshold=0.005, stable=True)
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model3", "../Power/timeL/HPC_power_50_model3", thereshold=0.005, stable=True)
+    plot(np.arange(0.0,0.36,0.06), np.arange(0.0,1.5,0.25), "../Power/timeL/HPC_power_1000_model4", "../Power/timeL/HPC_power_50_model4", thereshold=0.005, stable=True)
 
 main_pic_generator()

@@ -25,7 +25,7 @@ def plot_results(data, title, xsticks, lr, gbm, multipleimputation):
 
     plt.scatter(0, lr, color='red', marker='x', s=50, label="Linear Regression")
     plt.scatter(0, gbm, color='green', marker='x', s=50,  label="Gradient Boosting Machine")
-    plt.scatter(0, multipleimputation, color='purple', marker='x', s=50, label="Multiple Imputation")
+    #plt.scatter(0, multipleimputation, color='purple', marker='x', s=50, label="Multiple Imputation")
 
     
     y_ticks = [i / 100.0 for i in range(25, 105, 25)]

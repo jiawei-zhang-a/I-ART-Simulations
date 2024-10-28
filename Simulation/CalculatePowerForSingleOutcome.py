@@ -28,6 +28,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
 
     if beta_coef == 0.0:
         Iter = 10000
+    
 
     # Simulate data
     if multiple == False:
@@ -36,6 +37,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     else:
         DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
+
     
     Framework = RandomizationTest.RandomizationTest(N = Nsize)
     reject, p_values= Framework.test(Z, X, M, Y,strata_size = 10, L=Iter, G = None,verbose=verbose)
@@ -95,6 +97,75 @@ if __name__ == '__main__':
         exit()
 
     task_id = task_id_origin
+    # Model 1
+    beta_to_lambda = {0.0: 2.159275141001102, 0.07: 2.165387531267955, 0.14: 2.285935405246937, 0.21: 2.258923945496463, 0.28: 2.2980720651301794, 0.35: 2.3679216299985613}
+    for coef in np.arange(0.0,0.42,0.07):
+        beta_coef = coef
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            run(1000, filepath = "Result/HPC_power_1000_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=False)
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+
+    beta_to_lambda = {0.0: 2.1577587265653126, 0.25: 2.2946233479956843, 0.5: 2.42339283727788, 0.75: 2.544154767644711, 1.0: 2.669166349074493, 1.25: 2.792645016605368}
+    for coef in np.arange(0,1.5,0.25):
+        beta_coef = coef
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            run(50, filepath = "Result/HPC_power_50_model1", adjust = 0, model = 1, Missing_lambda = lambda_value, small_size=True)
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+    
+    # Model 2
+    beta_to_lambda = {0.0: 14.376830203817725, 0.16: 14.492781397662549, 0.32: 14.636259203432914, 0.48: 14.790662640235277, 0.64: 14.902477227186191, 0.8: 14.995429287214796}
+    for coef in np.arange(0.0,0.96,0.16):
+        beta_coef = coef
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            run(1000, filepath = "Result/HPC_power_1000_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=False)
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+
+    beta_to_lambda = {0.0: 14.335704307321487, 0.8: 14.971101330156632, 1.6: 15.366375386649604, 2.4: 15.724510367662774, 3.2: 15.831265197313604, 4.0: 16.011150941155087}
+    for coef in np.arange(0.0,4.8,0.8):
+        beta_coef = coef
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            run(50, filepath = "Result/HPC_power_50_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=True)
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+          
+    # Model 3
+    beta_to_lambda = {0.0: 14.43119646829717, 0.06: 14.530199258897895, 0.12: 14.74631511872901, 0.18: 14.90822250678929, 0.24: 14.947558384606348, 0.3: 14.979303880359883}
+    for coef in np.arange(0.0,0.36,0.06):
+        beta_coef = coef
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            run(1000, filepath = "Result/HPC_power_1000_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=False)
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+
+    beta_to_lambda = {0.0: 14.390422997290685, 0.25: 14.909362702476912, 0.5: 15.219787798636258, 0.75: 15.4701421427122, 1.0: 15.625851714156521, 1.25: 15.831324938012127}
+    for coef in np.arange(0.0,1.5,0.25):
+        beta_coef = coef
+        # Round to two decimal places to match dictionary keys
+        beta_coef_rounded = round(beta_coef, 2)
+        if beta_coef_rounded in beta_to_lambda:
+            lambda_value = beta_to_lambda[beta_coef_rounded]
+            run(50, filepath = "Result/HPC_power_50_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=True)
+        else:
+            print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
+    
     # Model 4
     beta_to_lambda = {0.0: 15.359698674885047, 0.06: 15.507224279021253, 0.12: 15.675599389006583, 0.18: 15.744503702370242, 0.24: 15.778177240810757, 0.3: 15.8935570369039}
     for coef in np.arange(0.0,0.36,0.06):
@@ -103,7 +174,7 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(1000, filepath = "Result/HPC_power_1000_model7", adjust = 0, model = 7, Missing_lambda = lambda_value, small_size=False)
+            run(1000, filepath = "Result/HPC_power_1000_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=False)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")
 
@@ -114,6 +185,6 @@ if __name__ == '__main__':
         beta_coef_rounded = round(beta_coef, 2)
         if beta_coef_rounded in beta_to_lambda:
             lambda_value = beta_to_lambda[beta_coef_rounded]
-            run(50, filepath = "Result/HPC_power_50_model7", adjust = 0, model = 7, Missing_lambda = lambda_value, small_size=True)
+            run(50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
         else:
             print(f"No lambda value found for beta_coef: {beta_coef_rounded}")

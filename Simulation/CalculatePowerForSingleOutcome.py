@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 import SingleOutcomeModelGenerator as Generator
 import os
@@ -30,6 +31,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         X, Z, U, Y, M, S = DataGen.GenerateData()
     else:
         return
+
 
     """ Framework = RandomizationTest.RandomizationTest(N = Nsize)
     reject, p_values= Framework.test(Z, X, M, Y,strata_size = 10, L=Iter, G = None,verbose=verbose)

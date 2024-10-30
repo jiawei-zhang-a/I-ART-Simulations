@@ -130,7 +130,6 @@ class DataGenerator:
     U = U.reshape(-1,)
     Z = Z.reshape(-1,)
 
-    assert(self.model == 1 or self.model == 2 or self.model == 3 or self.model == 4 or self.model == 5 or self.model == 6)
     if self.model == 1:
       Y = self.beta * Z + sum1 + U +  StrataEps+ IndividualEps 
     if self.model == 2:
@@ -141,6 +140,8 @@ class DataGenerator:
       Y = self.beta * Z +  self.beta * Z * X[:,0 ] + self.beta * Z * sum4 + sum1 + sum2 + U +  StrataEps+ IndividualEps
     if self.model == 6:
       Y = self.beta * Z * X[:,0] ** 2 + sum3 + U +  StrataEps+ IndividualEps
+    if self.model == 7:
+      Y = self.beta * Z +  self.beta * Z * X[:,0 ] + self.beta * Z * sum4 + sum1 + sum2 + U +  StrataEps+ IndividualEps
 
     Y = Y.reshape(-1, 1)
 
@@ -165,7 +166,6 @@ class DataGenerator:
           sum2 += p * np.cos(X[i,p-1])
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
-        assert( self.model == 1 or self.model == 2 or self.model == 3 or self.model == 4 or self.model == 6) 
         if self.model == 1:
           M_lamda[i][0] = sum1 + Y[i, 0] + U[i] 
         if self.model == 2:
@@ -192,8 +192,6 @@ class DataGenerator:
         for p in range(1,6):
           sum2 += p * np.cos(X[i,p-1])
         sum2 =  (1.0  / np.sqrt(5)) * sum2
-
-        assert(self.model == 1 or self.model == 2 or self.model == 3 or self.model == 4 or self.model == 6)
     
         if self.model == 1:
           if sum1 + Y[i, 0] + U[i]  > lambda1:
@@ -213,6 +211,47 @@ class DataGenerator:
 
       return M
   
+  def GenerateM_X(self, X, U, Y, XInter, YInter):
+      
+      U = U.reshape(-1,)
+      n = X.shape[0]
+
+      M_X = np.zeros((n, 5))
+      M_lamda = np.zeros((n, 1))
+      for i in range(n):
+        sum1 = 0
+        for p in range(1,6):
+            sum1 += X[i,p-1] 
+        sum1 = (1.0  / np.sqrt(5)) * sum1
+
+        sum2 = 0
+        for p in range(1,6):
+          sum2 += X[i,p-1]**2
+        sum2 =  (1.0  / np.sqrt(5)) * sum2
+
+        M_lamda[i][0] = sum1 + sum2  + logistic.cdf(U[i])
+
+      if self.Missing_lambda == None:
+        lambda1 = np.percentile(M_lamda, 100 * (1-0.3))
+      else:
+        lambda1 = self.Missing_lambda
+
+      for i in range(n):
+        sum1 = 0
+        for p in range(1,6):
+            sum1 += X[i,p-1] 
+        sum1 = (1.0  / np.sqrt(5)) * sum1
+
+        sum2 = 0
+        for p in range(1,6):
+          sum2 += X[i,p-1]**2
+        sum2 =  (1.0  / np.sqrt(5)) * sum2
+
+        if sum1 + sum2 + logistic.cdf(U[i]) > lambda1:
+            M_X[i][0] = 1
+
+      return M_X
+  
   def GenerateData(self):
     X = self.GenerateX()
     Z = self.GenerateZ()
@@ -224,6 +263,10 @@ class DataGenerator:
     YInter = self.GenerateYInter(X)
     Y = self.GenerateY(X, U, Z, StrataEps, IndividualEps)
     M = self.GenerateM(X, U, Y, XInter, YInter)
+    M_X = self.GenerateM_X(X, U, Y, XInter, YInter)
+    X = np.ma.masked_array(X, mask=M_X)
+    X = X.filled(np.nan)
+
     return X, Z, U, Y, M, S
 
   

@@ -14,6 +14,8 @@ from sklearn.impute import SimpleImputer
 import time
 import warnings
 from scipy.stats import rankdata
+from sklearn.linear_model import BayesianRidge
+
 
 
 def holm_bonferroni(p_values, alpha = 0.05):
@@ -104,19 +106,10 @@ def T(z,y):
     """
     Calculate the Wilcoxon rank sum test statistics
     """
-    #the Wilcoxon rank sum test
-    n = len(z)
-    t = 0
 
-    #O(N*Log(N)) version
-    my_list = []
-    for i in range(n):
-        my_list.append((z[i],y[i]))
-    sorted_list = sorted(my_list, key=lambda x: x[1])
+    Y_rank = rankdata(y)
+    t = np.sum(Y_rank[z == 1])
 
-    #Calculate
-    for i in range(n):
-        t += sorted_list[i][0] * (i + 1)
     return t
 
 def split(y, z, M):
@@ -422,21 +415,28 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
 
     # preprocess the variable
     Z, X, Y, S, M = preprocess(Z, X, Y, S)
-    #X = transformX(X,threshold_covariate_median_imputation,verbose)
 
-    # Check the validity of the input parameters
-    #check_param(Z=Z, X=X, Y=Y, S=S, G=G, L=L,threshold_covariate_median_imputation = threshold_covariate_median_imputation, randomization_design=randomization_design, verbose=verbose, covariate_adjustment=covariate_adjustment, alpha=alpha, alternative=alternative, random_state=random_state)
-    
-    # Set random seed
-    np.random.seed(random_state)
+    """# choose the imputation model
+    estimator = BayesianRidge()
 
-    # choose the imputation model
-    G_model = choosemodel(G)
+    # Define imputation models with different seeds
+    G_models = [
+        IterativeImputer(estimator=estimator, sample_posterior=True)
+        for i in range(20)
+    ]
 
-    # impuate the missing values to get the observed test statistics in part 1
-    Y_pred = getY(clone(G_model), Z, X, Y, covariate_adjustment)
-    t_obs = getT(Y_pred, Z, Y.shape[1], M, rankAdjust = rankAdjust)
-    
+    # Precompute all imputations only once for each model
+    Y_preds = [
+        getY(clone(G_model), Z, X, Y, covariate_adjustment)
+        for G_model in G_models
+    ]
+    # print two predicted Y values
+
+
+    # Compute observed test statistics for each precomputed imputation
+    t_obs = sum(getT(Y_pred, Z, Y.shape[1], M, rankAdjust=rankAdjust) for Y_pred in Y_preds)"""
+
+
     if verbose:
         if isinstance(G, str):
             # the method used is :
@@ -452,7 +452,7 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
         print("=========================================================")
 
     # re-impute the missing values and calculate the observed test statistics in part 2
-    t_sim = [ [] for _ in range(L)]
+    t_sim = [ [0] for _ in range(L)]
     if randomization_design == 'strata':
         Z_sim_templates = getZsimTemplates(Z, S)
     else:
@@ -473,9 +473,10 @@ def test(*,Z, X, Y, G='iterative+linear', S=None,L = 10000,threshold_covariate_m
             for s in S.flatten():
                 Z_sim.append(cluster_sim[int(s) - 1])
             Z_sim = np.array(Z_sim).reshape(-1, 1)
-
-        # get the test statistics 
-        t_sim[l] = getT(Y_pred, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust)
+        
+        # Compute test statistics once for each precomputed imputation and accumulate
+        for Y_pred in Y_preds:
+            t_sim[l] += getT(Y_pred, Z_sim, Y.shape[1], M, rankAdjust=rankAdjust).reshape(-1,)
 
         if verbose:
             print(f"re-prediction iteration {l+1}/{L} completed. Test statistics[{l}]: {t_sim[l]}")

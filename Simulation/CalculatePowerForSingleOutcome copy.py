@@ -11,7 +11,7 @@ import os
 from sklearn.linear_model import BayesianRidge
 import lightgbm as lgb
 import xgboost as xgb
-import iArt as iArt
+import Simulation.iArt_MutipleImputation as iArt_MutipleImputation
 from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
 
@@ -76,25 +76,25 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     #LR imputer
     print("LR")
     IterBayesianRidge = IterativeImputer(estimator = BayesianRidge(random_state=None),max_iter=max_iter)
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=IterBayesianRidge,L=Iter, verbose=verbose )
+    reject, p_values = iArt_MutipleImputation.test(Z=Z, X=X, Y=Y,S=S,G=IterBayesianRidge,L=Iter, verbose=verbose )
     values_LR = [ *p_values, reject ]
 
     median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose, covariate_adjustment=1)
+    reject, p_values = iArt_MutipleImputation.test(Z=Z, X=X, Y=Y,S=S,G=median_imputer,L=Iter, verbose=verbose, covariate_adjustment=1)
     values_medianLR = [ *p_values, reject ]
 
     #XGBoost
     if small_size == True:
         print("Xgboost")
         XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
+        reject, p_values = iArt_MutipleImputation.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
         values_xgboost = [ *p_values, reject ]
 
     #LightGBM
     if small_size == False:
         print("LightGBM")
         LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
-        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
+        reject, p_values = iArt_MutipleImputation.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
         values_lightgbm = [ *p_values, reject ]
 
 

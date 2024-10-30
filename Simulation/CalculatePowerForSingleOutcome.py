@@ -5,7 +5,7 @@ from sklearn.impute import IterativeImputer
 import SingleOutcomeModelGenerator as Generator
 import os
 from sklearn.linear_model import BayesianRidge
-import iArt as iArt
+import Simulation.iArt_MutipleImputation as iArt_MutipleImputation
 
 
 
@@ -45,7 +45,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     #LR imputer
     print("LR")
     IterBayesianRidge = IterativeImputer(estimator = BayesianRidge(),max_iter=max_iter)
-    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=IterBayesianRidge,L=Iter, verbose=verbose )
+    reject, p_values = iArt_MutipleImputation.test(Z=Z, X=X, Y=Y,S=S,G=IterBayesianRidge,L=Iter, verbose=verbose )
     values_LR = [ *p_values, reject ]
 
     values_oracle = [ 1, 1 ]

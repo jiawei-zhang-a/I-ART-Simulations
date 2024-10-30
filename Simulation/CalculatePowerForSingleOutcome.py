@@ -5,8 +5,7 @@ from sklearn.impute import IterativeImputer
 import SingleOutcomeModelGenerator as Generator
 import os
 from sklearn.linear_model import BayesianRidge
-import Simulation.iArt_MutipleImputation as iArt_MutipleImputation
-
+import iArt
 
 
 # Do not change this parameter

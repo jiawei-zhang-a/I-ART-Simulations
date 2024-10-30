@@ -50,8 +50,6 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     values_LR = [ *p_values, reject ]
 
     values_oracle = [ 1, 1 ]
-
-    Iter  = 1
     values_median = [ 1, 1 ]
 
     #XGBoost

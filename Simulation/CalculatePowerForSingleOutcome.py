@@ -6,6 +6,8 @@ import SingleOutcomeModelGenerator as Generator
 import os
 from sklearn.linear_model import BayesianRidge
 import iArt
+import xgboost as xgb
+import lightgbm as lgb
 
 
 # Do not change this parameter
@@ -44,7 +46,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     #LR imputer
     print("LR")
     IterBayesianRidge = IterativeImputer(estimator = BayesianRidge(),max_iter=max_iter)
-    reject, p_values = iArt_MutipleImputation.test(Z=Z, X=X, Y=Y,S=S,G=IterBayesianRidge,L=Iter, verbose=verbose )
+    reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=IterBayesianRidge,L=Iter, verbose=verbose )
     values_LR = [ *p_values, reject ]
 
     values_oracle = [ 1, 1 ]
@@ -55,12 +57,16 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     #XGBoost
     if small_size == True:
         print("Xgboost")
-        values_xgboost = [ 1, 1 ]
+        XGBoost = IterativeImputer(estimator=xgb.XGBRegressor(n_jobs=1), max_iter=max_iter)
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=XGBoost,L=Iter, verbose=verbose)
+        values_xgboost = [ *p_values, reject ]
 
     #LightGBM
     if small_size == False:
         print("LightGBM")
-        values_lightgbm = [ 1, 1 ]
+        LightGBM = IterativeImputer(estimator=lgb.LGBMRegressor(n_jobs=1,verbosity=-1), max_iter=max_iter)
+        reject, p_values = iArt.test(Z=Z, X=X, Y=Y,S=S,G=LightGBM,L=Iter,verbose=verbose)
+        values_lightgbm = [ *p_values, reject ]
 
 
     os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)

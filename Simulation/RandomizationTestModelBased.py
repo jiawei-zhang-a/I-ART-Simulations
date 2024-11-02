@@ -171,6 +171,12 @@ class RandomizationTest:
 
         return reject,p_values
 
+    def T_M(self,z,m):
+            
+            assert len(z) == len(m)
+            t = np.sum(z[m == 1])
+            return t
+
     def test_imputed(self, Z, X, M, Y, G,  strata_size, L=10000, verbose = False):
         """
         A retrain framework for testing H_0.
@@ -212,9 +218,7 @@ class RandomizationTest:
         N = df_Z.shape[0]
 
         # re-impute the missing values and calculate the observed test statistics in part 2
-        bias = self.getY(G, df_Z, df_noZ, indeX,lenX,indexY, lenY)
-        t_obs = self.getT(bias, Z, lenY, M, verbose = verbose)
-
+        t_obs = self.T_M(Z, M)
 
         # simulate data and calculate test statistics
         t_sim = np.zeros((L,Y.shape[1]))
@@ -233,13 +237,8 @@ class RandomizationTest:
                 Z_sim.append(strata)
             Z_sim = np.concatenate(Z_sim).reshape(-1, 1) 
             
-            G_clone = clone(G_model)
-            df_Z = pd.DataFrame(np.concatenate((Z_sim, X, Y), axis=1))
-            bias = self.getY(G_clone, df_Z, df_noZ, indeX,lenX, indexY, lenY)
-
             # get the test statistics 
-            t_sim[l] = self.getT(bias, Z_sim, lenY, M, verbose=False)
-
+            t_sim[l] = self.T_M(Z_sim, M)
 
         if verbose:
             print("t_sims_mean:"+str(np.mean(t_sim)))

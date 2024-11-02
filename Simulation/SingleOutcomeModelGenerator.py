@@ -263,9 +263,9 @@ class DataGenerator:
     YInter = self.GenerateYInter(X)
     Y = self.GenerateY(X, U, Z, StrataEps, IndividualEps)
     M = self.GenerateM(X, U, Y, XInter, YInter)
-    M_X = self.GenerateM_X(X, U, Y, XInter, YInter)
-    X = np.ma.masked_array(X, mask=M_X)
-    X = X.filled(np.nan)
+    #M_X = self.GenerateM_X(X, U, Y, XInter, YInter)
+    #X = np.ma.masked_array(X, mask=M_X)
+    #X = X.filled(np.nan)
 
     return X, Z, U, Y, M, S
 

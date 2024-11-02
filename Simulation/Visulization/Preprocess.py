@@ -53,15 +53,15 @@ def main_data_saver():
 def current_data_saver():
     save_data(np.arange(0.0, 0.42, 0.07), np.arange(0, 1.5, 0.25), 
               "../Power/Result/HPC_power_1000_model1", "../Power/Result/HPC_power_50_model1",
-                "Size1000_Model1_current.pkl", "Size50_Model1_current.pkl", multiple=True)
+                "Size1000_Model1_current.pkl", "Size50_Model1_current.pkl")
     save_data(np.arange(0.0, 0.96, 0.16), np.arange(0.0, 4.8, 0.8),
                 "../Power/Result/HPC_power_1000_model2", "../Power/Result/HPC_power_50_model2",
-                    "Size1000_Model2_current.pkl", "Size50_Model2_current.pkl", multiple=True)
+                    "Size1000_Model2_current.pkl", "Size50_Model2_current.pkl")
     save_data(np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25),
                 "../Power/Result/HPC_power_1000_model3", "../Power/Result/HPC_power_50_model3",
-                    "Size1000_Model3_current.pkl", "Size50_Model3_current.pkl", multiple=True)
+                    "Size1000_Model3_current.pkl", "Size50_Model3_current.pkl")
     save_data(np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25),
                 "../Power/Result/HPC_power_1000_model4", "../Power/Result/HPC_power_50_model4",
-                    "Size1000_Model4_current.pkl", "Size50_Model4_current.pkl", multiple=True)
+                    "Size1000_Model4_current.pkl", "Size50_Model4_current.pkl")
     
 current_data_saver()

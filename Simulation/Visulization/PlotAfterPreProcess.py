@@ -58,4 +58,16 @@ def main_pic_plotter():
     load_and_plot("Size1000_Model4.pkl", "Size50_Model4.pkl", "Size1000_Model4", "Size50_Model4", 
                   np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25), 0.0765, 0.0905, 0.0845, 0.127, 0.0605, 0.0625)
 
-main_pic_plotter()
+#main_pic_plotter()
+
+def current_pic_pllotter():
+    load_and_plot("Size1000_Model1_current.pkl", "Size50_Model1_current.pkl", "Size1000_Model1_current", "Size50_Model1_current", 
+                  np.arange(0.0, 0.42, 0.07), np.arange(0, 1.5, 0.25), 0.1115,0.0985, 0.181,0.189, 0.122,0.091 )
+    load_and_plot("Size1000_Model2_current.pkl", "Size50_Model2_current.pkl", "Size1000_Model2_current", "Size50_Model2_current", 
+                  np.arange(0.0, 0.96, 0.16), np.arange(0.0, 4.8, 0.8), 0.084, 0.0905, 0.0755, 0.14, 0.075, 0.0675)
+    load_and_plot("Size1000_Model3_current.pkl", "Size50_Model3_current.pkl", "Size1000_Model3_current", "Size50_Model3_current", 
+                  np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25), 0.0865, 0.09, 0.0895, 0.14, 0.0715, 0.069)
+    load_and_plot("Size1000_Model4_current.pkl", "Size50_Model4_current.pkl", "Size1000_Model4_current", "Size50_Model4_current", 
+                  np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25), 0.0765, 0.0905, 0.0845, 0.127, 0.0605, 0.0625)
+
+current_pic_pllotter()

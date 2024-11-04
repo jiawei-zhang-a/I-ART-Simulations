@@ -29,6 +29,7 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     if beta_coef == 0.0:
         Iter = 10000
     
+    Iter = 50
 
     # Simulate data
     if multiple == False:
@@ -37,6 +38,8 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
     else:
         DataGen = GeneratorMutiple.DataGenerator(N = Nsize, strata_size=10,beta = beta_coef, MaskRate=0.5, verbose=verbose,Missing_lambda = Missing_lambda)
         X, Z, U, Y, M, S = DataGen.GenerateData()
+    
+    
 
     
     Framework = RandomizationTest.RandomizationTest(N = Nsize)

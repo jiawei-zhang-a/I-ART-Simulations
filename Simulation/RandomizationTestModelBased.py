@@ -166,7 +166,7 @@ class RandomizationTest:
         # perform Holm-Bonferroni correction
         p_values = []
         for i in range(lenY):
-            p_values.append(np.mean(np.abs(t_sim[:,i] - np.mean(t_sim[:,i])) >= np.abs(t_obs - np.mean(t_sim[:,i])), axis=0))
+            p_values.append(np.mean(t_sim[:,i] >= t_obs, axis=0))
         reject = self.holm_bonferroni(p_values)
 
         return reject,p_values

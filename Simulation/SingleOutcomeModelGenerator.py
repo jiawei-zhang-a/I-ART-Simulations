@@ -167,15 +167,15 @@ class DataGenerator:
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
         if self.model == 1:
-          M_lamda[i][0] = sum1 + Y[i, 0] + U[i] 
+          M_lamda[i][0] = sum1 + U[i] 
         if self.model == 2:
-          M_lamda[i][0] = sum1 + sum2 + 10 * logistic.cdf(Y[i, 0]) + U[i] 
+          M_lamda[i][0] = sum1 + sum2  + U[i] 
         if self.model == 3:
-          M_lamda[i][0] = sum1 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i]
+          M_lamda[i][0] = sum1 + sum2   + U[i]
         if self.model == 4:
-          M_lamda[i][0] = sum1 + sum2  + 10 * logistic.cdf(Y[i, 0])+ XInter[i] + YInter[i] + U[i]
+          M_lamda[i][0] = sum1 + sum2  + XInter[i] + YInter[i] + U[i]
         if self.model == 6:
-          M_lamda[i][0] = sum1 + sum2  + 10 * logistic.cdf(Y[i, 0])+ XInter[i] + YInter[i] + U[i]
+          M_lamda[i][0] = sum1 + sum2  +  XInter[i]  + U[i]
 
       if self.Missing_lambda == None:
         lambda1 = np.percentile(M_lamda, 100 * (1-self.MaskRate))
@@ -194,16 +194,16 @@ class DataGenerator:
         sum2 =  (1.0  / np.sqrt(5)) * sum2
     
         if self.model == 1:
-          if sum1 + Y[i, 0] + U[i]  > lambda1:
+          if sum1 + U[i]  > lambda1:
             M[i][0] = 1
         if self.model == 2:
-          if sum1 + sum2   + 10 * logistic.cdf(Y[i, 0])+ U[i] > lambda1:
+          if sum1 + sum2  + U[i] > lambda1:
             M[i][0] = 1            
         if self.model == 3:
-          if sum1 + sum2  + 10 * logistic.cdf(Y[i, 0]) + U[i] > lambda1:
+          if sum1 + sum2   + U[i] > lambda1:
             M[i][0] = 1 
         if self.model == 4:
-          if sum1 + sum2  + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i] + U[i] > lambda1:
+          if sum1 + sum2  + XInter[i]  + U[i] > lambda1:
             M[i][0] = 1
         if self.model == 6:
           if sum1 + sum2  + 10 * logistic.cdf(Y[i, 0]) + XInter[i] + YInter[i] + U[i] > lambda1:

@@ -112,7 +112,13 @@ class RandomizationTest:
     def T_M(self,z,m):
             
             assert len(z) == len(m)
+
+            #t = np.sum(z[m == 1])
+            z = np.array(z)
+            m = np.array(m)
             t = np.sum(z[m == 1])
+
+            
             return t
 
 
@@ -122,22 +128,15 @@ class RandomizationTest:
 
         Y_copy = np.ma.masked_array(Y, mask=M)
         Y_copy = Y_copy.filled(np.nan)
-
-        df_noZ = pd.DataFrame(np.concatenate((X, Y_copy), axis=1))
-
-        # lenY is the number of how many columns are Y
         lenY = Y.shape[1]
-        lenX = X.shape[1]
 
-        # indexY is the index of the first column of Y
-        indexY = Z.shape[1] + X.shape[1]
-        indeX = 0
 
         # N is the number of rows of the data frame
         N = df_Z.shape[0]
 
         # re-impute the missing values and calculate the observed test statistics in part 2
         t_obs = self.T_M(Z, M)
+        
 
         #print train end
         if verbose:
@@ -145,7 +144,7 @@ class RandomizationTest:
             print("Permutation Start")
 
         # simulate data and calculate test statistics
-        t_sim = np.zeros((L,Y.shape[1]))
+        t_sim = np.zeros((L,lenY))
 
         for l in range(L):
             
@@ -157,8 +156,8 @@ class RandomizationTest:
                 strata = np.array([0.0]*half_strata_size + [1.0]*half_strata_size)
                 np.random.shuffle(strata)
                 Z_sim.append(strata)
-            Z_sim = np.concatenate(Z_sim).reshape(-1, 1) 
-
+            Z_sim = np.concatenate(Z_sim).reshape(-1, 1)
+            
             # get the test statistics 
             t_sim[l] = self.T_M(Z_sim, M)
 
@@ -169,7 +168,7 @@ class RandomizationTest:
         # perform Holm-Bonferroni correction
         p_values = []
         for i in range(lenY):
-            p_values.append(np.mean(t_sim[:,i] >= t_obs[i], axis=0))
+            p_values.append(np.mean(t_sim[:,i] >= t_obs, axis=0))
         reject = self.holm_bonferroni(p_values)
 
         return reject,p_values

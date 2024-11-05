@@ -232,7 +232,7 @@ class DataGenerator:
         M_lamda[i][4] = sum1 + sum2  + logistic.cdf(U[i])
 
       if self.Missing_lambda == None:
-        lambda1 = np.percentile(M_lamda[:,4], 100 * (1-0.25))
+        lambda1 = np.percentile(M_lamda[:,4], 100 * (1-0.5))
       else:
         lambda1 = self.Missing_lambda
 
@@ -266,7 +266,7 @@ class DataGenerator:
     M_X = self.GenerateM_X(X, U, Y, XInter, YInter)
     X = np.ma.masked_array(X, mask=M_X)
     X = X.filled(np.nan)
-    
+
     return X, Z, U, Y, M, S
 
   

@@ -229,10 +229,10 @@ class DataGenerator:
           sum2 += X[i,p-1]**2
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
-        M_lamda[i][0] = sum1 + sum2  + logistic.cdf(U[i])
+        M_lamda[i][4] = sum1 + sum2  + logistic.cdf(U[i])
 
       if self.Missing_lambda == None:
-        lambda1 = np.percentile(M_lamda[:,0], 100 * (1-0.5))
+        lambda1 = np.percentile(M_lamda[:,4], 100 * (1-0.25))
       else:
         lambda1 = self.Missing_lambda
 
@@ -248,7 +248,7 @@ class DataGenerator:
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
         if sum1 + sum2 + logistic.cdf(U[i]) > lambda1:
-            M_X[i][0] = 1
+            M_X[i][4] = 1
 
       return M_X
   

@@ -217,7 +217,7 @@ class DataGenerator:
       n = X.shape[0]
 
       M_X = np.zeros((n, 5))
-      M_lamda = np.zeros((n, 1))
+      M_lamda = np.zeros((n, 5))
       for i in range(n):
         sum1 = 0
         for p in range(1,6):
@@ -229,10 +229,10 @@ class DataGenerator:
           sum2 += X[i,p-1]**2
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
-        M_lamda[i][0] = sum1 + sum2  + logistic.cdf(U[i])
+        M_lamda[i][4] = sum1 + sum2  + logistic.cdf(U[i])
 
       if self.Missing_lambda == None:
-        lambda1 = np.percentile(M_lamda, 100 * (1-0.3))
+        lambda1 = np.percentile(M_lamda[:,4], 100 * (1-0.25))
       else:
         lambda1 = self.Missing_lambda
 
@@ -248,7 +248,7 @@ class DataGenerator:
         sum2 =  (1.0  / np.sqrt(5)) * sum2
 
         if sum1 + sum2 + logistic.cdf(U[i]) > lambda1:
-            M_X[i][0] = 1
+            M_X[i][4] = 1
 
       return M_X
   

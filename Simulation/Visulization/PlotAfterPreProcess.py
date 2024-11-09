@@ -62,12 +62,12 @@ def main_pic_plotter():
 
 def current_pic_pllotter():
     load_and_plot("Size1000_Model1_current.pkl", "Size50_Model1_current.pkl", "Size1000_Model1_MissingCovariate", "Size50_Model1_MissingCovariate", 
-                  np.arange(0.0, 0.42, 0.07), np.arange(0, 1.5, 0.25), 0.122, 0.1095,  0.1525, 0.1915, 0.122,0.091 )
+                  np.arange(0.0, 0.42, 0.07), np.arange(0, 1.5, 0.25), 0.104, 0.1035,  0.142, 0.1885, 0.122,0.091 )
     load_and_plot("Size1000_Model2_current.pkl", "Size50_Model2_current.pkl", "Size1000_Model2_MissingCovariate", "Size50_Model2_MissingCovariate", 
-                  np.arange(0.0, 0.96, 0.16), np.arange(0.0, 4.8, 0.8), 0.093, 0.109, 0.074, 0.1685, 0.075, 0.0675)
+                  np.arange(0.0, 0.96, 0.16), np.arange(0.0, 4.8, 0.8), 0.072, 0.1115, 0.0675, 0.106, 0.075, 0.0675)
     load_and_plot("Size1000_Model3_current.pkl", "Size50_Model3_current.pkl", "Size1000_Model3_MissingCovariate", "Size50_Model3_MissingCovariate", 
-                  np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25), 0.079, 0.094, 0.066, 0.153, 0.0715, 0.069)
+                  np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25), 0.071, 0.1075, 0.0655, 0.12, 0.0715, 0.069)
     load_and_plot("Size1000_Model4_current.pkl", "Size50_Model4_current.pkl", "Size1000_Model4_MissingCovariate", "Size50_Model4_MissingCovariate", 
-                  np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25), 0.080, 0.102, 0.070, 0.12, 0.0605, 0.0625)
+                  np.arange(0.0, 0.36, 0.06), np.arange(0.0, 1.5, 0.25), 0.0555,  0.09, 0.0725, 0.1035, 0.0605, 0.0625)
 
 current_pic_pllotter()

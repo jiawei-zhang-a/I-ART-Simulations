@@ -56,7 +56,7 @@ if __name__ == '__main__':
         beta_coef = coef
         run(1000, filepath = "Result/HPC_power_1000_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=False)
 
-    for coef in np.arange(30,50,5):
+    for coef in np.arange(2,5,0.1):
         beta_coef = coef
         run(50, filepath = "Result/HPC_power_50_model2", adjust = 0, model = 2, Missing_lambda = lambda_value, small_size=True)
           
@@ -65,15 +65,15 @@ if __name__ == '__main__':
         beta_coef = coef
         run(1000, filepath = "Result/HPC_power_1000_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=False)
 
-    for coef in np.arange(20,30,1):
+    for coef in np.arange(0.5,3,0.1):
         beta_coef = coef
         run(50, filepath = "Result/HPC_power_50_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=True)
   
     # Model 4
-    for coef in np.arange(0.5,0.8,0.1):
+    for coef in np.arange(0.5,1,0.1):
         beta_coef = coef
         run(1000, filepath = "Result/HPC_power_1000_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=False)
 
-    for coef in np.arange(15,20,1):
+    for coef in np.arange(0.5,3,0.1):
         beta_coef = coef
         run(50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)

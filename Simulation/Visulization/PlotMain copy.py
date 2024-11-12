@@ -5,41 +5,42 @@ import os
 from ReadData import read_npz_files
 
 def plot_results(data, title, xsticks):
-    # Only include 'beta' and 'Imputer_Oracle' columns
-    columns = ['beta', 'Imputer_Oracle']
+    # Exclude 'Imputer_Median' by removing it from the columns list
+    columns = ['beta', 'Imputer_PREP-RidgeReg', 'Imputer_PREP-GBM', 'Imputer_Oracle']
 
     df = pd.DataFrame(data, columns=columns)
 
     plt.figure(figsize=(10, 6))
 
-    # Update colors dictionary to include only 'Oracle'
-    colors = {'Oracle': 'black'}
+    # Update the colors dictionary accordingly, removing 'Median'
+    colors = {'PREP-RidgeReg': 'red', 'PREP-GBM': 'green', 'Oracle': 'black'}
     linestyles = {'Imputer': '-'}
 
-    # Loop through the relevant columns, excluding removed ones
     for col in columns[1:]:
-        method = col.split('_')[1]  # Extract method name, e.g., 'Oracle'
-        dataset = col.split('_')[0]  # Extract dataset type, e.g., 'Imputer'
+        method = col.split('_')[1]
+        dataset = col.split('_')[0]
         linestyle = linestyles[dataset]
         plt.plot(df['beta'], df[col], marker='o', label=method, color=colors[method], linestyle=linestyle, linewidth=2.0)
-
+        
     plt.xlabel(r'$\beta$', fontsize=30)
     plt.ylabel('Rejection Rate', fontsize=30)
     plt.grid()
 
     # Setting y-axis ticks with custom intervals
-    y_ticks = [i / 100.0 for i in range(25, 105, 25)]
+    y_ticks = [i / 100.0 for i in range(25, 105, 25)]  # Starts from 0, ends at 1.05, with an interval of 0.05
     y_ticks.append(0.05)
     plt.yticks(y_ticks)
-    plt.xticks(xsticks)
+    X_ticks = xsticks
+    plt.xticks(X_ticks)
     plt.tick_params(axis='both', which='major', labelsize=25)
 
-    # Create 'pic' directory if it doesn't exist
+    #plt.show()
     if not os.path.exists("pic"):
         os.makedirs("pic")
 
-    # Save the plot as a PDF file
-    plt.savefig(f"pic/{title}.pdf", bbox_inches='tight')
+    plt.savefig("pic/" + title + ".pdf", bbox_inches='tight')
+
+
 
 
 def plot2(range, range_small, path, path_small, new_path, new_path_small, title, title_small, multiple=False):
@@ -51,10 +52,15 @@ def plot2(range, range_small, path, path_small, new_path, new_path_small, title,
     for coef in range:
         row_power = [coef]
         
+        # Use xgboost and lr from the original paths (path and path_small)
+        for directory in [path + "/%f" % coef]:
+            results = read_npz_files(directory, small_size=False, multiple=multiple)
+            row_power.extend([results['lr_power'], results['lightgbm_power'], results['oracle_power']])
+
         # Use oracle from new_path (last path)
         for directory in [new_path + "/%f" % coef]:
             results = read_npz_files(directory, small_size=False, multiple=multiple)
-            row_power.extend([ results['oracle_power']])   # Replace last value with oracle from new path
+            row_power[-1] = results['oracle_power']  # Replace last value with oracle from new path
 
         Power_data.append(row_power)
     print("Power Data (Large):", Power_data)
@@ -64,10 +70,15 @@ def plot2(range, range_small, path, path_small, new_path, new_path_small, title,
     for coef in range_small:
         row_power_small = [coef]
         
+        # Use xgboost and lr from the original paths (path and path_small)
+        for directory in [path_small + "/%f" % coef]:
+            results = read_npz_files(directory, small_size=True, multiple=multiple)
+            row_power_small.extend([results['lr_power'], results['xgboost_power'], results['oracle_power']])
+
         # Use oracle from new_path_small (last path)
         for directory in [new_path_small + "/%f" % coef]:
             results = read_npz_files(directory, small_size=True, multiple=multiple)
-            row_power_small.extend([ results['oracle_power']])  # Replace last value with oracle from new path
+            row_power_small[-1] = results['oracle_power']  # Replace last value with oracle from new path
         
         Power_data_small.append(row_power_small)
     print("Power Data (Small):", Power_data_small)

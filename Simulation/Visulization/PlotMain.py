@@ -76,8 +76,8 @@ def plot2(range, range_small, path, path_small, new_path, new_path_small, title,
 
 def main_pic_generator():
     plot2(np.arange(0.8,1.6,0.1), np.arange(0.3,8,0.5), "../Data/Simulation/HPC_power_1000_model1", "../Data/Simulation/HPC_power_50_model1", "../Power/Result/HPC_power_1000_model1", "../Power/Result/HPC_power_50_model1","Size1000_Model1_T_M", "Size50_Model1_T_M")
-    plot2(np.arange(1,2,0.1), np.arange(30,50,5), "../Data/Simulation/HPC_power_1000_model2", "../Data/Simulation/HPC_power_50_model2", "../Power/Result/HPC_power_1000_model2", "../Power/Result/HPC_power_50_model2", "Size1000_Model2_T_M", "Size50_Model2_T_M")
-    plot2(np.arange(0.5,0.8,0.1), np.arange(20,30,1), "../Data/Simulation/HPC_power_1000_model3", "../Data/Simulation/HPC_power_50_model3", "../Power/Result/HPC_power_1000_model3", "../Power/Result/HPC_power_50_model3", "Size1000_Model3_T_M", "Size50_Model3_T_M")
-    plot2(np.arange(0.5,0.8,0.1), np.arange(15,20,1), "../Data/Simulation/HPC_power_1000_model4", "../Data/Simulation/HPC_power_50_model4", "../Power/Result/HPC_power_1000_model4", "../Power/Result/HPC_power_50_model4", "Size1000_Model4_T_M", "Size50_Model4_T_M") 
+    plot2(np.arange(1,2,0.1), np.arange(2,5,0.1), "../Data/Simulation/HPC_power_1000_model2", "../Data/Simulation/HPC_power_50_model2", "../Power/Result/HPC_power_1000_model2", "../Power/Result/HPC_power_50_model2", "Size1000_Model2_T_M", "Size50_Model2_T_M")
+    plot2(np.arange(0.5,0.8,0.1), np.arange(0.5,9,0.1), "../Data/Simulation/HPC_power_1000_model3", "../Data/Simulation/HPC_power_50_model3", "../Power/Result/HPC_power_1000_model3", "../Power/Result/HPC_power_50_model3", "Size1000_Model3_T_M", "Size50_Model3_T_M")
+    plot2(np.arange(0.5,0.8,0.1), np.arange(0.5,9,0.1), "../Data/Simulation/HPC_power_1000_model4", "../Data/Simulation/HPC_power_50_model4", "../Power/Result/HPC_power_1000_model4", "../Power/Result/HPC_power_50_model4", "Size1000_Model4_T_M", "Size50_Model4_T_M") 
 
 main_pic_generator()

@@ -32,7 +32,6 @@ def read_npz_files(directory,small_size=False, multiple=False, type="original"):
             p_values = np.load(filepath)
 
             reject = p_values
-            reject = any(reject)
             if "p_values_median" in filename and 'p_values_medianadjusted' not in filename:
                 N_p_values_median += 1
                 summed_p_values_median += reject

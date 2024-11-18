@@ -7,20 +7,6 @@ def bonferroni_correction(p_values, alpha=0.05):
     adjusted_p_values = [min(p * n, 1.0) for p in p_values]
     return [p <= alpha for p in adjusted_p_values]
 
-def holm_bonferroni_correction(p_values, alpha=0.05):
-    sorted_p_values = sorted((p, i) for i, p in enumerate(p_values))
-    n = len(p_values)
-    adjusted_p_values = [0] * n
-    significant = [False] * n
-    for rank, (p, original_index) in enumerate(sorted_p_values):
-        adjusted_p_value = min(p * (n - rank), 1.0)
-        adjusted_p_values[original_index] = adjusted_p_value
-        if adjusted_p_value <= alpha:
-            significant[original_index] = True
-        else:
-            break  # No need to continue once a test fails
-    return significant
-
 def read_npz_files(directory,small_size=False, multiple=False, type="original"):
     summed_p_values_median = None
     summed_p_values_LR = None
@@ -44,10 +30,8 @@ def read_npz_files(directory,small_size=False, multiple=False, type="original"):
         if filename.endswith(".npy"):
             filepath = os.path.join(directory, filename)
             p_values = np.load(filepath)
-            if multiple:
-                reject = holm_bonferroni_correction(p_values[0:3], alpha=0.05)
-            else:
-                reject = holm_bonferroni_correction(p_values[0:1], alpha=0.05)
+
+            reject = p_values
             reject = any(reject)
             if "p_values_median" in filename and 'p_values_medianadjusted' not in filename:
                 N_p_values_median += 1

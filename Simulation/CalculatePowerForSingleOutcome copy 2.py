@@ -15,35 +15,6 @@ import iArt as iArt
 beta_coef = None
 task_id = 1
 
-def calculate_missing_rates(Z, M):
-    """
-    Calculate the missing rates for treated and control groups.
-
-    Parameters:
-    - Z: numpy array, where 1 represents the treated group and 0 represents the control group
-    - M: numpy array, where 1 means the measurement is present and 0 means it's missing
-
-    Returns:
-    - A dictionary with missing rates for treated and control groups
-    """
-    # Ensure Z and M have the same length
-    if len(Z) != len(M):
-        raise ValueError("Z and M must have the same length")
-
-    # Total counts for treated and control groups
-    total_treated = np.sum(Z == 1)
-    total_control = np.sum(Z == 0)
-
-    # Missing counts for treated and control groups
-    missing_treated = np.sum((Z == 1) & (M == 0))
-    missing_control = np.sum((Z == 0) & (M == 0))
-
-    # Calculate missing rates, handling cases where there are no treated or control samples
-    missing_rate_treated = missing_treated / total_treated if total_treated > 0 else None
-    missing_rate_control = missing_control / total_control if total_control > 0 else None
-
-    # Return the results as a dictionary
-    return {"treated": missing_rate_treated, "control": missing_rate_control}
 
 def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small_size = True, multiple = False):
 
@@ -54,14 +25,13 @@ def run(Nsize, filepath,  Missing_lambda,adjust = 0, model = 0, verbose=1, small
         X, Z, U, Y, M, S = DataGen.GenerateData()
 
     Framework = RandomizationTest.RandomizationTest(N = Nsize)
-
-    #print("Model, beta_coef",model, beta_coef)
-    X = calculate_missing_rates(Z, M)
-
+    reject, p_values= Framework.test(Z, X, M, Y,strata_size = 10, L=10000, G = None,verbose=verbose)
+    # Append p-values to corresponding lists
+    values_oracle = [ *p_values, reject]
 
     os.makedirs("%s/%f"%(filepath,beta_coef), exist_ok=True)
     
-    np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), X["treated"])
+    np.save('%s/%f/p_values_oracle_%d.npy' % (filepath, beta_coef, task_id), values_oracle)
 
 task_id_origin = 0
 if __name__ == '__main__':
@@ -95,7 +65,7 @@ if __name__ == '__main__':
         beta_coef = coef
         run(1000, filepath = "Result/HPC_power_1000_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=False)
 
-    for coef in np.arange(0,9,0.5):
+    for coef in np.arange(3,9,0.1):
         beta_coef = coef
         run(50, filepath = "Result/HPC_power_50_model3", adjust = 0, model = 3, Missing_lambda = lambda_value, small_size=True)
   
@@ -104,6 +74,6 @@ if __name__ == '__main__':
         beta_coef = coef
         run(1000, filepath = "Result/HPC_power_1000_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=False)
 
-    for coef in np.arange(0,9,0.5):
+    for coef in np.arange(3,9,0.1):
         beta_coef = coef
         run(50, filepath = "Result/HPC_power_50_model4", adjust = 0, model = 4, Missing_lambda = lambda_value, small_size=True)
